@@ -5,12 +5,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Log In - My Investment Library</title>
+  <title>My Investment Library</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       font-family: Arial, sans-serif;
@@ -18,148 +22,474 @@
       color: #172033;
     }
 
-    .container {
-      max-width: 500px;
-      margin: 100px auto;
-      padding: 20px;
-    }
-
-    .box {
-      background: white;
-      padding: 35px;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-    }
-
-    h1 {
-      margin-top: 0;
-    }
-
-    label {
-      display: block;
-      font-weight: bold;
-      margin-top: 15px;
-    }
-
-    input {
-      width: 100%;
-      padding: 12px;
-      margin: 8px 0 15px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      box-sizing: border-box;
-    }
-
-    button {
-      width: 100%;
-      padding: 12px;
+    header {
+      position: relative;
       background: #111827;
       color: white;
-      border: none;
-      border-radius: 6px;
-      font-size: 16px;
-      cursor: pointer;
+      padding: 55px 20px;
+      text-align: center;
     }
 
-    button:hover {
-      background: #263247;
+    header h1 {
+      font-size: 42px;
+      margin: 0 0 12px;
     }
 
-    #message {
-      margin-top: 15px;
+    header p {
+      font-size: 18px;
+      color: #cbd5e1;
+      margin-bottom: 30px;
+    }
+
+    .login-link {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      padding: 9px 14px;
+      background: white;
+      color: #111827;
+      text-decoration: none;
+      border-radius: 7px;
+      font-size: 14px;
       font-weight: bold;
     }
 
-    .home-link {
-      display: block;
+    .login-link:hover {
+      background: #e5e7eb;
+    }
+
+    .search {
+      max-width: 650px;
+      margin: auto;
+    }
+
+    .search input {
+      width: 100%;
+      padding: 16px 20px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 45px auto;
+      padding: 0 20px;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    .categories {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 18px;
+    }
+
+    .category {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
       text-align: center;
-      margin-top: 20px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+      transition: transform 0.2s;
+    }
+
+    .category:hover {
+      transform: translateY(-4px);
+    }
+
+    .category .icon {
+      font-size: 32px;
+    }
+
+    .category h3 {
+      margin: 12px 0 0;
+    }
+
+    .featured {
+      margin-top: 55px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 22px;
+    }
+
+    .card {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+    }
+
+    .card h3 {
+      margin-top: 0;
+      font-size: 21px;
+    }
+
+    .card p {
+      line-height: 1.6;
+      color: #526071;
+    }
+
+    .card a {
       color: #2563eb;
       text-decoration: none;
+      font-weight: bold;
+    }
+
+    .card a:hover {
+      text-decoration: underline;
+    }
+
+    .tag {
+      display: inline-block;
+      background: #e8edf3;
+      padding: 6px 10px;
+      margin: 4px 4px 0 0;
+      border-radius: 20px;
+      font-size: 13px;
+    }
+
+    footer {
+      margin-top: 70px;
+      padding: 35px 20px;
+      background: #111827;
+      color: #9ca3af;
+      text-align: center;
     }
   </style>
 </head>
 
+
 <body>
+
+<header>
+
+  <!-- PUBLIC PAGE LOGIN ENTRANCE -->
+  <a href="admin.html" class="login-link">
+    🔐 Log In
+  </a>
+
+  <h1>My Investment Library</h1>
+
+  <p>
+    My collection of investment news, research, videos and ideas.
+  </p>
+
+  <div class="search">
+    <input
+      type="text"
+      id="search-input"
+      placeholder="Search stocks, topics, news and research..."
+    >
+  </div>
+
+</header>
+
 
 <div class="container">
 
-  <div class="box">
+  <h2>Investment Categories</h2>
 
-    <h1>🔐 Log In</h1>
+  <div class="categories">
 
-    <p>My Investment Library</p>
+    <div class="category">
+      <div class="icon">📈</div>
+      <h3>Market</h3>
+    </div>
 
-    <label>Email</label>
-    <input
-      type="email"
-      id="email"
-      placeholder="Your email"
-    >
+    <div class="category">
+      <div class="icon">💰</div>
+      <h3>Stocks</h3>
+    </div>
 
-    <label>Password</label>
-    <input
-      type="password"
-      id="password"
-      placeholder="Your password"
-    >
+    <div class="category">
+      <div class="icon">🤖</div>
+      <h3>AI & Semiconductors</h3>
+    </div>
 
-    <button onclick="login()">
-      Log In
-    </button>
+    <div class="category">
+      <div class="icon">⚡</div>
+      <h3>Energy</h3>
+    </div>
 
-    <p id="message"></p>
+    <div class="category">
+      <div class="icon">🏦</div>
+      <h3>Financials</h3>
+    </div>
 
-    <a href="index.html" class="home-link">
-      ← Back to Home
-    </a>
+    <div class="category">
+      <div class="icon">🪙</div>
+      <h3>Crypto</h3>
+    </div>
+
+    <div class="category">
+      <div class="icon">🌎</div>
+      <h3>Macro Economy</h3>
+    </div>
+
+    <div class="category">
+      <div class="icon">📰</div>
+      <h3>News</h3>
+    </div>
+
+  </div>
+
+
+  <div class="featured">
+
+    <h2>⭐ Featured Research</h2>
+
+    <div class="cards">
+
+      <div class="card">
+
+        <h3>MU — Micron Technology</h3>
+
+        <p>
+          HBM demand, AI infrastructure,
+          memory market and Micron's
+          long-term growth outlook.
+        </p>
+
+        <span class="tag">MU</span>
+        <span class="tag">HBM</span>
+        <span class="tag">AI</span>
+
+      </div>
+
+
+      <div class="card">
+
+        <h3>NVDA — NVIDIA</h3>
+
+        <p>
+          AI chips, data centers,
+          GPU demand and the
+          AI infrastructure cycle.
+        </p>
+
+        <span class="tag">NVDA</span>
+        <span class="tag">AI</span>
+        <span class="tag">GPU</span>
+
+      </div>
+
+
+      <div class="card">
+
+        <h3>COIN — Coinbase</h3>
+
+        <p>
+          Crypto markets, Bitcoin,
+          trading activity and
+          digital asset adoption.
+        </p>
+
+        <span class="tag">COIN</span>
+        <span class="tag">Crypto</span>
+        <span class="tag">Bitcoin</span>
+
+      </div>
+
+    </div>
 
   </div>
 
 </div>
 
 
+<div class="container">
+
+  <div class="featured">
+
+    <h2>📚 Latest From My Library</h2>
+
+    <div class="cards" id="database-items">
+      <p>Loading investment items...</p>
+    </div>
+
+  </div>
+
+</div>
+
+
+<footer>
+
+  My Investment Library
+
+  <br><br>
+
+  Personal investment research and content collection.
+
+</footer>
+
+
 <script>
 
-async function login() {
-
-  const email =
-    document.getElementById("email").value;
-
-  const password =
-    document.getElementById("password").value;
-
-  const message =
-    document.getElementById("message");
+let allInvestmentItems = [];
 
 
-  message.textContent = "Logging in...";
+async function loadInvestmentItems() {
 
-
-  const { data, error } =
-    await supabaseClient.auth.signInWithPassword({
-      email: email,
-      password: password
-    });
+  const { data, error } = await supabaseClient
+    .from("items")
+    .select("*")
+    .order("created_at", { ascending: false });
 
 
   if (error) {
 
-    message.textContent =
-      "Login failed: " + error.message;
+    console.error("Error loading items:", error);
+
+    document.getElementById("database-items").innerHTML =
+      "<p>Unable to load investment items.</p>";
 
     return;
   }
 
 
-  message.textContent = "Login successful!";
+  allInvestmentItems = data || [];
 
-
-  window.location.href = "management.html";
+  displayInvestmentItems(allInvestmentItems);
 
 }
 
+
+
+function displayInvestmentItems(items) {
+
+  const container =
+    document.getElementById("database-items");
+
+
+  if (!items || items.length === 0) {
+
+    container.innerHTML =
+      "<p>No investment items found.</p>";
+
+    return;
+  }
+
+
+  container.innerHTML = items.map(item => `
+
+    <div class="card">
+
+      <h3>
+        ${item.ticker ? item.ticker + " — " : ""}
+        ${item.title || ""}
+      </h3>
+
+      <p>
+        ${item.description || ""}
+      </p>
+
+      ${item.ticker
+        ? `<span class="tag">${item.ticker}</span>`
+        : ""
+      }
+
+      ${item.type
+        ? `<span class="tag">${item.type}</span>`
+        : ""
+      }
+
+      ${item.category
+        ? `<span class="tag">${item.category}</span>`
+        : ""
+      }
+
+      ${item.tags
+        ? `<span class="tag">${item.tags}</span>`
+        : ""
+      }
+
+      ${item.my_note
+        ? `<p><strong>My Note:</strong> ${item.my_note}</p>`
+        : ""
+      }
+
+      ${item.url
+        ? `<p>
+             <a
+               href="${item.url}"
+               target="_blank"
+               rel="noopener noreferrer"
+             >
+               Read original →
+             </a>
+           </p>`
+        : ""
+      }
+
+    </div>
+
+  `).join("");
+
+}
+
+
+
+document
+  .getElementById("search-input")
+  .addEventListener("input", function() {
+
+    const searchText =
+      this.value.toLowerCase().trim();
+
+
+    if (!searchText) {
+
+      displayInvestmentItems(
+        allInvestmentItems
+      );
+
+      return;
+
+    }
+
+
+    const filteredItems =
+      allInvestmentItems.filter(item => {
+
+        const searchableText = [
+
+          item.title,
+          item.ticker,
+          item.type,
+          item.category,
+          item.tags,
+          item.description,
+          item.my_note
+
+        ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+
+
+        return searchableText.includes(
+          searchText
+        );
+
+      });
+
+
+    displayInvestmentItems(filteredItems);
+
+  });
+
+
+
+loadInvestmentItems();
+
 </script>
+
 
 </body>
 </html>
