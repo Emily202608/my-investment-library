@@ -1,42 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>My Investment Library</title>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
-  .admin-login {
-  position: absolute;
-  top: 20px;
-  right: 30px;
-  color: white;
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: bold;
-  z-index: 1000;
-}
 
-.admin-login:hover {
-  text-decoration: underline;
-}
   <style>
+
     * {
       box-sizing: border-box;
     }
 
-    body 
-     <a href="admin.html" class="admin-login">🔐 Admin Login</a>
-
-      <div class="container">
-     { margin: 0;
+    body {
+      margin: 0;
       font-family: Arial, sans-serif;
       background: #f5f7fa;
       color: #172033;
     }
 
     header {
+      position: relative;
       background: #111827;
       color: white;
       padding: 55px 20px;
@@ -52,6 +40,23 @@
       font-size: 18px;
       color: #cbd5e1;
       margin-bottom: 30px;
+    }
+
+    .admin-login {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      padding: 9px 14px;
+      background: white;
+      color: #111827;
+      text-decoration: none;
+      border-radius: 7px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .admin-login:hover {
+      background: #e5e7eb;
     }
 
     .search {
@@ -131,6 +136,16 @@
       color: #526071;
     }
 
+    .card a {
+      color: #2563eb;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .card a:hover {
+      text-decoration: underline;
+    }
+
     .tag {
       display: inline-block;
       background: #e8edf3;
@@ -147,27 +162,18 @@
       color: #9ca3af;
       text-align: center;
     }
-    <a href="admin.html" class="admin-link">Admin Login</a>
-  </style>
-  .admin-link {
-  display: inline-block;
-  margin-top: 15px;
-  padding: 10px 16px;
-  background: white;
-  color: #111827;
-  text-decoration: none;
-  border-radius: 8px;
-  font-weight: bold;
-}
 
-.admin-link:hover {
-  background: #e5e7eb;
-}
+  </style>
 </head>
+
 
 <body>
 
 <header>
+
+  <a href="admin.html" class="admin-login">
+    🔐 Admin Login
+  </a>
 
   <h1>My Investment Library</h1>
 
@@ -296,15 +302,22 @@
 
 </div>
 
+
 <div class="container">
+
   <div class="featured">
+
     <h2>📚 Latest From My Library</h2>
 
     <div class="cards" id="database-items">
       <p>Loading investment items...</p>
     </div>
+
   </div>
+
 </div>
+
+
 <footer>
 
   My Investment Library
@@ -314,47 +327,109 @@
   Personal investment research and content collection.
 
 </footer>
+
+
 <script>
+
 async function loadInvestmentItems() {
+
   const { data, error } = await supabaseClient
     .from("items")
     .select("*")
     .order("created_at", { ascending: false });
 
   if (error) {
+
     console.error("Error loading items:", error);
+
+    const container =
+      document.getElementById("database-items");
+
+    if (container) {
+      container.innerHTML =
+        "<p>Unable to load investment items.</p>";
+    }
+
     return;
   }
 
-  console.log("Investment items:", data);
 
-  const container = document.getElementById("database-items");
+  const container =
+    document.getElementById("database-items");
 
-  if (!container) return;
+
+  if (!container) {
+    return;
+  }
+
 
   if (!data || data.length === 0) {
-    container.innerHTML = "<p>No investment items yet.</p>";
+
+    container.innerHTML =
+      "<p>No investment items yet.</p>";
+
     return;
   }
 
+
   container.innerHTML = data.map(item => `
+
     <div class="card">
-      <h3>${item.ticker ? item.ticker + " — " : ""}${item.title || ""}</h3>
 
-      <p>${item.description || ""}</p>
+      <h3>
+        ${item.ticker ? item.ticker + " — " : ""}
+        ${item.title || ""}
+      </h3>
 
-      ${item.ticker ? `<span class="tag">${item.ticker}</span>` : ""}
-      ${item.type ? `<span class="tag">${item.type}</span>` : ""}
-      ${item.tags ? `<span class="tag">${item.tags}</span>` : ""}
+      <p>
+        ${item.description || ""}
+      </p>
 
-      ${item.my_note ? `<p><strong>My Note:</strong> ${item.my_note}</p>` : ""}
+      ${item.ticker
+        ? `<span class="tag">${item.ticker}</span>`
+        : ""
+      }
 
-      ${item.url ? `<p><a href="${item.url}" target="_blank">Read original →</a></p>` : ""}
+      ${item.type
+        ? `<span class="tag">${item.type}</span>`
+        : ""
+      }
+
+      ${item.category
+        ? `<span class="tag">${item.category}</span>`
+        : ""
+      }
+
+      ${item.tags
+        ? `<span class="tag">${item.tags}</span>`
+        : ""
+      }
+
+      ${item.my_note
+        ? `<p><strong>My Note:</strong> ${item.my_note}</p>`
+        : ""
+      }
+
+      ${item.url
+        ? `<p>
+             <a href="${item.url}" target="_blank" rel="noopener noreferrer">
+               Read original →
+             </a>
+           </p>`
+        : ""
+      }
+
     </div>
+
   `).join("");
+
 }
 
+
 loadInvestmentItems();
+
 </script>
+
+
 </body>
 </html>
