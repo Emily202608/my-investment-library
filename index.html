@@ -264,7 +264,15 @@
 
 </div>
 
+<div class="container">
+  <div class="featured">
+    <h2>📚 Latest From My Library</h2>
 
+    <div class="cards" id="database-items">
+      <p>Loading investment items...</p>
+    </div>
+  </div>
+</div>
 <footer>
 
   My Investment Library
@@ -274,6 +282,47 @@
   Personal investment research and content collection.
 
 </footer>
+<script>
+async function loadInvestmentItems() {
+  const { data, error } = await supabaseClient
+    .from("items")
+    .select("*")
+    .order("created_at", { ascending: false });
 
+  if (error) {
+    console.error("Error loading items:", error);
+    return;
+  }
+
+  console.log("Investment items:", data);
+
+  const container = document.getElementById("database-items");
+
+  if (!container) return;
+
+  if (!data || data.length === 0) {
+    container.innerHTML = "<p>No investment items yet.</p>";
+    return;
+  }
+
+  container.innerHTML = data.map(item => `
+    <div class="card">
+      <h3>${item.ticker ? item.ticker + " — " : ""}${item.title || ""}</h3>
+
+      <p>${item.description || ""}</p>
+
+      ${item.ticker ? `<span class="tag">${item.ticker}</span>` : ""}
+      ${item.type ? `<span class="tag">${item.type}</span>` : ""}
+      ${item.tags ? `<span class="tag">${item.tags}</span>` : ""}
+
+      ${item.my_note ? `<p><strong>My Note:</strong> ${item.my_note}</p>` : ""}
+
+      ${item.url ? `<p><a href="${item.url}" target="_blank">Read original →</a></p>` : ""}
+    </div>
+  `).join("");
+}
+
+loadInvestmentItems();
+</script>
 </body>
 </html>
