@@ -7,10 +7,12 @@
 
   <title>My Investment Library</title>
 
+  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
 
   <style>
+
     * {
       box-sizing: border-box;
     }
@@ -114,7 +116,7 @@
 
     .cards {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 22px;
     }
 
@@ -154,6 +156,42 @@
       font-size: 13px;
     }
 
+    .chart-button {
+      margin-top: 18px;
+      padding: 10px 14px;
+      background: #111827;
+      color: white;
+      border: none;
+      border-radius: 7px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .chart-button:hover {
+      background: #263247;
+    }
+
+    .chart-wrapper {
+      display: none;
+      margin-top: 18px;
+      height: 450px;
+      width: 100%;
+    }
+
+    .chart-wrapper.open {
+      display: block;
+    }
+
+    .tradingview-widget-container {
+      height: 100%;
+      width: 100%;
+    }
+
+    .tradingview-widget-container__widget {
+      height: 100%;
+      width: 100%;
+    }
+
     footer {
       margin-top: 70px;
       padding: 35px 20px;
@@ -161,6 +199,7 @@
       color: #9ca3af;
       text-align: center;
     }
+
   </style>
 </head>
 
@@ -169,7 +208,6 @@
 
 <header>
 
-  <!-- PUBLIC PAGE LOGIN ENTRANCE -->
   <a href="admin.html" class="login-link">
     🔐 Log In
   </a>
@@ -181,11 +219,13 @@
   </p>
 
   <div class="search">
+
     <input
       type="text"
       id="search-input"
-      placeholder="Search stocks, topics, news and research..."
+      placeholder="Search ticker, company, topic, news or research..."
     >
+
   </div>
 
 </header>
@@ -310,7 +350,9 @@
     <h2>📚 Latest From My Library</h2>
 
     <div class="cards" id="database-items">
+
       <p>Loading investment items...</p>
+
     </div>
 
   </div>
@@ -334,6 +376,10 @@
 let allInvestmentItems = [];
 
 
+/* ------------------------------
+   LOAD SUPABASE ITEMS
+-------------------------------- */
+
 async function loadInvestmentItems() {
 
   const { data, error } = await supabaseClient
@@ -344,27 +390,41 @@ async function loadInvestmentItems() {
 
   if (error) {
 
-    console.error("Error loading items:", error);
+    console.error(
+      "Error loading items:",
+      error
+    );
 
-    document.getElementById("database-items").innerHTML =
+    document
+      .getElementById("database-items")
+      .innerHTML =
       "<p>Unable to load investment items.</p>";
 
     return;
+
   }
 
 
   allInvestmentItems = data || [];
 
-  displayInvestmentItems(allInvestmentItems);
+  displayInvestmentItems(
+    allInvestmentItems
+  );
 
 }
 
 
 
+/* ------------------------------
+   DISPLAY ITEMS
+-------------------------------- */
+
 function displayInvestmentItems(items) {
 
   const container =
-    document.getElementById("database-items");
+    document.getElementById(
+      "database-items"
+    );
 
 
   if (!items || items.length === 0) {
@@ -373,116 +433,337 @@ function displayInvestmentItems(items) {
       "<p>No investment items found.</p>";
 
     return;
+
   }
 
 
-  container.innerHTML = items.map(item => `
+  container.innerHTML =
+    items.map((item, index) => {
 
-    <div class="card">
+      const ticker =
+        item.ticker
+          ? item.ticker.trim().toUpperCase()
+          : "";
 
-      <h3>
-        ${item.ticker ? item.ticker + " — " : ""}
-        ${item.title || ""}
-      </h3>
+      /*
+        For now, existing records default to NASDAQ.
 
-      <p>
-        ${item.description || ""}
-      </p>
+        Next step:
+        we will add an Exchange field in Management
+        so NYSE and other exchanges are supported.
+      */
 
-      ${item.ticker
-        ? `<span class="tag">${item.ticker}</span>`
-        : ""
-      }
+      const exchange =
+        item.exchange
+          ? item.exchange.trim().toUpperCase()
+          : "NASDAQ";
 
-      ${item.type
-        ? `<span class="tag">${item.type}</span>`
-        : ""
-      }
 
-      ${item.category
-        ? `<span class="tag">${item.category}</span>`
-        : ""
-      }
+      return `
 
-      ${item.tags
-        ? `<span class="tag">${item.tags}</span>`
-        : ""
-      }
+        <div class="card">
 
-      ${item.my_note
-        ? `<p><strong>My Note:</strong> ${item.my_note}</p>`
-        : ""
-      }
+          <h3>
+            ${ticker ? ticker + " — " : ""}
+            ${item.title || ""}
+          </h3>
 
-      ${item.url
-        ? `<p>
-             <a
-               href="${item.url}"
-               target="_blank"
-               rel="noopener noreferrer"
-             >
-               Read original →
-             </a>
-           </p>`
-        : ""
-      }
 
-    </div>
+          <p>
+            ${item.description || ""}
+          </p>
 
-  `).join("");
+
+          ${ticker
+            ? `<span class="tag">${ticker}</span>`
+            : ""
+          }
+
+
+          ${item.type
+            ? `<span class="tag">${item.type}</span>`
+            : ""
+          }
+
+
+          ${item.category
+            ? `<span class="tag">${item.category}</span>`
+            : ""
+          }
+
+
+          ${item.tags
+            ? `<span class="tag">${item.tags}</span>`
+            : ""
+          }
+
+
+          ${item.my_note
+            ? `
+              <p>
+                <strong>My Note:</strong>
+                ${item.my_note}
+              </p>
+              `
+            : ""
+          }
+
+
+          ${item.url
+            ? `
+              <p>
+                <a
+                  href="${item.url}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Read original →
+                </a>
+              </p>
+              `
+            : ""
+          }
+
+
+          ${ticker
+            ? `
+              <button
+                class="chart-button"
+                onclick="
+                  toggleTradingViewChart(
+                    'chart-${index}',
+                    '${exchange}:${ticker}',
+                    this
+                  )
+                "
+              >
+                📊 Show ${ticker} Chart
+              </button>
+
+              <div
+                id="chart-${index}"
+                class="chart-wrapper"
+              ></div>
+              `
+            : ""
+          }
+
+        </div>
+
+      `;
+
+    }).join("");
 
 }
 
 
 
+/* ------------------------------
+   TRADINGVIEW CHART
+-------------------------------- */
+
+function toggleTradingViewChart(
+  containerId,
+  symbol,
+  button
+) {
+
+  const chartWrapper =
+    document.getElementById(
+      containerId
+    );
+
+
+  if (
+    chartWrapper.classList.contains(
+      "open"
+    )
+  ) {
+
+    chartWrapper.classList.remove(
+      "open"
+    );
+
+    button.textContent =
+      "📊 Show Chart";
+
+    return;
+
+  }
+
+
+  chartWrapper.classList.add(
+    "open"
+  );
+
+
+  button.textContent =
+    "▲ Hide Chart";
+
+
+  /*
+    Do not create the TradingView widget again
+    if it has already been loaded.
+  */
+
+  if (
+    chartWrapper.dataset.loaded === "true"
+  ) {
+
+    return;
+
+  }
+
+
+  const widgetContainer =
+    document.createElement("div");
+
+
+  widgetContainer.className =
+    "tradingview-widget-container";
+
+
+  const widget =
+    document.createElement("div");
+
+
+  widget.className =
+    "tradingview-widget-container__widget";
+
+
+  widgetContainer.appendChild(
+    widget
+  );
+
+
+  const script =
+    document.createElement("script");
+
+
+  script.type =
+    "text/javascript";
+
+
+  script.src =
+    "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
+
+
+  script.async = true;
+
+
+  script.innerHTML =
+    JSON.stringify({
+
+      autosize: true,
+
+      symbol: symbol,
+
+      interval: "D",
+
+      timezone: "exchange",
+
+      theme: "light",
+
+      style: "1",
+
+      locale: "en",
+
+      allow_symbol_change: true,
+
+      withdateranges: true,
+
+      hide_side_toolbar: false,
+
+      save_image: false,
+
+      calendar: false,
+
+      support_host:
+        "https://www.tradingview.com"
+
+    });
+
+
+  widgetContainer.appendChild(
+    script
+  );
+
+
+  chartWrapper.appendChild(
+    widgetContainer
+  );
+
+
+  chartWrapper.dataset.loaded =
+    "true";
+
+}
+
+
+
+/* ------------------------------
+   SEARCH
+-------------------------------- */
+
 document
   .getElementById("search-input")
-  .addEventListener("input", function() {
+  .addEventListener(
+    "input",
+    function() {
 
-    const searchText =
-      this.value.toLowerCase().trim();
-
-
-    if (!searchText) {
-
-      displayInvestmentItems(
-        allInvestmentItems
-      );
-
-      return;
-
-    }
+      const searchText =
+        this.value
+          .toLowerCase()
+          .trim();
 
 
-    const filteredItems =
-      allInvestmentItems.filter(item => {
+      if (!searchText) {
 
-        const searchableText = [
-
-          item.title,
-          item.ticker,
-          item.type,
-          item.category,
-          item.tags,
-          item.description,
-          item.my_note
-
-        ]
-        .filter(Boolean)
-        .join(" ")
-        .toLowerCase();
-
-
-        return searchableText.includes(
-          searchText
+        displayInvestmentItems(
+          allInvestmentItems
         );
 
-      });
+        return;
+
+      }
 
 
-    displayInvestmentItems(filteredItems);
+      const filteredItems =
+        allInvestmentItems.filter(
+          item => {
 
-  });
+            const searchableText = [
+
+              item.title,
+              item.ticker,
+              item.type,
+              item.category,
+              item.tags,
+              item.description,
+              item.my_note
+
+            ]
+
+            .filter(Boolean)
+
+            .join(" ")
+
+            .toLowerCase();
+
+
+            return searchableText
+              .includes(searchText);
+
+          }
+        );
+
+
+      displayInvestmentItems(
+        filteredItems
+      );
+
+    }
+  );
 
 
 
@@ -492,4 +773,5 @@ loadInvestmentItems();
 
 
 </body>
+
 </html>
