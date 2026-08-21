@@ -1,1 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Investment Management</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+      color: #172033;
+    }
+
+    header {
+      background: #111827;
+      color: white;
+      padding: 20px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .header-actions a,
+    .header-actions button {
+      padding: 10px 14px;
+      border-radius: 7px;
+      border: none;
+      text-decoration: none;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .back-link {
+      background: white;
+      color: #111827;
+    }
+
+    .logout-button {
+      background: #374151;
+      color: white;
+    }
+
+    .container {
+      max-width: 760px;
+      margin: 50px auto;
+      padding: 0 20px;
+    }
+
+    .panel {
+      background: white;
+      padding: 35px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+
+    label {
+      display: block;
+      margin-top: 12px;
+      font-weight: bold;
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-family: Arial, sans-serif;
+      font-size: 15px;
+    }
+
+    textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    .publish-button {
+      width: 100%;
+      padding: 13px;
+      background: #111827;
+      color: white;
+      border: none;
+      border-radius: 7px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .publish-button:hover {
+      background: #263247;
+    }
+
+    #publish-message {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    #login-warning {
+      display: none;
+      background: #fff3cd;
+      padding: 20px;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+
+  <h1>Investment Management</h1>
+
+  <div class="header-actions">
+
+    <a href="index.html" class="back-link">
+      ← Back to Library
+    </a>
+
+    <button class="logout-button" onclick="logout()">
+      Log Out
+    </button>
+
+  </div>
+
+</header>
+
+
+<div class="container">
+
+  <div id="login-warning">
+
+    <strong>You are not logged in.</strong>
+
+    <br><br>
+
+    <a href="admin.html">
+      Go to Log In
+    </a>
+
+  </div>
+
+
+  <div class="panel" id="management-panel">
+
+    <h2>➕ Add New Investment</h2>
+
+    <p>
+      Add an article, news story, video,
+      research report or investment idea.
+    </p>
+
+
+    <label>Title</label>
+
+    <input
+      type="text"
+      id="title"
+      placeholder="Article or video title"
+    >
+
+
+    <label>URL</label>
+
+    <input
+      type="url"
+      id="url"
+      placeholder="https://..."
+    >
+
+
+    <label>Type</label>
+
+    <select id="type">
+
+      <option value="Article">Article</option>
+      <option value="News">News</option>
+      <option value="Video">Video</option>
+      <option value="Research">Research</option>
+      <option value="Investment Idea">Investment Idea</option>
+
+    </select>
+
+
+    <label>Ticker</label>
+
+    <input
+      type="text"
+      id="ticker"
+      placeholder="MU, NVDA, COIN..."
+    >
+
+
+    <label>Category</label>
+
+    <select id="category">
+
+      <option value="Market">Market</option>
+      <option value="Stocks">Stocks</option>
+      <option value="AI & Semiconductors">AI & Semiconductors</option>
+      <option value="Energy">Energy</option>
+      <option value="Financials">Financials</option>
+      <option value="Crypto">Crypto</option>
+      <option value="Macro Economy">Macro Economy</option>
+      <option value="News">News</option>
+
+    </select>
+
+
+    <label>Tags</label>
+
+    <input
+      type="text"
+      id="tags"
+      placeholder="AI, HBM, Bitcoin, Earnings..."
+    >
+
+
+    <label>Description</label>
+
+    <textarea
+      id="description"
+      placeholder="Short description"
+    ></textarea>
+
+
+    <label>My Note</label>
+
+    <textarea
+      id="my_note"
+      placeholder="Why I saved this"
+    ></textarea>
+
+
+    <button
+      class="publish-button"
+      onclick="addInvestment()"
+    >
+      Publish
+    </button>
+
+    <p id="publish-message"></p>
+
+  </div>
+
+</div>
+
+
+<script>
+
+async function checkLogin() {
+
+  const {
+    data: { session }
+  } = await supabaseClient.auth.getSession();
+
+
+  if (!session) {
+
+    document
+      .getElementById("management-panel")
+      .style.display = "none";
+
+    document
+      .getElementById("login-warning")
+      .style.display = "block";
+
+  }
+
+}
+
+
+async function addInvestment() {
+
+  const publishMessage =
+    document.getElementById("publish-message");
+
+
+  const newItem = {
+
+    title:
+      document.getElementById("title").value,
+
+    url:
+      document.getElementById("url").value,
+
+    type:
+      document.getElementById("type").value,
+
+    ticker:
+      document.getElementById("ticker")
+        .value
+        .trim()
+        .toUpperCase(),
+
+    category:
+      document.getElementById("category").value,
+
+    tags:
+      document.getElementById("tags").value,
+
+    description:
+      document.getElementById("description").value,
+
+    my_note:
+      document.getElementById("my_note").value
+
+  };
+
+
+  if (!newItem.title) {
+
+    publishMessage.textContent =
+      "Please enter a title.";
+
+    return;
+
+  }
+
+
+  publishMessage.textContent =
+    "Publishing...";
+
+
+  const { error } =
+    await supabaseClient
+      .from("items")
+      .insert([newItem]);
+
+
+  if (error) {
+
+    publishMessage.textContent =
+      "Publish failed: " + error.message;
+
+    console.error(error);
+
+    return;
+
+  }
+
+
+  publishMessage.textContent =
+    "Published successfully!";
+
+
+  document.getElementById("title").value = "";
+  document.getElementById("url").value = "";
+  document.getElementById("ticker").value = "";
+  document.getElementById("tags").value = "";
+  document.getElementById("description").value = "";
+  document.getElementById("my_note").value = "";
+
+}
+
+
+async function logout() {
+
+  await supabaseClient.auth.signOut();
+
+  window.location.href = "index.html";
+
+}
+
+
+checkLogin();
+
+</script>
+
+
+</body>
+</html>
