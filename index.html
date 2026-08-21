@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>My Investment Library</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+      color: #172033;
+    }
+
+    header {
+      background: #111827;
+      color: white;
+      padding: 55px 20px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 42px;
+      margin: 0 0 12px;
+    }
+
+    header p {
+      font-size: 18px;
+      color: #cbd5e1;
+      margin-bottom: 30px;
+    }
+
+    .search {
+      max-width: 650px;
+      margin: auto;
+    }
+
+    .search input {
+      width: 100%;
+      padding: 16px 20px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 45px auto;
+      padding: 0 20px;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    .categories {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 18px;
+    }
+
+    .category {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+      transition: transform 0.2s;
+    }
+
+    .category:hover {
+      transform: translateY(-4px);
+    }
+
+    .category .icon {
+      font-size: 32px;
+    }
+
+    .category h3 {
+      margin: 12px 0 0;
+    }
+
+    .featured {
+      margin-top: 55px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 22px;
+    }
+
+    .card {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+    }
+
+    .card h3 {
+      margin-top: 0;
+      font-size: 21px;
+    }
+
+    .card p {
+      line-height: 1.6;
+      color: #526071;
+    }
+
+    .tag {
+      display: inline-block;
+      background: #e8edf3;
+      padding: 6px 10px;
+      margin: 4px 4px 0 0;
+      border-radius: 20px;
+      font-size: 13px;
+    }
+
+    footer {
+      margin-top: 70px;
+      padding: 35px 20px;
+      background: #111827;
+      color: #9ca3af;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+
+  <h1>My Investment Library</h1>
+
+  <p>
+    My collection of investment news, research, videos and ideas.
+  </p>
+
+  <div class="search">
+    <input
+      type="text"
+      placeholder="Search stocks, topics, news and research..."
+    >
+  </div>
+
+</header>
+
+
+<div class="container">
+
+  <h2>Investment Categories</h2>
+
+  <div class="categories">
+
+    <div class="category">
+      <div class="icon">📈</div>
+      <h3>Market</h3>
+    </div>
+
+    <div class="category">
+      <div class="icon">💰</div>
+      <h3>Stocks</h3>
+    </div>
+
+    <div class="category">
+      <div class="icon">🤖</div>
+      <h3>AI & Semiconductors</h3>
+    </div>
+
+    <div class="category">
+      <div class="icon">⚡</div>
+      <h3>Energy</h3>
+    </div>
+
+    <div class="category">
+      <div class="icon">🏦</div>
+      <h3>Financials</h3>
+    </div>
+
+    <div class="category">
+      <div class="icon">🪙</div>
+      <h3>Crypto</h3>
+    </div>
+
+    <div class="category">
+      <div class="icon">🌎</div>
+      <h3>Macro Economy</h3>
+    </div>
+
+    <div class="category">
+      <div class="icon">📰</div>
+      <h3>News</h3>
+    </div>
+
+  </div>
+
+
+  <div class="featured">
+
+    <h2>⭐ Featured Research</h2>
+
+    <div class="cards">
+
+      <div class="card">
+
+        <h3>MU — Micron Technology</h3>
+
+        <p>
+          HBM demand, AI infrastructure,
+          memory market and Micron's
+          long-term growth outlook.
+        </p>
+
+        <span class="tag">MU</span>
+        <span class="tag">HBM</span>
+        <span class="tag">AI</span>
+
+      </div>
+
+
+      <div class="card">
+
+        <h3>NVDA — NVIDIA</h3>
+
+        <p>
+          AI chips, data centers,
+          GPU demand and the
+          AI infrastructure cycle.
+        </p>
+
+        <span class="tag">NVDA</span>
+        <span class="tag">AI</span>
+        <span class="tag">GPU</span>
+
+      </div>
+
+
+      <div class="card">
+
+        <h3>COIN — Coinbase</h3>
+
+        <p>
+          Crypto markets, Bitcoin,
+          trading activity and
+          digital asset adoption.
+        </p>
+
+        <span class="tag">COIN</span>
+        <span class="tag">Crypto</span>
+        <span class="tag">Bitcoin</span>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<footer>
+
+  My Investment Library
+
+  <br><br>
+
+  Personal investment research and content collection.
+
+</footer>
+
+</body>
+</html>
