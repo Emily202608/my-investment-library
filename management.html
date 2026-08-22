@@ -76,10 +76,7 @@
       margin-bottom: 30px;
     }
 
-    h2 {
-      margin-top: 0;
-    }
-
+    h2,
     h3 {
       margin-top: 0;
     }
@@ -252,7 +249,10 @@
 
   <div id="management-content">
 
-    <!-- ADD NEW CONTENT -->
+
+    <!-- =========================
+         ADD NEW CONTENT
+    ========================== -->
 
     <div class="panel">
 
@@ -276,6 +276,7 @@
       <div class="grid-2">
 
         <div>
+
           <label>Type</label>
 
           <select id="new-type">
@@ -285,11 +286,19 @@
             <option value="Video">Video</option>
             <option value="Investment Idea">Investment Idea</option>
           </select>
+
         </div>
 
         <div>
+
           <label>Ticker</label>
-          <input id="new-ticker" type="text" placeholder="MU, NVDA...">
+
+          <input
+            id="new-ticker"
+            type="text"
+            placeholder="MU, NVDA..."
+          >
+
         </div>
 
       </div>
@@ -298,26 +307,58 @@
       <label>Category</label>
 
       <select id="new-category">
-        <option value="Macro Trends">Macro Trends</option>
-        <option value="Fundamental Analysis">Fundamental Analysis</option>
-        <option value="Price Action Analysis">Price Action Analysis</option>
-        <option value="Trading Psychology">Trading Psychology</option>
-        <option value="Trading Strategies">Trading Strategies</option>
-        <option value="My Trade Reviews">My Trade Reviews</option>
-        <option value="My Videos">My Videos</option>
-        <option value="Selected YouTube Videos">Selected YouTube Videos</option>
+
+        <option value="Macro Trends">
+          Macro Trends
+        </option>
+
+        <option value="Fundamental Analysis">
+          Fundamental Analysis
+        </option>
+
+        <option value="Price Action Analysis">
+          Price Action Analysis
+        </option>
+
+        <option value="Trading Psychology">
+          Trading Psychology
+        </option>
+
+        <option value="Trading Strategies">
+          Trading Strategies
+        </option>
+
+        <option value="My Trade Reviews">
+          My Trade Reviews
+        </option>
+
+        <option value="My Videos">
+          My Videos
+        </option>
+
+        <option value="Selected YouTube Videos">
+          Selected YouTube Videos
+        </option>
+
       </select>
 
 
       <label>Tags</label>
-      <input id="new-tags" type="text" placeholder="AI, HBM, Earnings...">
+
+      <input
+        id="new-tags"
+        type="text"
+        placeholder="AI, HBM, Earnings..."
+      >
 
 
       <label>Description</label>
+
       <textarea id="new-description"></textarea>
 
 
       <label>My Note</label>
+
       <textarea id="new-note"></textarea>
 
 
@@ -328,48 +369,67 @@
         Publish
       </button>
 
-      <div id="content-message" class="message"></div>
+
+      <div
+        id="content-message"
+        class="message"
+      ></div>
 
     </div>
 
 
-    <!-- EXISTING CONTENT -->
+    <!-- =========================
+         EXISTING CONTENT
+    ========================== -->
 
     <div class="panel">
 
       <h2>Existing Content</h2>
 
-      <div id="content-list" class="item-list">
+      <div
+        id="content-list"
+        class="item-list"
+      >
         Loading...
       </div>
 
     </div>
 
 
-    <!-- WATCH LIST MANAGEMENT -->
+    <!-- =========================
+         WATCH LIST MANAGEMENT
+    ========================== -->
 
     <div class="panel">
 
       <h2>⭐ Watch List Management</h2>
 
+
       <div class="grid-2">
 
         <div>
+
           <label>Ticker</label>
+
           <input
             id="watch-ticker"
             type="text"
             placeholder="CRCL"
           >
+
         </div>
 
+
         <div>
+
           <label>Company</label>
+
           <input
             id="watch-company"
             type="text"
             placeholder="Circle Internet Group"
           >
+
         </div>
 
       </div>
@@ -388,10 +448,17 @@
           >
 
           <div class="helper">
-            Example: NASDAQ:MU, NASDAQ:NVDA, NYSE:CRCL, AMEX:SPY.
+
+            Examples:
+            NASDAQ:MU,
+            NASDAQ:NVDA,
+            NYSE:CRCL,
+            AMEX:SPY.
+
           </div>
 
         </div>
+
 
         <div>
 
@@ -415,14 +482,22 @@
         Add to Watch List
       </button>
 
-      <div id="watch-message" class="message"></div>
+
+      <div
+        id="watch-message"
+        class="message"
+      ></div>
 
 
-      <div id="watch-list" class="item-list">
+      <div
+        id="watch-list"
+        class="item-list"
+      >
         Loading...
       </div>
 
     </div>
+
 
   </div>
 
@@ -431,67 +506,122 @@
 
 <script>
 
-/* LOGIN CHECK */
+/* ========================================
+   LOGIN CHECK
+======================================== */
 
 async function checkLogin() {
 
   const {
     data: { session }
-  } = await supabaseClient.auth.getSession();
+  } =
+    await supabaseClient.auth.getSession();
+
 
   if (!session) {
 
     document
-      .getElementById("management-content")
-      .style.display = "none";
+      .getElementById(
+        "management-content"
+      )
+      .style.display =
+      "none";
+
 
     document
-      .getElementById("login-warning")
-      .style.display = "block";
+      .getElementById(
+        "login-warning"
+      )
+      .style.display =
+      "block";
+
 
     return;
   }
 
-  loadContent();
-  loadWatchList();
+
+  await loadContent();
+
+  await loadWatchList();
 }
 
 
-/* ADD CONTENT */
+/* ========================================
+   ADD CONTENT
+======================================== */
 
 async function addContent() {
 
   const message =
-    document.getElementById("content-message");
+    document.getElementById(
+      "content-message"
+    );
+
 
   const item = {
 
     title:
-      document.getElementById("new-title").value.trim(),
+      document
+        .getElementById(
+          "new-title"
+        )
+        .value
+        .trim(),
 
     url:
-      document.getElementById("new-url").value.trim(),
+      document
+        .getElementById(
+          "new-url"
+        )
+        .value
+        .trim(),
 
     type:
-      document.getElementById("new-type").value,
+      document
+        .getElementById(
+          "new-type"
+        )
+        .value,
 
     ticker:
-      document.getElementById("new-ticker")
+      document
+        .getElementById(
+          "new-ticker"
+        )
         .value
         .trim()
         .toUpperCase(),
 
     category:
-      document.getElementById("new-category").value,
+      document
+        .getElementById(
+          "new-category"
+        )
+        .value,
 
     tags:
-      document.getElementById("new-tags").value.trim(),
+      document
+        .getElementById(
+          "new-tags"
+        )
+        .value
+        .trim(),
 
     description:
-      document.getElementById("new-description").value.trim(),
+      document
+        .getElementById(
+          "new-description"
+        )
+        .value
+        .trim(),
 
     my_note:
-      document.getElementById("new-note").value.trim()
+      document
+        .getElementById(
+          "new-note"
+        )
+        .value
+        .trim()
   };
 
 
@@ -516,8 +646,11 @@ async function addContent() {
 
   if (error) {
 
+    console.error(error);
+
     message.textContent =
-      "Publish failed: " + error.message;
+      "Publish failed: "
+      + error.message;
 
     return;
   }
@@ -527,35 +660,79 @@ async function addContent() {
     "Published successfully!";
 
 
-  document.getElementById("new-title").value = "";
-  document.getElementById("new-url").value = "";
-  document.getElementById("new-ticker").value = "";
-  document.getElementById("new-tags").value = "";
-  document.getElementById("new-description").value = "";
-  document.getElementById("new-note").value = "";
+  document
+    .getElementById(
+      "new-title"
+    )
+    .value = "";
 
-  loadContent();
+
+  document
+    .getElementById(
+      "new-url"
+    )
+    .value = "";
+
+
+  document
+    .getElementById(
+      "new-ticker"
+    )
+    .value = "";
+
+
+  document
+    .getElementById(
+      "new-tags"
+    )
+    .value = "";
+
+
+  document
+    .getElementById(
+      "new-description"
+    )
+    .value = "";
+
+
+  document
+    .getElementById(
+      "new-note"
+    )
+    .value = "";
+
+
+  await loadContent();
 }
 
 
-/* LOAD CONTENT */
+/* ========================================
+   LOAD CONTENT
+======================================== */
 
 async function loadContent() {
 
   const container =
-    document.getElementById("content-list");
+    document.getElementById(
+      "content-list"
+    );
 
 
   const { data, error } =
     await supabaseClient
       .from("items")
       .select("*")
-      .order("created_at", {
-        ascending: false
-      });
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
+      );
 
 
   if (error) {
+
+    console.error(error);
 
     container.innerHTML =
       "<p>Unable to load content.</p>";
@@ -574,155 +751,199 @@ async function loadContent() {
 
 
   container.innerHTML =
-    data.map(item => {
+    data.map(
+      item => {
 
-      const id = item.id;
+        const id =
+          item.id;
 
-      return `
 
-        <div class="item-card">
+        return `
 
-          <h3>
-            ${safe(item.ticker)
-              ? safe(item.ticker) + " — "
-              : ""
+          <div class="item-card">
+
+            <h3>
+
+              ${
+                safe(item.ticker)
+                  ? safe(item.ticker) + " — "
+                  : ""
+              }
+
+              ${safe(item.title)}
+
+            </h3>
+
+
+            <p>
+              <strong>Category:</strong>
+              ${safe(item.category)}
+            </p>
+
+
+            <p>
+              <strong>Type:</strong>
+              ${safe(item.type)}
+            </p>
+
+
+            ${
+              item.tags
+                ? `
+                  <span class="tag">
+                    ${safe(item.tags)}
+                  </span>
+                `
+                : ""
             }
-            ${safe(item.title)}
-          </h3>
 
-          <p>
-            <strong>Category:</strong>
-            ${safe(item.category)}
-          </p>
 
-          <p>
-            <strong>Type:</strong>
-            ${safe(item.type)}
-          </p>
+            <div class="item-actions">
 
-          ${item.tags
-            ? `<span class="tag">${safe(item.tags)}</span>`
-            : ""
-          }
+              <button
+                class="secondary-button"
+                onclick="toggleEdit(${id})"
+              >
+                Edit
+              </button>
 
-          <div class="item-actions">
 
-            <button
-              class="secondary-button"
-              onclick="toggleEdit(${id})"
+              <button
+                class="danger-button"
+                onclick="deleteContent(${id})"
+              >
+                Delete
+              </button>
+
+            </div>
+
+
+            <div
+              class="edit-box"
+              id="edit-${id}"
             >
-              Edit
-            </button>
 
-            <button
-              class="danger-button"
-              onclick="deleteContent(${id})"
-            >
-              Delete
-            </button>
+              <label>Title</label>
+
+              <input
+                id="edit-title-${id}"
+                value="${safeAttr(item.title)}"
+              >
+
+
+              <label>URL</label>
+
+              <input
+                id="edit-url-${id}"
+                value="${safeAttr(item.url)}"
+              >
+
+
+              <label>Type</label>
+
+              <select id="edit-type-${id}">
+
+                ${optionList(
+
+                  [
+                    "Article",
+                    "News",
+                    "Research",
+                    "Video",
+                    "Investment Idea"
+                  ],
+
+                  item.type
+
+                )}
+
+              </select>
+
+
+              <label>Ticker</label>
+
+              <input
+                id="edit-ticker-${id}"
+                value="${safeAttr(item.ticker)}"
+              >
+
+
+              <label>Category</label>
+
+              <select id="edit-category-${id}">
+
+                ${optionList(
+
+                  [
+                    "Macro Trends",
+                    "Fundamental Analysis",
+                    "Price Action Analysis",
+                    "Trading Psychology",
+                    "Trading Strategies",
+                    "My Trade Reviews",
+                    "My Videos",
+                    "Selected YouTube Videos"
+                  ],
+
+                  item.category
+
+                )}
+
+              </select>
+
+
+              <label>Tags</label>
+
+              <input
+                id="edit-tags-${id}"
+                value="${safeAttr(item.tags)}"
+              >
+
+
+              <label>Description</label>
+
+              <textarea
+                id="edit-description-${id}"
+              >${safe(item.description)}</textarea>
+
+
+              <label>My Note</label>
+
+              <textarea
+                id="edit-note-${id}"
+              >${safe(item.my_note)}</textarea>
+
+
+              <button
+                class="primary-button"
+                onclick="saveContent(${id})"
+              >
+                Save Changes
+              </button>
+
+
+              <button
+                class="secondary-button"
+                onclick="toggleEdit(${id})"
+              >
+                Cancel
+              </button>
+
+            </div>
 
           </div>
 
+        `;
 
-          <div
-            class="edit-box"
-            id="edit-${id}"
-          >
-
-            <label>Title</label>
-            <input
-              id="edit-title-${id}"
-              value="${safeAttr(item.title)}"
-            >
-
-            <label>URL</label>
-            <input
-              id="edit-url-${id}"
-              value="${safeAttr(item.url)}"
-            >
-
-            <label>Type</label>
-
-            <select id="edit-type-${id}">
-              ${optionList(
-                [
-                  "Article",
-                  "News",
-                  "Research",
-                  "Video",
-                  "Investment Idea"
-                ],
-                item.type
-              )}
-            </select>
-
-
-            <label>Ticker</label>
-            <input
-              id="edit-ticker-${id}"
-              value="${safeAttr(item.ticker)}"
-            >
-
-
-            <label>Category</label>
-
-            <select id="edit-category-${id}">
-              ${optionList(
-                [
-                  "Macro Trends",
-                  "Fundamental Analysis",
-                  "Price Action Analysis",
-                  "Trading Psychology",
-                  "Trading Strategies",
-                  "My Trade Reviews",
-                  "My Videos",
-                  "Selected YouTube Videos"
-                ],
-                item.category
-              )}
-            </select>
-
-
-            <label>Tags</label>
-            <input
-              id="edit-tags-${id}"
-              value="${safeAttr(item.tags)}"
-            >
-
-
-            <label>Description</label>
-            <textarea id="edit-description-${id}">${safe(item.description)}</textarea>
-
-
-            <label>My Note</label>
-            <textarea id="edit-note-${id}">${safe(item.my_note)}</textarea>
-
-
-            <button
-              class="primary-button"
-              onclick="saveContent(${id})"
-            >
-              Save Changes
-            </button>
-
-            <button
-              class="secondary-button"
-              onclick="toggleEdit(${id})"
-            >
-              Cancel
-            </button>
-
-          </div>
-
-        </div>
-
-      `;
-
-    }).join("");
+      }
+    )
+    .join("");
 }
 
 
-/* EDIT CONTENT */
+/* ========================================
+   EDIT CONTENT
+======================================== */
 
 function toggleEdit(id) {
 
@@ -730,6 +951,7 @@ function toggleEdit(id) {
     document.getElementById(
       "edit-" + id
     );
+
 
   box.style.display =
     box.style.display === "block"
@@ -743,44 +965,67 @@ async function saveContent(id) {
   const updated = {
 
     title:
-      document.getElementById(
-        "edit-title-" + id
-      ).value.trim(),
+      document
+        .getElementById(
+          "edit-title-" + id
+        )
+        .value
+        .trim(),
 
     url:
-      document.getElementById(
-        "edit-url-" + id
-      ).value.trim(),
+      document
+        .getElementById(
+          "edit-url-" + id
+        )
+        .value
+        .trim(),
 
     type:
-      document.getElementById(
-        "edit-type-" + id
-      ).value,
+      document
+        .getElementById(
+          "edit-type-" + id
+        )
+        .value,
 
     ticker:
-      document.getElementById(
-        "edit-ticker-" + id
-      ).value.trim().toUpperCase(),
+      document
+        .getElementById(
+          "edit-ticker-" + id
+        )
+        .value
+        .trim()
+        .toUpperCase(),
 
     category:
-      document.getElementById(
-        "edit-category-" + id
-      ).value,
+      document
+        .getElementById(
+          "edit-category-" + id
+        )
+        .value,
 
     tags:
-      document.getElementById(
-        "edit-tags-" + id
-      ).value.trim(),
+      document
+        .getElementById(
+          "edit-tags-" + id
+        )
+        .value
+        .trim(),
 
     description:
-      document.getElementById(
-        "edit-description-" + id
-      ).value.trim(),
+      document
+        .getElementById(
+          "edit-description-" + id
+        )
+        .value
+        .trim(),
 
     my_note:
-      document.getElementById(
-        "edit-note-" + id
-      ).value.trim()
+      document
+        .getElementById(
+          "edit-note-" + id
+        )
+        .value
+        .trim()
   };
 
 
@@ -793,6 +1038,8 @@ async function saveContent(id) {
 
   if (error) {
 
+    console.error(error);
+
     alert(
       "Update failed: "
       + error.message
@@ -802,11 +1049,13 @@ async function saveContent(id) {
   }
 
 
-  loadContent();
+  await loadContent();
 }
 
 
-/* DELETE CONTENT */
+/* ========================================
+   DELETE CONTENT
+======================================== */
 
 async function deleteContent(id) {
 
@@ -830,6 +1079,8 @@ async function deleteContent(id) {
 
   if (error) {
 
+    console.error(error);
+
     alert(
       "Delete failed: "
       + error.message
@@ -839,54 +1090,62 @@ async function deleteContent(id) {
   }
 
 
-  loadContent();
+  await loadContent();
 }
 
 
-/* ADD WATCH STOCK */
+/* ========================================
+   ADD WATCH STOCK
+======================================== */
 
 async function addWatchStock() {
 
   const message =
-    document.getElementById("watch-message");
+    document.getElementById(
+      "watch-message"
+    );
 
 
   const ticker =
-    document.getElementById("watch-ticker")
+    document
+      .getElementById(
+        "watch-ticker"
+      )
       .value
       .trim()
       .toUpperCase();
 
 
-  const symbol =
-    document.getElementById("watch-symbol")
+  const company =
+    document
+      .getElementById(
+        "watch-company"
+      )
+      .value
+      .trim();
+
+
+  const tradingviewSymbol =
+    document
+      .getElementById(
+        "watch-symbol"
+      )
       .value
       .trim()
       .toUpperCase();
 
 
-  const stock = {
-
-    ticker: ticker,
-
-    company:
-      document.getElementById("watch-company")
+  const displayOrder =
+    Number(
+      document
+        .getElementById(
+          "watch-order"
+        )
         .value
-        .trim(),
-
-    tradingview_symbol:
-      symbol,
-
-    display_order:
-      Number(
-        document.getElementById("watch-order")
-          .value
-      ) || 0
-
-  };
+    ) || 0;
 
 
-  if (!stock.ticker) {
+  if (!ticker) {
 
     message.textContent =
       "Please enter a ticker.";
@@ -895,7 +1154,7 @@ async function addWatchStock() {
   }
 
 
-  if (!stock.tradingview_symbol) {
+  if (!tradingviewSymbol) {
 
     message.textContent =
       "Please enter a TradingView Symbol.";
@@ -904,13 +1163,62 @@ async function addWatchStock() {
   }
 
 
-  const { error } =
+  if (
+    !tradingviewSymbol.includes(":")
+  ) {
+
+    message.textContent =
+      "TradingView Symbol should look like NYSE:CRCL or NASDAQ:MU.";
+
+    return;
+  }
+
+
+  const exchange =
+    tradingviewSymbol
+      .split(":")[0]
+      .trim()
+      .toUpperCase();
+
+
+  const stock = {
+
+    ticker:
+      ticker,
+
+    company:
+      company,
+
+    tradingview_symbol:
+      tradingviewSymbol,
+
+    exchange:
+      exchange,
+
+    display_order:
+      displayOrder
+
+  };
+
+
+  message.textContent =
+    "Adding...";
+
+
+  const { data, error } =
     await supabaseClient
       .from("watchlist")
-      .insert([stock]);
+      .insert([stock])
+      .select();
 
 
   if (error) {
+
+    console.error(
+      "Watch List insert error:",
+      error
+    );
+
 
     message.textContent =
       "Add failed: "
@@ -920,26 +1228,58 @@ async function addWatchStock() {
   }
 
 
+  console.log(
+    "Inserted Watch List row:",
+    data
+  );
+
+
   message.textContent =
     "Added successfully!";
 
 
-  document.getElementById("watch-ticker").value = "";
-  document.getElementById("watch-company").value = "";
-  document.getElementById("watch-symbol").value = "";
-  document.getElementById("watch-order").value = "0";
+  document
+    .getElementById(
+      "watch-ticker"
+    )
+    .value = "";
 
 
-  loadWatchList();
+  document
+    .getElementById(
+      "watch-company"
+    )
+    .value = "";
+
+
+  document
+    .getElementById(
+      "watch-symbol"
+    )
+    .value = "";
+
+
+  document
+    .getElementById(
+      "watch-order"
+    )
+    .value = "0";
+
+
+  await loadWatchList();
 }
 
 
-/* LOAD WATCH LIST */
+/* ========================================
+   LOAD WATCH LIST
+======================================== */
 
 async function loadWatchList() {
 
   const container =
-    document.getElementById("watch-list");
+    document.getElementById(
+      "watch-list"
+    );
 
 
   const { data, error } =
@@ -948,15 +1288,21 @@ async function loadWatchList() {
       .select("*")
       .order(
         "display_order",
-        { ascending: true }
+        {
+          ascending: true
+        }
       )
       .order(
         "created_at",
-        { ascending: true }
+        {
+          ascending: true
+        }
       );
 
 
   if (error) {
+
+    console.error(error);
 
     container.innerHTML =
       "<p>Unable to load Watch List.</p>";
@@ -975,107 +1321,171 @@ async function loadWatchList() {
 
 
   container.innerHTML =
-    data.map(stock => {
+    data.map(
+      stock => {
 
-      const id = stock.id;
-
-      return `
-
-        <div class="item-card">
-
-          <h3>
-            ${safe(stock.ticker)}
-            — ${safe(stock.company)}
-          </h3>
-
-          <p>
-            <strong>TradingView Symbol:</strong>
-            ${safe(stock.tradingview_symbol)}
-          </p>
-
-          <p>
-            <strong>Display Order:</strong>
-            ${stock.display_order ?? 0}
-          </p>
+        const id =
+          stock.id;
 
 
-          <div class="item-actions">
+        return `
 
-            <button
-              class="secondary-button"
-              onclick="toggleWatchEdit(${id})"
+          <div class="item-card">
+
+            <h3>
+
+              ${safe(stock.ticker)}
+
+              ${
+                stock.company
+                  ? " — " + safe(stock.company)
+                  : ""
+              }
+
+            </h3>
+
+
+            <p>
+
+              <strong>
+                TradingView Symbol:
+              </strong>
+
+              ${safe(stock.tradingview_symbol)}
+
+            </p>
+
+
+            <p>
+
+              <strong>
+                Exchange:
+              </strong>
+
+              ${safe(stock.exchange)}
+
+            </p>
+
+
+            <p>
+
+              <strong>
+                Display Order:
+              </strong>
+
+              ${stock.display_order ?? 0}
+
+            </p>
+
+
+            <div class="item-actions">
+
+              <button
+                class="secondary-button"
+                onclick="toggleWatchEdit(${id})"
+              >
+                Edit
+              </button>
+
+
+              <button
+                class="danger-button"
+                onclick="deleteWatchStock(${id})"
+              >
+                Delete
+              </button>
+
+            </div>
+
+
+            <div
+              class="edit-box"
+              id="watch-edit-${id}"
             >
-              Edit
-            </button>
 
-            <button
-              class="danger-button"
-              onclick="deleteWatchStock(${id})"
-            >
-              Delete
-            </button>
+
+              <label>
+                Ticker
+              </label>
+
+              <input
+                id="watch-edit-ticker-${id}"
+                value="${safeAttr(stock.ticker)}"
+              >
+
+
+              <label>
+                Company
+              </label>
+
+              <input
+                id="watch-edit-company-${id}"
+                value="${safeAttr(stock.company)}"
+              >
+
+
+              <label>
+                TradingView Symbol
+              </label>
+
+              <input
+                id="watch-edit-symbol-${id}"
+                value="${safeAttr(stock.tradingview_symbol)}"
+                placeholder="NYSE:CRCL"
+              >
+
+
+              <div class="helper">
+
+                Example:
+                NASDAQ:MU,
+                NYSE:CRCL,
+                AMEX:SPY.
+
+              </div>
+
+
+              <label>
+                Display Order
+              </label>
+
+              <input
+                type="number"
+                id="watch-edit-order-${id}"
+                value="${stock.display_order ?? 0}"
+              >
+
+
+              <button
+                class="primary-button"
+                onclick="saveWatchStock(${id})"
+              >
+                Save Changes
+              </button>
+
+
+              <button
+                class="secondary-button"
+                onclick="toggleWatchEdit(${id})"
+              >
+                Cancel
+              </button>
+
+            </div>
 
           </div>
 
+        `;
 
-          <div
-            class="edit-box"
-            id="watch-edit-${id}"
-          >
-
-            <label>Ticker</label>
-            <input
-              id="watch-edit-ticker-${id}"
-              value="${safeAttr(stock.ticker)}"
-            >
-
-            <label>Company</label>
-            <input
-              id="watch-edit-company-${id}"
-              value="${safeAttr(stock.company)}"
-            >
-
-            <label>TradingView Symbol</label>
-            <input
-              id="watch-edit-symbol-${id}"
-              value="${safeAttr(stock.tradingview_symbol)}"
-              placeholder="NYSE:CRCL"
-            >
-
-            <label>Display Order</label>
-
-            <input
-              type="number"
-              id="watch-edit-order-${id}"
-              value="${stock.display_order ?? 0}"
-            >
-
-
-            <button
-              class="primary-button"
-              onclick="saveWatchStock(${id})"
-            >
-              Save Changes
-            </button>
-
-            <button
-              class="secondary-button"
-              onclick="toggleWatchEdit(${id})"
-            >
-              Cancel
-            </button>
-
-          </div>
-
-        </div>
-
-      `;
-
-    }).join("");
+      }
+    )
+    .join("");
 }
 
 
-/* EDIT WATCH STOCK */
+/* ========================================
+   EDIT WATCH STOCK
+======================================== */
 
 function toggleWatchEdit(id) {
 
@@ -1092,52 +1502,125 @@ function toggleWatchEdit(id) {
 }
 
 
+/* ========================================
+   SAVE WATCH STOCK
+======================================== */
+
 async function saveWatchStock(id) {
 
-  const updated = {
-
-    ticker:
-      document.getElementById(
+  const ticker =
+    document
+      .getElementById(
         "watch-edit-ticker-" + id
       )
       .value
       .trim()
-      .toUpperCase(),
+      .toUpperCase();
 
-    company:
-      document.getElementById(
+
+  const company =
+    document
+      .getElementById(
         "watch-edit-company-" + id
       )
       .value
-      .trim(),
+      .trim();
 
-    tradingview_symbol:
-      document.getElementById(
+
+  const tradingviewSymbol =
+    document
+      .getElementById(
         "watch-edit-symbol-" + id
       )
       .value
       .trim()
-      .toUpperCase(),
+      .toUpperCase();
 
-    display_order:
-      Number(
-        document.getElementById(
+
+  const displayOrder =
+    Number(
+      document
+        .getElementById(
           "watch-edit-order-" + id
         )
         .value
-      ) || 0
+    ) || 0;
+
+
+  if (!ticker) {
+
+    alert(
+      "Ticker cannot be empty."
+    );
+
+    return;
+  }
+
+
+  if (!tradingviewSymbol) {
+
+    alert(
+      "TradingView Symbol cannot be empty."
+    );
+
+    return;
+  }
+
+
+  if (
+    !tradingviewSymbol.includes(":")
+  ) {
+
+    alert(
+      "TradingView Symbol should look like NYSE:CRCL or NASDAQ:MU."
+    );
+
+    return;
+  }
+
+
+  const exchange =
+    tradingviewSymbol
+      .split(":")[0]
+      .trim()
+      .toUpperCase();
+
+
+  const updated = {
+
+    ticker:
+      ticker,
+
+    company:
+      company,
+
+    tradingview_symbol:
+      tradingviewSymbol,
+
+    exchange:
+      exchange,
+
+    display_order:
+      displayOrder
 
   };
 
 
-  const { error } =
+  const { data, error } =
     await supabaseClient
       .from("watchlist")
       .update(updated)
-      .eq("id", id);
+      .eq("id", id)
+      .select();
 
 
   if (error) {
+
+    console.error(
+      "Watch List update error:",
+      error
+    );
+
 
     alert(
       "Update failed: "
@@ -1148,11 +1631,19 @@ async function saveWatchStock(id) {
   }
 
 
-  loadWatchList();
+  console.log(
+    "Updated Watch List row:",
+    data
+  );
+
+
+  await loadWatchList();
 }
 
 
-/* DELETE WATCH STOCK */
+/* ========================================
+   DELETE WATCH STOCK
+======================================== */
 
 async function deleteWatchStock(id) {
 
@@ -1176,6 +1667,8 @@ async function deleteWatchStock(id) {
 
   if (error) {
 
+    console.error(error);
+
     alert(
       "Delete failed: "
       + error.message
@@ -1185,11 +1678,13 @@ async function deleteWatchStock(id) {
   }
 
 
-  loadWatchList();
+  await loadWatchList();
 }
 
 
-/* LOG OUT */
+/* ========================================
+   LOG OUT
+======================================== */
 
 async function logout() {
 
@@ -1200,26 +1695,53 @@ async function logout() {
 }
 
 
-/* HELPERS */
+/* ========================================
+   HELPERS
+======================================== */
 
 function safe(value) {
 
-  if (value === null || value === undefined) {
+  if (
+    value === null ||
+    value === undefined
+  ) {
+
     return "";
+
   }
 
 
   return String(value)
 
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
 }
 
 
 function safeAttr(value) {
+
   return safe(value);
 }
 
@@ -1229,27 +1751,35 @@ function optionList(
   selected
 ) {
 
-  return options.map(option => `
+  return options
+    .map(
+      option => `
 
-    <option
-      value="${safeAttr(option)}"
-      ${option === selected
-        ? "selected"
-        : ""
-      }
-    >
-      ${safe(option)}
-    </option>
+        <option
+          value="${safeAttr(option)}"
+          ${
+            option === selected
+              ? "selected"
+              : ""
+          }
+        >
+          ${safe(option)}
+        </option>
 
-  `).join("");
+      `
+    )
+    .join("");
 }
 
 
-/* START */
+/* ========================================
+   START
+======================================== */
 
 checkLogin();
 
 </script>
 
 </body>
+
 </html>
