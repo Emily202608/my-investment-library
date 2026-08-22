@@ -236,32 +236,22 @@
     }
 
     .sub-button {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      width: 100%;
-      margin-top: 10px;
-      padding: 13px 14px;
-      background: white;
-      color: #172033;
-      border: 1px solid #e5e7eb;
-      border-radius: 9px;
-      text-align: left;
+      display: inline-block;
+      width: auto;
+      margin-top: 8px;
+      margin-right: 8px;
+      padding: 9px 13px;
+      background: #111827;
+      color: white;
+      border: none;
+      border-radius: 7px;
+      text-align: center;
       cursor: pointer;
       font-weight: bold;
-      box-shadow: 0 2px 7px rgba(0,0,0,0.04);
-      transition: transform 0.15s, background 0.15s;
     }
 
     .sub-button:hover {
-      background: #f8fafc;
-      transform: translateY(-1px);
-    }
-
-    .sub-icon {
-      font-size: 30px;
-      line-height: 1;
-      flex: 0 0 auto;
+      background: #263247;
     }
 
     /* =========================
@@ -446,16 +436,14 @@
           class="sub-button"
           onclick="window.location.href='category.html?name=Fundamental%20Analysis'"
         >
-          <span class="sub-icon">📊</span>
-          <span>Fundamental Analysis</span>
+          Fundamental
         </button>
 
         <button
           class="sub-button"
           onclick="window.location.href='category.html?name=Price%20Action%20Analysis'"
         >
-          <span class="sub-icon">📈</span>
-          <span>Price Action Analysis</span>
+          Price Action
         </button>
 
       </div>
@@ -561,16 +549,14 @@
           class="sub-button"
           onclick="window.location.href='category.html?name=My%20Videos'"
         >
-          <span class="sub-icon">🎥</span>
-          <span>My Videos</span>
+          My Videos
         </button>
 
         <button
           class="sub-button"
           onclick="window.location.href='category.html?name=Selected%20YouTube%20Videos'"
         >
-          <span class="sub-icon">▶️</span>
-          <span>Selected YouTube Videos</span>
+          Selected YouTube Videos
         </button>
 
       </div>
