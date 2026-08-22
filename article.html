@@ -7,10 +7,28 @@
 
   <title>Investment Article</title>
 
+  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
 
+  <!-- Quill Rich Text Editor -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.snow.css"
+    rel="stylesheet"
+  >
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.js"
+  ></script>
+
+  <!-- HTML sanitizer -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"
+  ></script>
+
+
   <style>
+
     * {
       box-sizing: border-box;
     }
@@ -22,6 +40,11 @@
       color: #172033;
     }
 
+
+    /* =========================
+       HEADER
+    ========================= */
+
     header {
       background: #111827;
       color: white;
@@ -31,6 +54,12 @@
     .header-inner {
       max-width: 900px;
       margin: auto;
+
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      gap: 15px;
     }
 
     .back-link {
@@ -43,6 +72,31 @@
       text-decoration: underline;
     }
 
+    .edit-button {
+      display: none;
+
+      padding: 9px 14px;
+
+      background: white;
+      color: #111827;
+
+      border: none;
+      border-radius: 7px;
+
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .edit-button:hover {
+      background: #e5e7eb;
+    }
+
+
+    /* =========================
+       PAGE
+    ========================= */
+
     .container {
       max-width: 900px;
       margin: 45px auto;
@@ -52,30 +106,50 @@
     .article {
       background: white;
       padding: 40px;
+
       border-radius: 12px;
-      box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+
+      box-shadow:
+        0 3px 12px rgba(0,0,0,0.06);
     }
 
     h1 {
       margin-top: 0;
+
       font-size: 36px;
       line-height: 1.25;
     }
 
+
+    /* =========================
+       META
+    ========================= */
+
     .meta {
       margin: 20px 0 30px;
       padding-bottom: 20px;
-      border-bottom: 1px solid #e5e7eb;
+
+      border-bottom:
+        1px solid #e5e7eb;
     }
 
     .tag {
       display: inline-block;
+
       background: #e8edf3;
+
       padding: 6px 10px;
       margin: 4px 4px 0 0;
+
       border-radius: 20px;
+
       font-size: 13px;
     }
+
+
+    /* =========================
+       ARTICLE CONTENT
+    ========================= */
 
     .section {
       margin-top: 30px;
@@ -92,14 +166,76 @@
       white-space: pre-wrap;
     }
 
+
+    .article-content {
+      margin-top: 30px;
+
+      color: #263247;
+
+      font-size: 17px;
+      line-height: 1.8;
+    }
+
+    .article-content h1 {
+      font-size: 30px;
+      margin-top: 35px;
+    }
+
+    .article-content h2 {
+      font-size: 25px;
+      margin-top: 32px;
+    }
+
+    .article-content h3 {
+      font-size: 21px;
+      margin-top: 28px;
+    }
+
+    .article-content p {
+      line-height: 1.8;
+      margin: 15px 0;
+    }
+
+    .article-content blockquote {
+      margin: 25px 0;
+
+      padding: 12px 20px;
+
+      border-left:
+        4px solid #9ca3af;
+
+      background: #f8fafc;
+
+      color: #526071;
+    }
+
+    .article-content ul,
+    .article-content ol {
+      line-height: 1.8;
+    }
+
+    .article-content a {
+      color: #2563eb;
+    }
+
+
+    /* =========================
+       ORIGINAL LINK
+    ========================= */
+
     .original-link {
       display: inline-block;
+
       margin-top: 30px;
       padding: 11px 17px;
+
       background: #111827;
       color: white;
+
       text-decoration: none;
+
       border-radius: 8px;
+
       font-weight: bold;
     }
 
@@ -107,14 +243,162 @@
       background: #263247;
     }
 
+
+    /* =========================
+       EDITOR
+    ========================= */
+
+    #edit-panel {
+      display: none;
+
+      margin-top: 30px;
+
+      background: white;
+
+      padding: 35px;
+
+      border-radius: 12px;
+
+      box-shadow:
+        0 3px 12px rgba(0,0,0,0.06);
+    }
+
+    #edit-panel h2 {
+      margin-top: 0;
+    }
+
+    label {
+      display: block;
+
+      margin-top: 14px;
+
+      font-weight: bold;
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+
+      margin: 7px 0 15px;
+      padding: 11px;
+
+      border:
+        1px solid #ccc;
+
+      border-radius: 6px;
+
+      font-family:
+        Arial, sans-serif;
+
+      font-size: 14px;
+    }
+
+    textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    .grid-2 {
+      display: grid;
+
+      grid-template-columns:
+        1fr 1fr;
+
+      gap: 18px;
+    }
+
+
+    /* =========================
+       QUILL
+    ========================= */
+
+    #article-editor {
+      margin-top: 7px;
+      margin-bottom: 20px;
+    }
+
+    #article-editor .ql-container {
+      min-height: 350px;
+
+      font-family:
+        Arial, sans-serif;
+
+      font-size: 16px;
+    }
+
+    #article-editor .ql-editor {
+      min-height: 350px;
+
+      line-height: 1.7;
+    }
+
+
+    /* =========================
+       EDIT BUTTONS
+    ========================= */
+
+    .edit-actions {
+      display: flex;
+
+      gap: 10px;
+
+      margin-top: 20px;
+
+      flex-wrap: wrap;
+    }
+
+    .save-button,
+    .cancel-button {
+      padding: 11px 17px;
+
+      border: none;
+
+      border-radius: 7px;
+
+      cursor: pointer;
+
+      font-weight: bold;
+    }
+
+    .save-button {
+      background: #111827;
+      color: white;
+    }
+
+    .cancel-button {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    #save-message {
+      margin-top: 15px;
+
+      font-weight: bold;
+    }
+
+
+    /* =========================
+       MESSAGE
+    ========================= */
+
     .message {
       background: white;
+
       padding: 30px;
+
       border-radius: 12px;
+
       text-align: center;
     }
 
+
+    /* =========================
+       MOBILE
+    ========================= */
+
     @media (max-width: 700px) {
+
       .article {
         padding: 25px;
       }
@@ -122,20 +406,57 @@
       h1 {
         font-size: 29px;
       }
+
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+
+      .header-inner {
+        align-items: flex-start;
+      }
+
     }
+
   </style>
 </head>
 
+
 <body>
 
+
+<!-- =========================
+     HEADER
+========================= -->
+
 <header>
+
   <div class="header-inner">
-    <a href="index.html" class="back-link">
+
+    <a
+      href="index.html"
+      class="back-link"
+    >
       ← Back to Library
     </a>
+
+
+    <button
+      id="edit-article-button"
+      class="edit-button"
+      onclick="openEditor()"
+    >
+      ✏ Edit Article
+    </button>
+
   </div>
+
 </header>
 
+
+
+<!-- =========================
+     ARTICLE
+========================= -->
 
 <div class="container">
 
@@ -147,36 +468,405 @@
 
   </div>
 
+
+
+  <!-- =========================
+       INLINE EDITOR
+  ========================= -->
+
+  <div id="edit-panel">
+
+    <h2>
+      ✏ Edit Article
+    </h2>
+
+
+    <div class="grid-2">
+
+      <div>
+
+        <label>
+          Title
+        </label>
+
+        <input
+          id="edit-title"
+          type="text"
+        >
+
+      </div>
+
+
+      <div>
+
+        <label>
+          URL
+        </label>
+
+        <input
+          id="edit-url"
+          type="url"
+        >
+
+      </div>
+
+    </div>
+
+
+
+    <div class="grid-2">
+
+      <div>
+
+        <label>
+          Type
+        </label>
+
+        <select id="edit-type">
+
+          <option value="Article">
+            Article
+          </option>
+
+          <option value="News">
+            News
+          </option>
+
+          <option value="Research">
+            Research
+          </option>
+
+          <option value="Video">
+            Video
+          </option>
+
+          <option value="Investment Idea">
+            Investment Idea
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <div>
+
+        <label>
+          Ticker
+        </label>
+
+        <input
+          id="edit-ticker"
+          type="text"
+        >
+
+      </div>
+
+    </div>
+
+
+
+    <label>
+      Category
+    </label>
+
+    <select id="edit-category">
+
+      <option value="Macro Trends">
+        Macro Trends
+      </option>
+
+      <option value="Fundamental Analysis">
+        Fundamental Analysis
+      </option>
+
+      <option value="Price Action Analysis">
+        Price Action Analysis
+      </option>
+
+      <option value="Trading Psychology">
+        Trading Psychology
+      </option>
+
+      <option value="Trading Strategies">
+        Trading Strategies
+      </option>
+
+      <option value="My Trade Reviews">
+        My Trade Reviews
+      </option>
+
+      <option value="My Videos">
+        My Videos
+      </option>
+
+      <option value="Selected YouTube Videos">
+        Selected YouTube Videos
+      </option>
+
+    </select>
+
+
+
+    <label>
+      Tags
+    </label>
+
+    <input
+      id="edit-tags"
+      type="text"
+    >
+
+
+
+    <label>
+      Description
+    </label>
+
+    <textarea
+      id="edit-description"
+      placeholder="Short summary"
+    ></textarea>
+
+
+
+    <label>
+      Article Content
+    </label>
+
+    <p
+      style="
+        color:#6b7280;
+        font-size:13px;
+      "
+    >
+      Edit paragraphs, headings, font size,
+      bold text, highlights, colors, lists,
+      quotes and links.
+    </p>
+
+
+    <div id="article-editor"></div>
+
+
+
+    <label>
+      My Note
+    </label>
+
+    <textarea
+      id="edit-note"
+    ></textarea>
+
+
+
+    <div class="edit-actions">
+
+      <button
+        class="save-button"
+        onclick="saveArticle()"
+      >
+        Save Changes
+      </button>
+
+
+      <button
+        class="cancel-button"
+        onclick="cancelEdit()"
+      >
+        Cancel
+      </button>
+
+    </div>
+
+
+    <div id="save-message"></div>
+
+  </div>
+
 </div>
+
 
 
 <script>
 
+
+/* ========================================
+   GLOBAL DATA
+======================================== */
+
+let currentArticle = null;
+
+let currentArticleId = null;
+
+let articleEditor = null;
+
+let currentSession = null;
+
+
+
+/* ========================================
+   QUILL TOOLBAR
+======================================== */
+
+const toolbarOptions = [
+
+  [
+    {
+      header:
+        [1, 2, 3, false]
+    }
+  ],
+
+  [
+    {
+      size:
+        [
+          "small",
+          false,
+          "large",
+          "huge"
+        ]
+    }
+  ],
+
+  [
+    "bold",
+    "italic",
+    "underline",
+    "strike"
+  ],
+
+  [
+    { color: [] },
+    { background: [] }
+  ],
+
+  [
+    {
+      list: "ordered"
+    },
+
+    {
+      list: "bullet"
+    }
+  ],
+
+  [
+    {
+      indent: "-1"
+    },
+
+    {
+      indent: "+1"
+    }
+  ],
+
+  [
+    {
+      align: []
+    }
+  ],
+
+  [
+    "blockquote",
+    "link"
+  ],
+
+  [
+    "clean"
+  ]
+
+];
+
+
+
+/* ========================================
+   CHECK LOGIN
+======================================== */
+
+async function checkLogin() {
+
+  const {
+    data: {
+      session
+    }
+  } =
+    await supabaseClient
+      .auth
+      .getSession();
+
+
+  currentSession =
+    session;
+
+
+  const editButton =
+    document.getElementById(
+      "edit-article-button"
+    );
+
+
+  if (session) {
+
+    editButton.style.display =
+      "inline-block";
+
+  } else {
+
+    editButton.style.display =
+      "none";
+
+  }
+
+}
+
+
+
+/* ========================================
+   LOAD ARTICLE
+======================================== */
+
 async function loadArticle() {
 
   const container =
-    document.getElementById("article-container");
+    document.getElementById(
+      "article-container"
+    );
+
 
   const params =
-    new URLSearchParams(window.location.search);
+    new URLSearchParams(
+      window.location.search
+    );
+
 
   const id =
     params.get("id");
 
 
+  currentArticleId =
+    id;
+
+
   if (!id) {
 
     container.innerHTML = `
+
       <div class="message">
         Article not found.
       </div>
+
     `;
 
     return;
   }
 
 
-  const { data, error } =
+  const {
+    data,
+    error
+  } =
     await supabaseClient
       .from("items")
       .select("*")
@@ -184,48 +874,115 @@ async function loadArticle() {
       .single();
 
 
-  if (error || !data) {
+  if (
+    error ||
+    !data
+  ) {
 
-    console.error("Article load error:", error);
+    console.error(
+      "Article load error:",
+      error
+    );
+
 
     container.innerHTML = `
+
       <div class="message">
         Unable to load this article.
       </div>
+
     `;
 
     return;
   }
 
 
+  currentArticle =
+    data;
+
+
+  renderArticle();
+
+}
+
+
+
+/* ========================================
+   RENDER ARTICLE
+======================================== */
+
+function renderArticle() {
+
+  const container =
+    document.getElementById(
+      "article-container"
+    );
+
+
+  const data =
+    currentArticle;
+
+
   const title =
-    safeText(data.title);
+    safeText(
+      data.title
+    );
+
 
   const ticker =
-    safeText(data.ticker);
+    safeText(
+      data.ticker
+    );
+
 
   const category =
-    safeText(data.category);
+    safeText(
+      data.category
+    );
+
 
   const type =
-    safeText(data.type);
+    safeText(
+      data.type
+    );
+
 
   const tags =
-    safeText(data.tags);
+    safeText(
+      data.tags
+    );
+
 
   const description =
-    safeText(data.description);
+    safeText(
+      data.description
+    );
+
 
   const note =
-    safeText(data.my_note);
+    safeText(
+      data.my_note
+    );
+
 
   const originalUrl =
-    cleanUrl(data.url);
+    cleanUrl(
+      data.url
+    );
+
+
+  const contentHtml =
+    data.content_html
+      ? DOMPurify.sanitize(
+          data.content_html
+        )
+      : "";
 
 
   document.title =
     title
-      ? title + " | My Investment Library"
+      ? title
+        + " | My Investment Library"
       : "My Investment Library";
 
 
@@ -233,74 +990,136 @@ async function loadArticle() {
 
     <article class="article">
 
+
       <h1>
-        ${ticker ? ticker + " — " : ""}
+
+        ${
+          ticker
+            ? ticker + " — "
+            : ""
+        }
+
         ${title}
+
       </h1>
+
 
 
       <div class="meta">
 
         ${
           category
-            ? `<span class="tag">${category}</span>`
+            ? `
+              <span class="tag">
+                ${category}
+              </span>
+            `
             : ""
         }
+
 
         ${
           ticker
-            ? `<span class="tag">${ticker}</span>`
+            ? `
+              <span class="tag">
+                ${ticker}
+              </span>
+            `
             : ""
         }
+
 
         ${
           type
-            ? `<span class="tag">${type}</span>`
+            ? `
+              <span class="tag">
+                ${type}
+              </span>
+            `
             : ""
         }
 
+
         ${
           tags
-            ? `<span class="tag">${tags}</span>`
+            ? `
+              <span class="tag">
+                ${tags}
+              </span>
+            `
             : ""
         }
 
       </div>
 
 
+
       ${
         description
           ? `
+
             <div class="section">
 
-              <h2>Description</h2>
+              <h2>
+                Description
+              </h2>
 
-              <p>${description}</p>
+              <p>
+                ${description}
+              </p>
 
             </div>
+
           `
           : ""
       }
+
+
+
+      ${
+        contentHtml
+          ? `
+
+            <div
+              class="article-content"
+            >
+
+              ${contentHtml}
+
+            </div>
+
+          `
+          : ""
+      }
+
 
 
       ${
         note
           ? `
+
             <div class="section">
 
-              <h2>My Note</h2>
+              <h2>
+                My Note
+              </h2>
 
-              <p>${note}</p>
+              <p>
+                ${note}
+              </p>
 
             </div>
+
           `
           : ""
       }
 
 
+
       ${
         originalUrl
           ? `
+
             <a
               href="${originalUrl}"
               target="_blank"
@@ -309,9 +1128,11 @@ async function loadArticle() {
             >
               Read Original →
             </a>
+
           `
           : ""
       }
+
 
     </article>
 
@@ -320,55 +1141,504 @@ async function loadArticle() {
 }
 
 
-function safeText(value) {
+
+/* ========================================
+   OPEN EDITOR
+======================================== */
+
+function openEditor() {
+
+  if (
+    !currentSession ||
+    !currentArticle
+  ) {
+
+    return;
+
+  }
+
+
+  const panel =
+    document.getElementById(
+      "edit-panel"
+    );
+
+
+  document
+    .getElementById(
+      "edit-title"
+    )
+    .value =
+    currentArticle.title || "";
+
+
+  document
+    .getElementById(
+      "edit-url"
+    )
+    .value =
+    currentArticle.url || "";
+
+
+  document
+    .getElementById(
+      "edit-type"
+    )
+    .value =
+    currentArticle.type ||
+    "Article";
+
+
+  document
+    .getElementById(
+      "edit-ticker"
+    )
+    .value =
+    currentArticle.ticker || "";
+
+
+  document
+    .getElementById(
+      "edit-category"
+    )
+    .value =
+    currentArticle.category ||
+    "Macro Trends";
+
+
+  document
+    .getElementById(
+      "edit-tags"
+    )
+    .value =
+    currentArticle.tags || "";
+
+
+  document
+    .getElementById(
+      "edit-description"
+    )
+    .value =
+    currentArticle.description || "";
+
+
+  document
+    .getElementById(
+      "edit-note"
+    )
+    .value =
+    currentArticle.my_note || "";
+
+
+  panel.style.display =
+    "block";
+
+
+  if (!articleEditor) {
+
+    articleEditor =
+      new Quill(
+        "#article-editor",
+        {
+          theme: "snow",
+
+          modules: {
+            toolbar:
+              toolbarOptions
+          }
+        }
+      );
+
+  }
+
+
+  articleEditor
+    .setContents([]);
+
+
+  if (
+    currentArticle.content_html
+  ) {
+
+    articleEditor
+      .clipboard
+      .dangerouslyPasteHTML(
+        currentArticle.content_html
+      );
+
+  } else if (
+    currentArticle.description
+  ) {
+
+    /*
+      Old articles without content_html
+      can start with the existing
+      description in the editor.
+    */
+
+    articleEditor
+      .clipboard
+      .dangerouslyPasteHTML(
+        safeText(
+          currentArticle.description
+        )
+        .replaceAll(
+          "\n",
+          "<br>"
+        )
+      );
+
+  }
+
+
+  panel.scrollIntoView({
+
+    behavior: "smooth",
+
+    block: "start"
+
+  });
+
+}
+
+
+
+/* ========================================
+   SAVE ARTICLE
+======================================== */
+
+async function saveArticle() {
+
+  if (
+    !currentSession ||
+    !currentArticleId
+  ) {
+
+    return;
+
+  }
+
+
+  const message =
+    document.getElementById(
+      "save-message"
+    );
+
+
+  message.textContent =
+    "Saving...";
+
+
+  let contentHtml =
+    "";
+
+
+  if (articleEditor) {
+
+    contentHtml =
+      articleEditor
+        .root
+        .innerHTML
+        .trim();
+
+
+    if (
+      contentHtml ===
+      "<p><br></p>"
+    ) {
+
+      contentHtml =
+        "";
+
+    }
+
+  }
+
+
+  const updated = {
+
+    title:
+      document
+        .getElementById(
+          "edit-title"
+        )
+        .value
+        .trim(),
+
+    url:
+      document
+        .getElementById(
+          "edit-url"
+        )
+        .value
+        .trim(),
+
+    type:
+      document
+        .getElementById(
+          "edit-type"
+        )
+        .value,
+
+    ticker:
+      document
+        .getElementById(
+          "edit-ticker"
+        )
+        .value
+        .trim()
+        .toUpperCase(),
+
+    category:
+      document
+        .getElementById(
+          "edit-category"
+        )
+        .value,
+
+    tags:
+      document
+        .getElementById(
+          "edit-tags"
+        )
+        .value
+        .trim(),
+
+    description:
+      document
+        .getElementById(
+          "edit-description"
+        )
+        .value
+        .trim(),
+
+    my_note:
+      document
+        .getElementById(
+          "edit-note"
+        )
+        .value
+        .trim(),
+
+    content_html:
+      contentHtml
+
+  };
+
+
+  if (!updated.title) {
+
+    message.textContent =
+      "Title cannot be empty.";
+
+    return;
+  }
+
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .from("items")
+      .update(updated)
+      .eq(
+        "id",
+        currentArticleId
+      )
+      .select()
+      .single();
+
+
+  if (error) {
+
+    console.error(
+      "Article update error:",
+      error
+    );
+
+
+    message.textContent =
+      "Save failed: "
+      + error.message;
+
+
+    return;
+  }
+
+
+  currentArticle =
+    data;
+
+
+  message.textContent =
+    "Saved successfully!";
+
+
+  renderArticle();
+
+
+  setTimeout(
+    () => {
+
+      cancelEdit();
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+
+    },
+    500
+  );
+
+}
+
+
+
+/* ========================================
+   CANCEL EDIT
+======================================== */
+
+function cancelEdit() {
+
+  document
+    .getElementById(
+      "edit-panel"
+    )
+    .style.display =
+    "none";
+
+
+  document
+    .getElementById(
+      "save-message"
+    )
+    .textContent =
+    "";
+
+}
+
+
+
+/* ========================================
+   TEXT SAFETY
+======================================== */
+
+function safeText(
+  value
+) {
 
   if (
     value === null ||
     value === undefined
   ) {
+
     return "";
+
   }
 
+
   return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
+
 }
 
 
-function cleanUrl(value) {
+
+/* ========================================
+   URL SAFETY
+======================================== */
+
+function cleanUrl(
+  value
+) {
 
   if (!value) {
+
     return "";
+
   }
+
 
   try {
 
     const url =
-      new URL(value);
+      new URL(
+        value
+      );
+
 
     if (
-      url.protocol !== "http:" &&
-      url.protocol !== "https:"
+      url.protocol !==
+        "http:" &&
+      url.protocol !==
+        "https:"
     ) {
+
       return "";
+
     }
 
-    return safeText(url.href);
 
-  } catch {
+    return safeText(
+      url.href
+    );
+
+  }
+
+  catch {
 
     return "";
 
   }
+
 }
 
 
-loadArticle();
+
+/* ========================================
+   START
+======================================== */
+
+async function startPage() {
+
+  await checkLogin();
+
+  await loadArticle();
+
+}
+
+
+startPage();
 
 </script>
 
+
 </body>
+
 </html>
