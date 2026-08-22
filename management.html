@@ -185,6 +185,14 @@
       font-weight: bold;
     }
 
+    .helper {
+      margin-top: -8px;
+      margin-bottom: 14px;
+      color: #6b7280;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
     #login-warning {
       display: none;
       background: #fff3cd;
@@ -244,10 +252,7 @@
 
   <div id="management-content">
 
-
-    <!-- =========================
-         ADD NEW CONTENT
-    ========================== -->
+    <!-- ADD NEW CONTENT -->
 
     <div class="panel">
 
@@ -328,9 +333,7 @@
     </div>
 
 
-    <!-- =========================
-         EXISTING CONTENT
-    ========================== -->
+    <!-- EXISTING CONTENT -->
 
     <div class="panel">
 
@@ -343,9 +346,7 @@
     </div>
 
 
-    <!-- =========================
-         WATCH LIST MANAGEMENT
-    ========================== -->
+    <!-- WATCH LIST MANAGEMENT -->
 
     <div class="panel">
 
@@ -355,12 +356,20 @@
 
         <div>
           <label>Ticker</label>
-          <input id="watch-ticker" type="text" placeholder="MU">
+          <input
+            id="watch-ticker"
+            type="text"
+            placeholder="CRCL"
+          >
         </div>
 
         <div>
           <label>Company</label>
-          <input id="watch-company" type="text" placeholder="Micron Technology">
+          <input
+            id="watch-company"
+            type="text"
+            placeholder="Circle Internet Group"
+          >
         </div>
 
       </div>
@@ -369,18 +378,31 @@
       <div class="grid-2">
 
         <div>
-          <label>Exchange</label>
 
-          <select id="watch-exchange">
-            <option value="NASDAQ">NASDAQ</option>
-            <option value="NYSE">NYSE</option>
-            <option value="AMEX">AMEX</option>
-          </select>
+          <label>TradingView Symbol</label>
+
+          <input
+            id="watch-symbol"
+            type="text"
+            placeholder="NYSE:CRCL"
+          >
+
+          <div class="helper">
+            Example: NASDAQ:MU, NASDAQ:NVDA, NYSE:CRCL, AMEX:SPY.
+          </div>
+
         </div>
 
         <div>
+
           <label>Display Order</label>
-          <input id="watch-order" type="number" value="0">
+
+          <input
+            id="watch-order"
+            type="number"
+            value="0"
+          >
+
         </div>
 
       </div>
@@ -402,7 +424,6 @@
 
     </div>
 
-
   </div>
 
 </div>
@@ -410,9 +431,7 @@
 
 <script>
 
-/* ========================================
-   LOGIN CHECK
-======================================== */
+/* LOGIN CHECK */
 
 async function checkLogin() {
 
@@ -438,10 +457,7 @@ async function checkLogin() {
 }
 
 
-
-/* ========================================
-   ADD CONTENT
-======================================== */
+/* ADD CONTENT */
 
 async function addContent() {
 
@@ -518,15 +534,11 @@ async function addContent() {
   document.getElementById("new-description").value = "";
   document.getElementById("new-note").value = "";
 
-
   loadContent();
 }
 
 
-
-/* ========================================
-   LOAD CONTENT
-======================================== */
+/* LOAD CONTENT */
 
 async function loadContent() {
 
@@ -710,10 +722,7 @@ async function loadContent() {
 }
 
 
-
-/* ========================================
-   EDIT CONTENT
-======================================== */
+/* EDIT CONTENT */
 
 function toggleEdit(id) {
 
@@ -727,7 +736,6 @@ function toggleEdit(id) {
       ? "none"
       : "block";
 }
-
 
 
 async function saveContent(id) {
@@ -798,10 +806,7 @@ async function saveContent(id) {
 }
 
 
-
-/* ========================================
-   DELETE CONTENT
-======================================== */
+/* DELETE CONTENT */
 
 async function deleteContent(id) {
 
@@ -838,10 +843,7 @@ async function deleteContent(id) {
 }
 
 
-
-/* ========================================
-   ADD WATCH STOCK
-======================================== */
+/* ADD WATCH STOCK */
 
 async function addWatchStock() {
 
@@ -849,22 +851,31 @@ async function addWatchStock() {
     document.getElementById("watch-message");
 
 
+  const ticker =
+    document.getElementById("watch-ticker")
+      .value
+      .trim()
+      .toUpperCase();
+
+
+  const symbol =
+    document.getElementById("watch-symbol")
+      .value
+      .trim()
+      .toUpperCase();
+
+
   const stock = {
 
-    ticker:
-      document.getElementById("watch-ticker")
-        .value
-        .trim()
-        .toUpperCase(),
+    ticker: ticker,
 
     company:
       document.getElementById("watch-company")
         .value
         .trim(),
 
-    exchange:
-      document.getElementById("watch-exchange")
-        .value,
+    tradingview_symbol:
+      symbol,
 
     display_order:
       Number(
@@ -879,6 +890,15 @@ async function addWatchStock() {
 
     message.textContent =
       "Please enter a ticker.";
+
+    return;
+  }
+
+
+  if (!stock.tradingview_symbol) {
+
+    message.textContent =
+      "Please enter a TradingView Symbol.";
 
     return;
   }
@@ -906,6 +926,7 @@ async function addWatchStock() {
 
   document.getElementById("watch-ticker").value = "";
   document.getElementById("watch-company").value = "";
+  document.getElementById("watch-symbol").value = "";
   document.getElementById("watch-order").value = "0";
 
 
@@ -913,10 +934,7 @@ async function addWatchStock() {
 }
 
 
-
-/* ========================================
-   LOAD WATCH LIST
-======================================== */
+/* LOAD WATCH LIST */
 
 async function loadWatchList() {
 
@@ -971,8 +989,8 @@ async function loadWatchList() {
           </h3>
 
           <p>
-            <strong>Exchange:</strong>
-            ${safe(stock.exchange)}
+            <strong>TradingView Symbol:</strong>
+            ${safe(stock.tradingview_symbol)}
           </p>
 
           <p>
@@ -1017,18 +1035,12 @@ async function loadWatchList() {
               value="${safeAttr(stock.company)}"
             >
 
-            <label>Exchange</label>
-
-            <select id="watch-edit-exchange-${id}">
-              ${optionList(
-                [
-                  "NASDAQ",
-                  "NYSE",
-                  "AMEX"
-                ],
-                stock.exchange
-              )}
-            </select>
+            <label>TradingView Symbol</label>
+            <input
+              id="watch-edit-symbol-${id}"
+              value="${safeAttr(stock.tradingview_symbol)}"
+              placeholder="NYSE:CRCL"
+            >
 
             <label>Display Order</label>
 
@@ -1063,10 +1075,7 @@ async function loadWatchList() {
 }
 
 
-
-/* ========================================
-   EDIT WATCH STOCK
-======================================== */
+/* EDIT WATCH STOCK */
 
 function toggleWatchEdit(id) {
 
@@ -1081,7 +1090,6 @@ function toggleWatchEdit(id) {
       ? "none"
       : "block";
 }
-
 
 
 async function saveWatchStock(id) {
@@ -1103,11 +1111,13 @@ async function saveWatchStock(id) {
       .value
       .trim(),
 
-    exchange:
+    tradingview_symbol:
       document.getElementById(
-        "watch-edit-exchange-" + id
+        "watch-edit-symbol-" + id
       )
-      .value,
+      .value
+      .trim()
+      .toUpperCase(),
 
     display_order:
       Number(
@@ -1142,10 +1152,7 @@ async function saveWatchStock(id) {
 }
 
 
-
-/* ========================================
-   DELETE WATCH STOCK
-======================================== */
+/* DELETE WATCH STOCK */
 
 async function deleteWatchStock(id) {
 
@@ -1182,10 +1189,7 @@ async function deleteWatchStock(id) {
 }
 
 
-
-/* ========================================
-   LOG OUT
-======================================== */
+/* LOG OUT */
 
 async function logout() {
 
@@ -1196,10 +1200,7 @@ async function logout() {
 }
 
 
-
-/* ========================================
-   HELPERS
-======================================== */
+/* HELPERS */
 
 function safe(value) {
 
@@ -1218,12 +1219,9 @@ function safe(value) {
 }
 
 
-
 function safeAttr(value) {
-
   return safe(value);
 }
-
 
 
 function optionList(
@@ -1247,10 +1245,7 @@ function optionList(
 }
 
 
-
-/* ========================================
-   START
-======================================== */
+/* START */
 
 checkLogin();
 
