@@ -267,18 +267,7 @@
     .library-header h2 {
       margin: 0;
     }
-
-    .clear-button {
-      display: none;
-      padding: 9px 13px;
-      background: #e5e7eb;
-      color: #111827;
-      border: none;
-      border-radius: 7px;
-      cursor: pointer;
-    }
-
-    .article-list {
+.article-list {
       display: grid;
       gap: 12px;
     }
@@ -416,7 +405,7 @@
 
       <button
         class="category-button"
-        onclick="showCategoryTitles('Macro Trends')"
+        onclick="window.location.href='category.html?name=Macro%20Trends'"
       >
         View Macro Trends
       </button>
@@ -443,14 +432,14 @@
 
         <button
           class="sub-button"
-          onclick="showCategoryTitles('Fundamental Analysis')"
+          onclick="window.location.href='category.html?name=Fundamental%20Analysis'"
         >
           Fundamental Analysis
         </button>
 
         <button
           class="sub-button"
-          onclick="showCategoryTitles('Price Action Analysis')"
+          onclick="window.location.href='category.html?name=Price%20Action%20Analysis'"
         >
           Price Action Analysis
         </button>
@@ -477,7 +466,7 @@
 
       <button
         class="category-button"
-        onclick="showCategoryTitles('Trading Psychology')"
+        onclick="window.location.href='category.html?name=Trading%20Psychology'"
       >
         View Psychology
       </button>
@@ -503,7 +492,7 @@
 
       <button
         class="category-button"
-        onclick="showCategoryTitles('Trading Strategies')"
+        onclick="window.location.href='category.html?name=Trading%20Strategies'"
       >
         View Strategies
       </button>
@@ -529,7 +518,7 @@
 
       <button
         class="category-button"
-        onclick="showCategoryTitles('My Trade Reviews')"
+        onclick="window.location.href='category.html?name=My%20Trade%20Reviews'"
       >
         View Trade Reviews
       </button>
@@ -556,14 +545,14 @@
 
         <button
           class="sub-button"
-          onclick="showCategoryTitles('My Videos')"
+          onclick="window.location.href='category.html?name=My%20Videos'"
         >
           My Videos
         </button>
 
         <button
           class="sub-button"
-          onclick="showCategoryTitles('Selected YouTube Videos')"
+          onclick="window.location.href='category.html?name=Selected%20YouTube%20Videos'"
         >
           Selected YouTube Videos
         </button>
@@ -640,16 +629,7 @@
     <h2 id="library-title">
       📚 Latest From My Library
     </h2>
-
-    <button
-      id="clear-filter"
-      class="clear-button"
-      onclick="clearFilter()"
-    >
-      Show All
-    </button>
-
-  </div>
+</div>
 
 
   <div
@@ -1155,93 +1135,6 @@ function displayArticleTitles(
 
       }
     ).join("");
-
-}
-
-
-/* ========================================
-   CATEGORY → TITLE LIST
-======================================== */
-
-function showCategoryTitles(
-  categoryName
-) {
-
-  const filtered =
-    allInvestmentItems.filter(
-      item => {
-
-        return (
-          item.category &&
-          item.category
-            .toLowerCase() ===
-          categoryName
-            .toLowerCase()
-        );
-
-      }
-    );
-
-
-  document
-    .getElementById(
-      "library-title"
-    )
-    .textContent =
-    "📚 " + categoryName;
-
-
-  document
-    .getElementById(
-      "clear-filter"
-    )
-    .style.display =
-    "inline-block";
-
-
-  displayArticleTitles(
-    filtered
-  );
-
-
-  document
-    .getElementById(
-      "library-title"
-    )
-    .scrollIntoView({
-
-      behavior: "smooth",
-
-      block: "start"
-
-    });
-
-}
-
-
-/* ========================================
-   SHOW ALL
-======================================== */
-
-function clearFilter() {
-
-  document
-    .getElementById(
-      "library-title"
-    )
-    .textContent =
-    "📚 Latest From My Library";
-
-
-  document
-    .getElementById(
-      "clear-filter"
-    )
-    .style.display =
-    "none";
-displayArticleTitles(
-    allInvestmentItems
-  );
 
 }
 
