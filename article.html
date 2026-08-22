@@ -26,7 +26,6 @@
     src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"
   ></script>
 
-
   <style>
 
     * {
@@ -39,7 +38,6 @@
       background: #f5f7fa;
       color: #172033;
     }
-
 
     /* =========================
        HEADER
@@ -92,7 +90,6 @@
       background: #e5e7eb;
     }
 
-
     /* =========================
        PAGE
     ========================= */
@@ -105,6 +102,7 @@
 
     .article {
       background: white;
+
       padding: 40px;
 
       border-radius: 12px;
@@ -119,7 +117,6 @@
       font-size: 36px;
       line-height: 1.25;
     }
-
 
     /* =========================
        META
@@ -146,9 +143,8 @@
       font-size: 13px;
     }
 
-
     /* =========================
-       ARTICLE CONTENT
+       NORMAL ARTICLE VIEW
     ========================= */
 
     .section {
@@ -165,7 +161,6 @@
       color: #465366;
       white-space: pre-wrap;
     }
-
 
     .article-content {
       margin-top: 30px;
@@ -218,11 +213,6 @@
       color: #2563eb;
     }
 
-
-    /* =========================
-       ORIGINAL LINK
-    ========================= */
-
     .original-link {
       display: inline-block;
 
@@ -243,19 +233,14 @@
       background: #263247;
     }
 
-
     /* =========================
-       EDITOR
+       INLINE EDIT MODE
     ========================= */
 
-    #edit-panel {
-      display: none;
-
-      margin-top: 30px;
-
+    .edit-mode {
       background: white;
 
-      padding: 35px;
+      padding: 40px;
 
       border-radius: 12px;
 
@@ -263,7 +248,7 @@
         0 3px 12px rgba(0,0,0,0.06);
     }
 
-    #edit-panel h2 {
+    .edit-mode h2 {
       margin-top: 0;
     }
 
@@ -308,18 +293,17 @@
       gap: 18px;
     }
 
-
     /* =========================
        QUILL
     ========================= */
 
-    #article-editor {
+    #inline-editor {
       margin-top: 7px;
       margin-bottom: 20px;
     }
 
-    #article-editor .ql-container {
-      min-height: 350px;
+    #inline-editor .ql-container {
+      min-height: 420px;
 
       font-family:
         Arial, sans-serif;
@@ -327,15 +311,14 @@
       font-size: 16px;
     }
 
-    #article-editor .ql-editor {
-      min-height: 350px;
+    #inline-editor .ql-editor {
+      min-height: 420px;
 
       line-height: 1.7;
     }
 
-
     /* =========================
-       EDIT BUTTONS
+       EDIT ACTIONS
     ========================= */
 
     .edit-actions {
@@ -373,14 +356,14 @@
 
     #save-message {
       margin-top: 15px;
-
       font-weight: bold;
     }
 
-
-    /* =========================
-       MESSAGE
-    ========================= */
+    .helper {
+      color: #6b7280;
+      font-size: 13px;
+      line-height: 1.5;
+    }
 
     .message {
       background: white;
@@ -392,14 +375,10 @@
       text-align: center;
     }
 
-
-    /* =========================
-       MOBILE
-    ========================= */
-
     @media (max-width: 700px) {
 
-      .article {
+      .article,
+      .edit-mode {
         padding: 25px;
       }
 
@@ -423,11 +402,6 @@
 
 <body>
 
-
-<!-- =========================
-     HEADER
-========================= -->
-
 <header>
 
   <div class="header-inner">
@@ -439,24 +413,18 @@
       ← Back to Library
     </a>
 
-
     <button
-      id="edit-article-button"
+      id="edit-button"
       class="edit-button"
-      onclick="openEditor()"
+      onclick="enterEditMode()"
     >
-      ✏ Edit Article
+      ✏ Edit
     </button>
 
   </div>
 
 </header>
 
-
-
-<!-- =========================
-     ARTICLE
-========================= -->
 
 <div class="container">
 
@@ -468,245 +436,26 @@
 
   </div>
 
-
-
-  <!-- =========================
-       INLINE EDITOR
-  ========================= -->
-
-  <div id="edit-panel">
-
-    <h2>
-      ✏ Edit Article
-    </h2>
-
-
-    <div class="grid-2">
-
-      <div>
-
-        <label>
-          Title
-        </label>
-
-        <input
-          id="edit-title"
-          type="text"
-        >
-
-      </div>
-
-
-      <div>
-
-        <label>
-          URL
-        </label>
-
-        <input
-          id="edit-url"
-          type="url"
-        >
-
-      </div>
-
-    </div>
-
-
-
-    <div class="grid-2">
-
-      <div>
-
-        <label>
-          Type
-        </label>
-
-        <select id="edit-type">
-
-          <option value="Article">
-            Article
-          </option>
-
-          <option value="News">
-            News
-          </option>
-
-          <option value="Research">
-            Research
-          </option>
-
-          <option value="Video">
-            Video
-          </option>
-
-          <option value="Investment Idea">
-            Investment Idea
-          </option>
-
-        </select>
-
-      </div>
-
-
-      <div>
-
-        <label>
-          Ticker
-        </label>
-
-        <input
-          id="edit-ticker"
-          type="text"
-        >
-
-      </div>
-
-    </div>
-
-
-
-    <label>
-      Category
-    </label>
-
-    <select id="edit-category">
-
-      <option value="Macro Trends">
-        Macro Trends
-      </option>
-
-      <option value="Fundamental Analysis">
-        Fundamental Analysis
-      </option>
-
-      <option value="Price Action Analysis">
-        Price Action Analysis
-      </option>
-
-      <option value="Trading Psychology">
-        Trading Psychology
-      </option>
-
-      <option value="Trading Strategies">
-        Trading Strategies
-      </option>
-
-      <option value="My Trade Reviews">
-        My Trade Reviews
-      </option>
-
-      <option value="My Videos">
-        My Videos
-      </option>
-
-      <option value="Selected YouTube Videos">
-        Selected YouTube Videos
-      </option>
-
-    </select>
-
-
-
-    <label>
-      Tags
-    </label>
-
-    <input
-      id="edit-tags"
-      type="text"
-    >
-
-
-
-    <label>
-      Description
-    </label>
-
-    <textarea
-      id="edit-description"
-      placeholder="Short summary"
-    ></textarea>
-
-
-
-    <label>
-      Article Content
-    </label>
-
-    <p
-      style="
-        color:#6b7280;
-        font-size:13px;
-      "
-    >
-      Edit paragraphs, headings, font size,
-      bold text, highlights, colors, lists,
-      quotes and links.
-    </p>
-
-
-    <div id="article-editor"></div>
-
-
-
-    <label>
-      My Note
-    </label>
-
-    <textarea
-      id="edit-note"
-    ></textarea>
-
-
-
-    <div class="edit-actions">
-
-      <button
-        class="save-button"
-        onclick="saveArticle()"
-      >
-        Save Changes
-      </button>
-
-
-      <button
-        class="cancel-button"
-        onclick="cancelEdit()"
-      >
-        Cancel
-      </button>
-
-    </div>
-
-
-    <div id="save-message"></div>
-
-  </div>
-
 </div>
-
 
 
 <script>
 
-
 /* ========================================
-   GLOBAL DATA
+   GLOBALS
 ======================================== */
 
 let currentArticle = null;
 
 let currentArticleId = null;
 
-let articleEditor = null;
-
 let currentSession = null;
 
+let inlineEditor = null;
 
 
 /* ========================================
-   QUILL TOOLBAR
+   TOOLBAR
 ======================================== */
 
 const toolbarOptions = [
@@ -780,7 +529,6 @@ const toolbarOptions = [
 ];
 
 
-
 /* ========================================
    CHECK LOGIN
 ======================================== */
@@ -803,7 +551,7 @@ async function checkLogin() {
 
   const editButton =
     document.getElementById(
-      "edit-article-button"
+      "edit-button"
     );
 
 
@@ -820,7 +568,6 @@ async function checkLogin() {
   }
 
 }
-
 
 
 /* ========================================
@@ -870,7 +617,10 @@ async function loadArticle() {
     await supabaseClient
       .from("items")
       .select("*")
-      .eq("id", id)
+      .eq(
+        "id",
+        id
+      )
       .single();
 
 
@@ -901,17 +651,16 @@ async function loadArticle() {
     data;
 
 
-  renderArticle();
+  renderReadMode();
 
 }
 
 
-
 /* ========================================
-   RENDER ARTICLE
+   NORMAL READ MODE
 ======================================== */
 
-function renderArticle() {
+function renderReadMode() {
 
   const container =
     document.getElementById(
@@ -990,7 +739,6 @@ function renderArticle() {
 
     <article class="article">
 
-
       <h1>
 
         ${
@@ -1002,7 +750,6 @@ function renderArticle() {
         ${title}
 
       </h1>
-
 
 
       <div class="meta">
@@ -1017,7 +764,6 @@ function renderArticle() {
             : ""
         }
 
-
         ${
           ticker
             ? `
@@ -1028,7 +774,6 @@ function renderArticle() {
             : ""
         }
 
-
         ${
           type
             ? `
@@ -1038,7 +783,6 @@ function renderArticle() {
             `
             : ""
         }
-
 
         ${
           tags
@@ -1051,7 +795,6 @@ function renderArticle() {
         }
 
       </div>
-
 
 
       ${
@@ -1075,14 +818,11 @@ function renderArticle() {
       }
 
 
-
       ${
         contentHtml
           ? `
 
-            <div
-              class="article-content"
-            >
+            <div class="article-content">
 
               ${contentHtml}
 
@@ -1091,7 +831,6 @@ function renderArticle() {
           `
           : ""
       }
-
 
 
       ${
@@ -1115,7 +854,6 @@ function renderArticle() {
       }
 
 
-
       ${
         originalUrl
           ? `
@@ -1133,7 +871,6 @@ function renderArticle() {
           : ""
       }
 
-
     </article>
 
   `;
@@ -1141,12 +878,11 @@ function renderArticle() {
 }
 
 
-
 /* ========================================
-   OPEN EDITOR
+   ENTER INLINE EDIT MODE
 ======================================== */
 
-function openEditor() {
+function enterEditMode() {
 
   if (
     !currentSession ||
@@ -1154,14 +890,216 @@ function openEditor() {
   ) {
 
     return;
-
   }
 
 
-  const panel =
+  const container =
     document.getElementById(
-      "edit-panel"
+      "article-container"
     );
+
+
+  container.innerHTML = `
+
+    <div class="edit-mode">
+
+      <h2>
+        ✏ Edit Article
+      </h2>
+
+
+      <div class="grid-2">
+
+        <div>
+
+          <label>
+            Title
+          </label>
+
+          <input
+            id="edit-title"
+            type="text"
+          >
+
+        </div>
+
+
+        <div>
+
+          <label>
+            URL
+          </label>
+
+          <input
+            id="edit-url"
+            type="url"
+          >
+
+        </div>
+
+      </div>
+
+
+      <div class="grid-2">
+
+        <div>
+
+          <label>
+            Type
+          </label>
+
+          <select id="edit-type">
+
+            <option value="Article">
+              Article
+            </option>
+
+            <option value="News">
+              News
+            </option>
+
+            <option value="Research">
+              Research
+            </option>
+
+            <option value="Video">
+              Video
+            </option>
+
+            <option value="Investment Idea">
+              Investment Idea
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <div>
+
+          <label>
+            Ticker
+          </label>
+
+          <input
+            id="edit-ticker"
+            type="text"
+          >
+
+        </div>
+
+      </div>
+
+
+      <label>
+        Category
+      </label>
+
+      <select id="edit-category">
+
+        <option value="Macro Trends">
+          Macro Trends
+        </option>
+
+        <option value="Fundamental Analysis">
+          Fundamental Analysis
+        </option>
+
+        <option value="Price Action Analysis">
+          Price Action Analysis
+        </option>
+
+        <option value="Trading Psychology">
+          Trading Psychology
+        </option>
+
+        <option value="Trading Strategies">
+          Trading Strategies
+        </option>
+
+        <option value="My Trade Reviews">
+          My Trade Reviews
+        </option>
+
+        <option value="My Videos">
+          My Videos
+        </option>
+
+        <option value="Selected YouTube Videos">
+          Selected YouTube Videos
+        </option>
+
+      </select>
+
+
+      <label>
+        Tags
+      </label>
+
+      <input
+        id="edit-tags"
+        type="text"
+      >
+
+
+      <label>
+        Description
+      </label>
+
+      <textarea
+        id="edit-description"
+      ></textarea>
+
+
+      <label>
+        Article Content
+      </label>
+
+      <p class="helper">
+        Edit the article directly here.
+        You can change paragraphs, headings,
+        font size, bold text, colors,
+        highlights, lists, quotes and links.
+      </p>
+
+
+      <div id="inline-editor"></div>
+
+
+      <label>
+        My Note
+      </label>
+
+      <textarea
+        id="edit-note"
+      ></textarea>
+
+
+      <div class="edit-actions">
+
+        <button
+          class="save-button"
+          onclick="saveChanges()"
+        >
+          Save Changes
+        </button>
+
+
+        <button
+          class="cancel-button"
+          onclick="cancelEdit()"
+        >
+          Cancel
+        </button>
+
+      </div>
+
+
+      <div id="save-message"></div>
+
+    </div>
+
+  `;
 
 
   document
@@ -1230,37 +1168,28 @@ function openEditor() {
     currentArticle.my_note || "";
 
 
-  panel.style.display =
-    "block";
+  inlineEditor =
+    new Quill(
+      "#inline-editor",
+      {
+        theme: "snow",
 
+        placeholder:
+          "Write or edit the article here...",
 
-  if (!articleEditor) {
-
-    articleEditor =
-      new Quill(
-        "#article-editor",
-        {
-          theme: "snow",
-
-          modules: {
-            toolbar:
-              toolbarOptions
-          }
+        modules: {
+          toolbar:
+            toolbarOptions
         }
-      );
-
-  }
-
-
-  articleEditor
-    .setContents([]);
+      }
+    );
 
 
   if (
     currentArticle.content_html
   ) {
 
-    articleEditor
+    inlineEditor
       .clipboard
       .dangerouslyPasteHTML(
         currentArticle.content_html
@@ -1271,53 +1200,44 @@ function openEditor() {
   ) {
 
     /*
-      Old articles without content_html
-      can start with the existing
-      description in the editor.
+      Old article:
+      load existing Description
+      into the editor so it is
+      not blank.
     */
 
-    articleEditor
+    const oldText =
+      safeText(
+        currentArticle.description
+      )
+      .replaceAll(
+        "\n",
+        "<br>"
+      );
+
+
+    inlineEditor
       .clipboard
       .dangerouslyPasteHTML(
-        safeText(
-          currentArticle.description
-        )
-        .replaceAll(
-          "\n",
-          "<br>"
-        )
+        oldText
       );
 
   }
 
 
-  panel.scrollIntoView({
-
-    behavior: "smooth",
-
-    block: "start"
-
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
   });
 
 }
 
 
-
 /* ========================================
-   SAVE ARTICLE
+   SAVE CHANGES
 ======================================== */
 
-async function saveArticle() {
-
-  if (
-    !currentSession ||
-    !currentArticleId
-  ) {
-
-    return;
-
-  }
-
+async function saveChanges() {
 
   const message =
     document.getElementById(
@@ -1333,10 +1253,10 @@ async function saveArticle() {
     "";
 
 
-  if (articleEditor) {
+  if (inlineEditor) {
 
     contentHtml =
-      articleEditor
+      inlineEditor
         .root
         .innerHTML
         .trim();
@@ -1471,29 +1391,19 @@ async function saveArticle() {
     data;
 
 
-  message.textContent =
-    "Saved successfully!";
+  inlineEditor =
+    null;
 
 
-  renderArticle();
+  renderReadMode();
 
 
-  setTimeout(
-    () => {
-
-      cancelEdit();
-
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
-
-    },
-    500
-  );
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
 
 }
-
 
 
 /* ========================================
@@ -1502,23 +1412,12 @@ async function saveArticle() {
 
 function cancelEdit() {
 
-  document
-    .getElementById(
-      "edit-panel"
-    )
-    .style.display =
-    "none";
+  inlineEditor =
+    null;
 
-
-  document
-    .getElementById(
-      "save-message"
-    )
-    .textContent =
-    "";
+  renderReadMode();
 
 }
-
 
 
 /* ========================================
@@ -1569,7 +1468,6 @@ function safeText(
 }
 
 
-
 /* ========================================
    URL SAFETY
 ======================================== */
@@ -1618,7 +1516,6 @@ function cleanUrl(
   }
 
 }
-
 
 
 /* ========================================
