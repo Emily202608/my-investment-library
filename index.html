@@ -24,6 +24,10 @@
       color: #172033;
     }
 
+    /* =========================
+       HEADER
+    ========================= */
+
     header {
       position: relative;
       background: #111827;
@@ -33,25 +37,29 @@
     }
 
     header h1 {
-      font-size: 42px;
       margin: 0 0 12px;
+      font-size: 42px;
     }
 
     header p {
+      margin-bottom: 30px;
       font-size: 18px;
       color: #cbd5e1;
-      margin-bottom: 30px;
     }
 
     .login-link {
       position: absolute;
       top: 20px;
       right: 30px;
+
       padding: 9px 14px;
+
       background: white;
       color: #111827;
+
       text-decoration: none;
       border-radius: 7px;
+
       font-size: 14px;
       font-weight: bold;
     }
@@ -60,70 +68,277 @@
       background: #e5e7eb;
     }
 
+    /* =========================
+       SEARCH
+    ========================= */
+
     .search {
-      max-width: 650px;
+      max-width: 700px;
       margin: auto;
     }
 
     .search input {
       width: 100%;
       padding: 16px 20px;
+
       border: none;
       border-radius: 10px;
+
       font-size: 16px;
     }
 
+    /* =========================
+       PAGE CONTAINER
+    ========================= */
+
     .container {
-      max-width: 1100px;
+      max-width: 1180px;
       margin: 45px auto;
       padding: 0 20px;
     }
 
-    h2 {
-      margin-bottom: 20px;
+    .section-title {
+      margin-bottom: 22px;
     }
+
+    /* =========================
+       WATCH LIST
+    ========================= */
+
+    .watch-section {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 25px;
+
+      align-items: stretch;
+    }
+
+    .watch-panel,
+    .chart-panel {
+      background: white;
+      border-radius: 12px;
+
+      box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+    }
+
+    .watch-panel {
+      padding: 22px;
+    }
+
+    .watch-panel h2 {
+      margin-top: 0;
+      margin-bottom: 18px;
+    }
+
+    .watch-item {
+      width: 100%;
+
+      margin-bottom: 10px;
+      padding: 12px 14px;
+
+      background: #f3f4f6;
+      border: 1px solid transparent;
+      border-radius: 8px;
+
+      text-align: left;
+      cursor: pointer;
+
+      transition: 0.2s;
+    }
+
+    .watch-item:hover {
+      background: #e5e7eb;
+    }
+
+    .watch-item.active {
+      background: #111827;
+      color: white;
+    }
+
+    .watch-ticker {
+      display: block;
+
+      font-size: 17px;
+      font-weight: bold;
+    }
+
+    .watch-company {
+      display: block;
+      margin-top: 4px;
+
+      font-size: 12px;
+      opacity: 0.75;
+    }
+
+    .chart-panel {
+      overflow: hidden;
+    }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      padding: 18px 22px;
+
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .chart-header h2 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    #current-symbol {
+      padding: 6px 10px;
+
+      background: #eef2f7;
+      border-radius: 20px;
+
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    #tradingview-chart {
+      width: 100%;
+      height: 500px;
+    }
+
+    .tradingview-widget-container {
+      height: 100%;
+      width: 100%;
+    }
+
+    .tradingview-widget-container__widget {
+      height: 100%;
+      width: 100%;
+    }
+
+    /* =========================
+       CATEGORIES
+    ========================= */
 
     .categories {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 18px;
+      grid-template-columns:
+        repeat(auto-fit, minmax(290px, 1fr));
+
+      gap: 20px;
     }
 
-    .category {
+    .category-card {
       background: white;
       padding: 25px;
+
       border-radius: 12px;
-      text-align: center;
+
       box-shadow: 0 3px 12px rgba(0,0,0,0.06);
-      transition: transform 0.2s;
     }
 
-    .category:hover {
-      transform: translateY(-4px);
+    .category-icon {
+      font-size: 30px;
     }
 
-    .category .icon {
-      font-size: 32px;
+    .category-card h3 {
+      margin: 12px 0 8px;
     }
 
-    .category h3 {
-      margin: 12px 0 0;
+    .category-card p {
+      color: #526071;
+      line-height: 1.5;
     }
 
-    .featured {
-      margin-top: 55px;
+    .category-button {
+      margin-top: 10px;
+      padding: 9px 13px;
+
+      border: none;
+      border-radius: 7px;
+
+      background: #111827;
+      color: white;
+
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .category-button:hover {
+      background: #263247;
+    }
+
+    .subcategories {
+      margin-top: 15px;
+      padding-top: 15px;
+
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .sub-button {
+      display: block;
+      width: 100%;
+
+      margin-top: 8px;
+      padding: 10px;
+
+      background: #f3f4f6;
+      color: #172033;
+
+      border: none;
+      border-radius: 7px;
+
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .sub-button:hover {
+      background: #e5e7eb;
+    }
+
+    /* =========================
+       LIBRARY
+    ========================= */
+
+    .library-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .library-header h2 {
+      margin: 0;
+    }
+
+    .clear-button {
+      display: none;
+
+      padding: 9px 13px;
+
+      background: #e5e7eb;
+      color: #111827;
+
+      border: none;
+      border-radius: 7px;
+
+      cursor: pointer;
     }
 
     .cards {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      grid-template-columns:
+        repeat(auto-fit, minmax(300px, 1fr));
+
       gap: 22px;
     }
 
     .card {
       background: white;
       padding: 25px;
+
       border-radius: 12px;
+
       box-shadow: 0 3px 12px rgba(0,0,0,0.06);
     }
 
@@ -133,8 +348,8 @@
     }
 
     .card p {
-      line-height: 1.6;
       color: #526071;
+      line-height: 1.6;
     }
 
     .card a {
@@ -149,55 +364,53 @@
 
     .tag {
       display: inline-block;
-      background: #e8edf3;
-      padding: 6px 10px;
+
       margin: 4px 4px 0 0;
+      padding: 6px 10px;
+
+      background: #e8edf3;
       border-radius: 20px;
+
       font-size: 13px;
     }
 
-    .chart-button {
-      margin-top: 18px;
-      padding: 10px 14px;
-      background: #111827;
-      color: white;
-      border: none;
-      border-radius: 7px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .chart-button:hover {
-      background: #263247;
-    }
-
-    .chart-wrapper {
-      display: none;
-      margin-top: 18px;
-      height: 450px;
-      width: 100%;
-    }
-
-    .chart-wrapper.open {
-      display: block;
-    }
-
-    .tradingview-widget-container {
-      height: 100%;
-      width: 100%;
-    }
-
-    .tradingview-widget-container__widget {
-      height: 100%;
-      width: 100%;
-    }
+    /* =========================
+       FOOTER
+    ========================= */
 
     footer {
       margin-top: 70px;
       padding: 35px 20px;
+
       background: #111827;
       color: #9ca3af;
+
       text-align: center;
+    }
+
+    /* =========================
+       MOBILE
+    ========================= */
+
+    @media (max-width: 800px) {
+
+      .watch-section {
+        grid-template-columns: 1fr;
+      }
+
+      #tradingview-chart {
+        height: 420px;
+      }
+
+      header h1 {
+        font-size: 34px;
+      }
+
+      .login-link {
+        top: 15px;
+        right: 15px;
+      }
+
     }
 
   </style>
@@ -205,6 +418,10 @@
 
 
 <body>
+
+<!-- =========================
+     PUBLIC HEADER
+========================= -->
 
 <header>
 
@@ -215,7 +432,7 @@
   <h1>My Investment Library</h1>
 
   <p>
-    My collection of investment news, research, videos and ideas.
+    Research, market insights, trading ideas and selected resources.
   </p>
 
   <div class="search">
@@ -223,7 +440,7 @@
     <input
       type="text"
       id="search-input"
-      placeholder="Search ticker, company, topic, news or research..."
+      placeholder="Search stocks, topics, research and ideas..."
     >
 
   </div>
@@ -231,134 +448,280 @@
 </header>
 
 
+<!-- =========================
+     WATCH LIST + CHART
+========================= -->
+
 <div class="container">
 
-  <h2>Investment Categories</h2>
+  <div class="watch-section">
+
+    <div class="watch-panel">
+
+      <h2>⭐ Watch List</h2>
+
+      <div id="watch-list"></div>
+
+    </div>
+
+
+    <div class="chart-panel">
+
+      <div class="chart-header">
+
+        <h2>📊 Interactive Chart</h2>
+
+        <span id="current-symbol">
+          NASDAQ:MU
+        </span>
+
+      </div>
+
+      <div id="tradingview-chart"></div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- =========================
+     RESEARCH CATEGORIES
+========================= -->
+
+<div class="container">
+
+  <h2 class="section-title">
+    Research Categories
+  </h2>
+
 
   <div class="categories">
 
-    <div class="category">
-      <div class="icon">📈</div>
-      <h3>Market</h3>
-    </div>
 
-    <div class="category">
-      <div class="icon">💰</div>
-      <h3>Stocks</h3>
-    </div>
+    <!-- Macro Trends -->
 
-    <div class="category">
-      <div class="icon">🤖</div>
-      <h3>AI & Semiconductors</h3>
-    </div>
+    <div class="category-card">
 
-    <div class="category">
-      <div class="icon">⚡</div>
-      <h3>Energy</h3>
-    </div>
-
-    <div class="category">
-      <div class="icon">🏦</div>
-      <h3>Financials</h3>
-    </div>
-
-    <div class="category">
-      <div class="icon">🪙</div>
-      <h3>Crypto</h3>
-    </div>
-
-    <div class="category">
-      <div class="icon">🌎</div>
-      <h3>Macro Economy</h3>
-    </div>
-
-    <div class="category">
-      <div class="icon">📰</div>
-      <h3>News</h3>
-    </div>
-
-  </div>
-
-
-  <div class="featured">
-
-    <h2>⭐ Featured Research</h2>
-
-    <div class="cards">
-
-      <div class="card">
-
-        <h3>MU — Micron Technology</h3>
-
-        <p>
-          HBM demand, AI infrastructure,
-          memory market and Micron's
-          long-term growth outlook.
-        </p>
-
-        <span class="tag">MU</span>
-        <span class="tag">HBM</span>
-        <span class="tag">AI</span>
-
+      <div class="category-icon">
+        🌎
       </div>
 
+      <h3>Macro Trends</h3>
 
-      <div class="card">
+      <p>
+        Interest rates, inflation, liquidity,
+        economic cycles, market flows and
+        broader market conditions.
+      </p>
 
-        <h3>NVDA — NVIDIA</h3>
+      <button
+        class="category-button"
+        onclick="filterCategory('Macro Trends')"
+      >
+        View Macro Trends
+      </button>
 
-        <p>
-          AI chips, data centers,
-          GPU demand and the
-          AI infrastructure cycle.
-        </p>
+    </div>
 
-        <span class="tag">NVDA</span>
-        <span class="tag">AI</span>
-        <span class="tag">GPU</span>
 
+    <!-- Stock Analysis -->
+
+    <div class="category-card">
+
+      <div class="category-icon">
+        📊
       </div>
 
+      <h3>Stock Analysis</h3>
 
-      <div class="card">
+      <p>
+        Company research combining business
+        fundamentals with practical price action.
+      </p>
 
-        <h3>COIN — Coinbase</h3>
 
-        <p>
-          Crypto markets, Bitcoin,
-          trading activity and
-          digital asset adoption.
-        </p>
+      <div class="subcategories">
 
-        <span class="tag">COIN</span>
-        <span class="tag">Crypto</span>
-        <span class="tag">Bitcoin</span>
+        <button
+          class="sub-button"
+          onclick="filterCategory('Fundamental Analysis')"
+        >
+          Fundamental Analysis
+        </button>
+
+        <button
+          class="sub-button"
+          onclick="filterCategory('Price Action Analysis')"
+        >
+          Price Action Analysis
+        </button>
 
       </div>
 
     </div>
+
+
+    <!-- Trading Psychology -->
+
+    <div class="category-card">
+
+      <div class="category-icon">
+        🧠
+      </div>
+
+      <h3>Trading Psychology</h3>
+
+      <p>
+        Discipline, emotion, decision-making,
+        FOMO, patience and trading behavior.
+      </p>
+
+      <button
+        class="category-button"
+        onclick="filterCategory('Trading Psychology')"
+      >
+        View Psychology
+      </button>
+
+    </div>
+
+
+    <!-- Trading Strategies -->
+
+    <div class="category-card">
+
+      <div class="category-icon">
+        🎯
+      </div>
+
+      <h3>Trading Strategies</h3>
+
+      <p>
+        Trading setups, entries, exits,
+        position sizing, risk management
+        and execution.
+      </p>
+
+      <button
+        class="category-button"
+        onclick="filterCategory('Trading Strategies')"
+      >
+        View Strategies
+      </button>
+
+    </div>
+
+
+    <!-- My Trade Reviews -->
+
+    <div class="category-card">
+
+      <div class="category-icon">
+        📝
+      </div>
+
+      <h3>My Trade Reviews</h3>
+
+      <p>
+        Personal trade reviews, lessons,
+        mistakes, execution notes and
+        post-trade analysis.
+      </p>
+
+      <button
+        class="category-button"
+        onclick="filterCategory('My Trade Reviews')"
+      >
+        View Trade Reviews
+      </button>
+
+    </div>
+
+
+    <!-- Videos -->
+
+    <div class="category-card">
+
+      <div class="category-icon">
+        🎬
+      </div>
+
+      <h3>Videos</h3>
+
+      <p>
+        My own investment videos and selected
+        videos from YouTube.
+      </p>
+
+
+      <div class="subcategories">
+
+        <button
+          class="sub-button"
+          onclick="filterCategory('My Videos')"
+        >
+          My Videos
+        </button>
+
+        <button
+          class="sub-button"
+          onclick="filterCategory('Selected YouTube Videos')"
+        >
+          Selected YouTube Videos
+        </button>
+
+      </div>
+
+    </div>
+
 
   </div>
 
 </div>
 
+
+<!-- =========================
+     LATEST LIBRARY
+========================= -->
 
 <div class="container">
 
-  <div class="featured">
+  <div class="library-header">
 
-    <h2>📚 Latest From My Library</h2>
+    <h2 id="library-title">
+      📚 Latest From My Library
+    </h2>
 
-    <div class="cards" id="database-items">
+    <button
+      id="clear-filter"
+      class="clear-button"
+      onclick="clearFilter()"
+    >
+      Clear Filter
+    </button>
 
-      <p>Loading investment items...</p>
+  </div>
 
-    </div>
+
+  <div
+    class="cards"
+    id="database-items"
+  >
+
+    <p>
+      Loading investment items...
+    </p>
 
   </div>
 
 </div>
 
+
+<!-- =========================
+     FOOTER
+========================= -->
 
 <footer>
 
@@ -373,253 +736,161 @@
 
 <script>
 
-let allInvestmentItems = [];
+/* ========================================
+   WATCH LIST
+======================================== */
 
+/*
+  Temporary Watch List.
 
-/* ------------------------------
-   LOAD SUPABASE ITEMS
--------------------------------- */
+  Next step:
+  We will move this into Supabase so you
+  can Add / Edit / Remove stocks from
+  Management.
+*/
 
-async function loadInvestmentItems() {
+const WATCH_LIST = [
 
-  const { data, error } = await supabaseClient
-    .from("items")
-    .select("*")
-    .order("created_at", { ascending: false });
+  {
+    ticker: "MU",
+    company: "Micron Technology",
+    symbol: "NASDAQ:MU"
+  },
 
+  {
+    ticker: "NVDA",
+    company: "NVIDIA",
+    symbol: "NASDAQ:NVDA"
+  },
 
-  if (error) {
+  {
+    ticker: "COIN",
+    company: "Coinbase",
+    symbol: "NASDAQ:COIN"
+  },
 
-    console.error(
-      "Error loading items:",
-      error
-    );
-
-    document
-      .getElementById("database-items")
-      .innerHTML =
-      "<p>Unable to load investment items.</p>";
-
-    return;
-
+  {
+    ticker: "CRCL",
+    company: "Circle Internet Group",
+    symbol: "NYSE:CRCL"
   }
 
+];
 
-  allInvestmentItems = data || [];
 
-  displayInvestmentItems(
-    allInvestmentItems
-  );
-
-}
+let activeWatchSymbol =
+  WATCH_LIST[0].symbol;
 
 
 
-/* ------------------------------
-   DISPLAY ITEMS
--------------------------------- */
+function renderWatchList() {
 
-function displayInvestmentItems(items) {
-
-  const container =
+  const watchContainer =
     document.getElementById(
-      "database-items"
+      "watch-list"
     );
 
 
-  if (!items || items.length === 0) {
+  watchContainer.innerHTML =
+    WATCH_LIST.map((stock, index) => `
 
-    container.innerHTML =
-      "<p>No investment items found.</p>";
+      <button
+        class="
+          watch-item
+          ${index === 0 ? "active" : ""}
+        "
+        data-symbol="${stock.symbol}"
+        onclick="
+          selectWatchStock(
+            '${stock.symbol}',
+            this
+          )
+        "
+      >
 
-    return;
+        <span class="watch-ticker">
+          ${stock.ticker}
+        </span>
 
-  }
+        <span class="watch-company">
+          ${stock.company}
+        </span>
 
+      </button>
 
-  container.innerHTML =
-    items.map((item, index) => {
-
-      const ticker =
-        item.ticker
-          ? item.ticker.trim().toUpperCase()
-          : "";
-
-      /*
-        For now, existing records default to NASDAQ.
-
-        Next step:
-        we will add an Exchange field in Management
-        so NYSE and other exchanges are supported.
-      */
-
-      const exchange =
-        item.exchange
-          ? item.exchange.trim().toUpperCase()
-          : "NASDAQ";
-
-
-      return `
-
-        <div class="card">
-
-          <h3>
-            ${ticker ? ticker + " — " : ""}
-            ${item.title || ""}
-          </h3>
-
-
-          <p>
-            ${item.description || ""}
-          </p>
-
-
-          ${ticker
-            ? `<span class="tag">${ticker}</span>`
-            : ""
-          }
-
-
-          ${item.type
-            ? `<span class="tag">${item.type}</span>`
-            : ""
-          }
-
-
-          ${item.category
-            ? `<span class="tag">${item.category}</span>`
-            : ""
-          }
-
-
-          ${item.tags
-            ? `<span class="tag">${item.tags}</span>`
-            : ""
-          }
-
-
-          ${item.my_note
-            ? `
-              <p>
-                <strong>My Note:</strong>
-                ${item.my_note}
-              </p>
-              `
-            : ""
-          }
-
-
-          ${item.url
-            ? `
-              <p>
-                <a
-                  href="${item.url}"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Read original →
-                </a>
-              </p>
-              `
-            : ""
-          }
-
-
-          ${ticker
-            ? `
-              <button
-                class="chart-button"
-                onclick="
-                  toggleTradingViewChart(
-                    'chart-${index}',
-                    '${exchange}:${ticker}',
-                    this
-                  )
-                "
-              >
-                📊 Show ${ticker} Chart
-              </button>
-
-              <div
-                id="chart-${index}"
-                class="chart-wrapper"
-              ></div>
-              `
-            : ""
-          }
-
-        </div>
-
-      `;
-
-    }).join("");
+    `).join("");
 
 }
 
 
 
-/* ------------------------------
-   TRADINGVIEW CHART
--------------------------------- */
+/* ========================================
+   SELECT WATCH STOCK
+======================================== */
 
-function toggleTradingViewChart(
-  containerId,
+function selectWatchStock(
   symbol,
   button
 ) {
 
-  const chartWrapper =
-    document.getElementById(
-      containerId
-    );
+  activeWatchSymbol = symbol;
 
 
-  if (
-    chartWrapper.classList.contains(
-      "open"
-    )
-  ) {
+  document
+    .querySelectorAll(".watch-item")
+    .forEach(item => {
 
-    chartWrapper.classList.remove(
-      "open"
-    );
+      item.classList.remove(
+        "active"
+      );
 
-    button.textContent =
-      "📊 Show Chart";
-
-    return;
-
-  }
+    });
 
 
-  chartWrapper.classList.add(
-    "open"
+  button.classList.add(
+    "active"
   );
 
 
-  button.textContent =
-    "▲ Hide Chart";
+  loadTradingViewChart(
+    symbol
+  );
+
+}
+
+
+
+/* ========================================
+   TRADINGVIEW CHART
+======================================== */
+
+function loadTradingViewChart(symbol) {
+
+  const chartContainer =
+    document.getElementById(
+      "tradingview-chart"
+    );
+
+
+  document
+    .getElementById(
+      "current-symbol"
+    )
+    .textContent = symbol;
 
 
   /*
-    Do not create the TradingView widget again
-    if it has already been loaded.
+    Remove previous chart
   */
 
-  if (
-    chartWrapper.dataset.loaded === "true"
-  ) {
-
-    return;
-
-  }
+  chartContainer.innerHTML = "";
 
 
-  const widgetContainer =
+  const outer =
     document.createElement("div");
 
 
-  widgetContainer.className =
+  outer.className =
     "tradingview-widget-container";
 
 
@@ -631,9 +902,7 @@ function toggleTradingViewChart(
     "tradingview-widget-container__widget";
 
 
-  widgetContainer.appendChild(
-    widget
-  );
+  outer.appendChild(widget);
 
 
   const script =
@@ -684,29 +953,314 @@ function toggleTradingViewChart(
     });
 
 
-  widgetContainer.appendChild(
-    script
+  outer.appendChild(script);
+
+
+  chartContainer.appendChild(
+    outer
   );
-
-
-  chartWrapper.appendChild(
-    widgetContainer
-  );
-
-
-  chartWrapper.dataset.loaded =
-    "true";
 
 }
 
 
 
-/* ------------------------------
+/* ========================================
+   SUPABASE LIBRARY
+======================================== */
+
+let allInvestmentItems = [];
+
+
+
+async function loadInvestmentItems() {
+
+  const { data, error } =
+    await supabaseClient
+      .from("items")
+      .select("*")
+      .order(
+        "created_at",
+        { ascending: false }
+      );
+
+
+  if (error) {
+
+    console.error(
+      "Error loading items:",
+      error
+    );
+
+
+    document
+      .getElementById(
+        "database-items"
+      )
+      .innerHTML =
+
+      "<p>Unable to load investment items.</p>";
+
+
+    return;
+
+  }
+
+
+  allInvestmentItems =
+    data || [];
+
+
+  displayInvestmentItems(
+    allInvestmentItems
+  );
+
+}
+
+
+
+/* ========================================
+   DISPLAY LIBRARY ITEMS
+======================================== */
+
+function displayInvestmentItems(
+  items
+) {
+
+  const container =
+    document.getElementById(
+      "database-items"
+    );
+
+
+  if (
+    !items ||
+    items.length === 0
+  ) {
+
+    container.innerHTML =
+      "<p>No investment items found.</p>";
+
+    return;
+
+  }
+
+
+  container.innerHTML =
+    items.map(item => {
+
+      const ticker =
+        safeText(item.ticker);
+
+      const title =
+        safeText(item.title);
+
+      const description =
+        safeText(item.description);
+
+      const type =
+        safeText(item.type);
+
+      const category =
+        safeText(item.category);
+
+      const tags =
+        safeText(item.tags);
+
+      const note =
+        safeText(item.my_note);
+
+      const safeUrl =
+        cleanUrl(item.url);
+
+
+      return `
+
+        <div class="card">
+
+          <h3>
+
+            ${ticker
+              ? ticker + " — "
+              : ""
+            }
+
+            ${title}
+
+          </h3>
+
+
+          ${description
+            ? `<p>${description}</p>`
+            : ""
+          }
+
+
+          ${ticker
+            ? `<span class="tag">${ticker}</span>`
+            : ""
+          }
+
+
+          ${type
+            ? `<span class="tag">${type}</span>`
+            : ""
+          }
+
+
+          ${category
+            ? `<span class="tag">${category}</span>`
+            : ""
+          }
+
+
+          ${tags
+            ? `<span class="tag">${tags}</span>`
+            : ""
+          }
+
+
+          ${note
+            ? `
+              <p>
+                <strong>My Note:</strong>
+                ${note}
+              </p>
+              `
+            : ""
+          }
+
+
+          ${safeUrl
+            ? `
+              <p>
+                <a
+                  href="${safeUrl}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Read original →
+                </a>
+              </p>
+              `
+            : ""
+          }
+
+        </div>
+
+      `;
+
+    }).join("");
+
+}
+
+
+
+/* ========================================
+   CATEGORY FILTER
+======================================== */
+
+function filterCategory(
+  categoryName
+) {
+
+  const filtered =
+    allInvestmentItems.filter(
+      item => {
+
+        return (
+          item.category &&
+          item.category
+            .toLowerCase() ===
+          categoryName
+            .toLowerCase()
+        );
+
+      }
+    );
+
+
+  document
+    .getElementById(
+      "library-title"
+    )
+    .textContent =
+    "📚 " + categoryName;
+
+
+  document
+    .getElementById(
+      "clear-filter"
+    )
+    .style.display =
+    "inline-block";
+
+
+  displayInvestmentItems(
+    filtered
+  );
+
+
+  document
+    .getElementById(
+      "library-title"
+    )
+    .scrollIntoView({
+
+      behavior: "smooth",
+
+      block: "start"
+
+    });
+
+}
+
+
+
+/* ========================================
+   CLEAR FILTER
+======================================== */
+
+function clearFilter() {
+
+  document
+    .getElementById(
+      "library-title"
+    )
+    .textContent =
+    "📚 Latest From My Library";
+
+
+  document
+    .getElementById(
+      "clear-filter"
+    )
+    .style.display =
+    "none";
+
+
+  document
+    .getElementById(
+      "search-input"
+    )
+    .value = "";
+
+
+  displayInvestmentItems(
+    allInvestmentItems
+  );
+
+}
+
+
+
+/* ========================================
    SEARCH
--------------------------------- */
+======================================== */
 
 document
-  .getElementById("search-input")
+  .getElementById(
+    "search-input"
+  )
   .addEventListener(
     "input",
     function() {
@@ -728,7 +1282,7 @@ document
       }
 
 
-      const filteredItems =
+      const filtered =
         allInvestmentItems.filter(
           item => {
 
@@ -752,20 +1306,133 @@ document
 
 
             return searchableText
-              .includes(searchText);
+              .includes(
+                searchText
+              );
 
           }
         );
 
 
+      document
+        .getElementById(
+          "library-title"
+        )
+        .textContent =
+        "🔎 Search Results";
+
+
+      document
+        .getElementById(
+          "clear-filter"
+        )
+        .style.display =
+        "inline-block";
+
+
       displayInvestmentItems(
-        filteredItems
+        filtered
       );
 
     }
   );
 
 
+
+/* ========================================
+   BASIC TEXT SAFETY
+======================================== */
+
+function safeText(value) {
+
+  if (!value) {
+    return "";
+  }
+
+
+  return String(value)
+
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
+
+}
+
+
+
+/* ========================================
+   URL SAFETY
+======================================== */
+
+function cleanUrl(value) {
+
+  if (!value) {
+    return "";
+  }
+
+
+  try {
+
+    const url =
+      new URL(value);
+
+
+    if (
+      url.protocol !== "http:" &&
+      url.protocol !== "https:"
+    ) {
+
+      return "";
+
+    }
+
+
+    return safeText(
+      url.href
+    );
+
+  }
+
+  catch {
+
+    return "";
+
+  }
+
+}
+
+
+
+/* ========================================
+   START PAGE
+======================================== */
+
+renderWatchList();
+
+loadTradingViewChart(
+  activeWatchSymbol
+);
 
 loadInvestmentItems();
 
