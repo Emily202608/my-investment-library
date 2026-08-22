@@ -1,1 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Investment Article</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+      color: #172033;
+    }
+
+    header {
+      background: #111827;
+      color: white;
+      padding: 18px 25px;
+    }
+
+    .header-inner {
+      max-width: 900px;
+      margin: auto;
+    }
+
+    .back-link {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 45px auto;
+      padding: 0 20px;
+    }
+
+    .article {
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: 36px;
+      line-height: 1.25;
+    }
+
+    .meta {
+      margin: 20px 0 30px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .tag {
+      display: inline-block;
+      background: #e8edf3;
+      padding: 6px 10px;
+      margin: 4px 4px 0 0;
+      border-radius: 20px;
+      font-size: 13px;
+    }
+
+    .section {
+      margin-top: 30px;
+    }
+
+    .section h2 {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    .section p {
+      line-height: 1.8;
+      color: #465366;
+      white-space: pre-wrap;
+    }
+
+    .original-link {
+      display: inline-block;
+      margin-top: 30px;
+      padding: 11px 17px;
+      background: #111827;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+
+    .original-link:hover {
+      background: #263247;
+    }
+
+    .message {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    @media (max-width: 700px) {
+      .article {
+        padding: 25px;
+      }
+
+      h1 {
+        font-size: 29px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="header-inner">
+    <a href="index.html" class="back-link">
+      ← Back to Library
+    </a>
+  </div>
+</header>
+
+
+<div class="container">
+
+  <div id="article-container">
+
+    <div class="message">
+      Loading article...
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+async function loadArticle() {
+
+  const container =
+    document.getElementById("article-container");
+
+  const params =
+    new URLSearchParams(window.location.search);
+
+  const id =
+    params.get("id");
+
+
+  if (!id) {
+
+    container.innerHTML = `
+      <div class="message">
+        Article not found.
+      </div>
+    `;
+
+    return;
+  }
+
+
+  const { data, error } =
+    await supabaseClient
+      .from("items")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+
+  if (error || !data) {
+
+    console.error("Article load error:", error);
+
+    container.innerHTML = `
+      <div class="message">
+        Unable to load this article.
+      </div>
+    `;
+
+    return;
+  }
+
+
+  const title =
+    safeText(data.title);
+
+  const ticker =
+    safeText(data.ticker);
+
+  const category =
+    safeText(data.category);
+
+  const type =
+    safeText(data.type);
+
+  const tags =
+    safeText(data.tags);
+
+  const description =
+    safeText(data.description);
+
+  const note =
+    safeText(data.my_note);
+
+  const originalUrl =
+    cleanUrl(data.url);
+
+
+  document.title =
+    title
+      ? title + " | My Investment Library"
+      : "My Investment Library";
+
+
+  container.innerHTML = `
+
+    <article class="article">
+
+      <h1>
+        ${ticker ? ticker + " — " : ""}
+        ${title}
+      </h1>
+
+
+      <div class="meta">
+
+        ${
+          category
+            ? `<span class="tag">${category}</span>`
+            : ""
+        }
+
+        ${
+          ticker
+            ? `<span class="tag">${ticker}</span>`
+            : ""
+        }
+
+        ${
+          type
+            ? `<span class="tag">${type}</span>`
+            : ""
+        }
+
+        ${
+          tags
+            ? `<span class="tag">${tags}</span>`
+            : ""
+        }
+
+      </div>
+
+
+      ${
+        description
+          ? `
+            <div class="section">
+
+              <h2>Description</h2>
+
+              <p>${description}</p>
+
+            </div>
+          `
+          : ""
+      }
+
+
+      ${
+        note
+          ? `
+            <div class="section">
+
+              <h2>My Note</h2>
+
+              <p>${note}</p>
+
+            </div>
+          `
+          : ""
+      }
+
+
+      ${
+        originalUrl
+          ? `
+            <a
+              href="${originalUrl}"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="original-link"
+            >
+              Read Original →
+            </a>
+          `
+          : ""
+      }
+
+    </article>
+
+  `;
+
+}
+
+
+function safeText(value) {
+
+  if (
+    value === null ||
+    value === undefined
+  ) {
+    return "";
+  }
+
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+
+function cleanUrl(value) {
+
+  if (!value) {
+    return "";
+  }
+
+  try {
+
+    const url =
+      new URL(value);
+
+    if (
+      url.protocol !== "http:" &&
+      url.protocol !== "https:"
+    ) {
+      return "";
+    }
+
+    return safeText(url.href);
+
+  } catch {
+
+    return "";
+
+  }
+}
+
+
+loadArticle();
+
+</script>
+
+</body>
+</html>
