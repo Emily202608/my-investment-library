@@ -10,6 +10,10 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
 
+  <!-- Rich Text Editor -->
+  <link href="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.snow.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.js"></script>
+
   <style>
     * {
       box-sizing: border-box;
@@ -198,6 +202,32 @@
       margin-bottom: 25px;
     }
 
+    .rich-editor {
+      margin: 7px 0 15px;
+      background: white;
+    }
+
+    .rich-editor .ql-toolbar {
+      border-radius: 6px 6px 0 0;
+    }
+
+    .rich-editor .ql-container {
+      min-height: 300px;
+      border-radius: 0 0 6px 6px;
+      font-family: Arial, sans-serif;
+      font-size: 16px;
+    }
+
+    .rich-editor .ql-editor {
+      min-height: 300px;
+      line-height: 1.7;
+    }
+
+    .edit-box .rich-editor .ql-container,
+    .edit-box .rich-editor .ql-editor {
+      min-height: 240px;
+    }
+
     @media (max-width: 800px) {
       .grid-2 {
         grid-template-columns: 1fr;
@@ -354,7 +384,18 @@
 
       <label>Description</label>
 
-      <textarea id="new-description"></textarea>
+      <textarea id="new-description" placeholder="Short summary shown in article lists."></textarea>
+
+
+      <label>Article Content</label>
+
+      <div class="helper">
+        Paste content from ChatGPT here, then reorganize paragraphs and format it.
+        You can use headings, font size, bold, italic, underline, text color,
+        highlight, lists, quotes and links.
+      </div>
+
+      <div id="new-content-editor" class="rich-editor"></div>
 
 
       <label>My Note</label>
@@ -506,6 +547,8 @@
 
 <script>
 
+let currentContentItems = [];
+
 /* ========================================
    LOGIN CHECK
 ======================================== */
@@ -539,6 +582,8 @@ async function checkLogin() {
     return;
   }
 
+
+  initializeNewEditor();
 
   await loadContent();
 
@@ -621,7 +666,10 @@ async function addContent() {
           "new-note"
         )
         .value
-        .trim()
+        .trim(),
+
+    content_html:
+      getNewEditorHtml()
   };
 
 
@@ -701,6 +749,10 @@ async function addContent() {
     )
     .value = "";
 
+  if (newContentEditor) {
+    newContentEditor.setContents([]);
+  }
+
 
   await loadContent();
 }
@@ -739,6 +791,15 @@ async function loadContent() {
 
     return;
   }
+
+
+  currentContentItems =
+    data || [];
+
+  Object.keys(editContentEditors)
+    .forEach(
+      key => delete editContentEditors[key]
+    );
 
 
   if (!data || data.length === 0) {
@@ -907,6 +968,18 @@ async function loadContent() {
               >${safe(item.description)}</textarea>
 
 
+              <label>Article Content</label>
+
+              <div class="helper">
+                Edit the full article here. Formatting is saved with the article.
+              </div>
+
+              <div
+                id="edit-content-editor-${id}"
+                class="rich-editor"
+              ></div>
+
+
               <label>My Note</label>
 
               <textarea
@@ -953,10 +1026,17 @@ function toggleEdit(id) {
     );
 
 
+  const opening =
+    box.style.display !== "block";
+
   box.style.display =
-    box.style.display === "block"
-      ? "none"
-      : "block";
+    opening
+      ? "block"
+      : "none";
+
+  if (opening) {
+    initializeEditEditor(id);
+  }
 }
 
 
@@ -1025,7 +1105,10 @@ async function saveContent(id) {
           "edit-note-" + id
         )
         .value
-        .trim()
+        .trim(),
+
+    content_html:
+      getEditEditorHtml(id)
   };
 
 
@@ -1050,6 +1133,147 @@ async function saveContent(id) {
 
 
   await loadContent();
+}
+
+
+/* ========================================
+   RICH TEXT EDITORS
+======================================== */
+
+const quillToolbarOptions = [
+  [{ header: [1, 2, 3, false] }],
+  [{ size: ["small", false, "large", "huge"] }],
+  ["bold", "italic", "underline", "strike"],
+  [{ color: [] }, { background: [] }],
+  [{ list: "ordered" }, { list: "bullet" }],
+  [{ indent: "-1" }, { indent: "+1" }],
+  [{ align: [] }],
+  ["blockquote", "link"],
+  ["clean"]
+];
+
+let newContentEditor = null;
+const editContentEditors = {};
+
+
+function initializeNewEditor() {
+
+  const editorElement =
+    document.getElementById(
+      "new-content-editor"
+    );
+
+  if (
+    !editorElement ||
+    newContentEditor
+  ) {
+    return;
+  }
+
+  newContentEditor =
+    new Quill(
+      editorElement,
+      {
+        theme: "snow",
+        placeholder:
+          "Paste or write the full article here...",
+        modules: {
+          toolbar:
+            quillToolbarOptions
+        }
+      }
+    );
+}
+
+
+function initializeEditEditor(id) {
+
+  if (editContentEditors[id]) {
+    return;
+  }
+
+  const editorElement =
+    document.getElementById(
+      "edit-content-editor-" + id
+    );
+
+  if (!editorElement) {
+    return;
+  }
+
+  const item =
+    currentContentItems.find(
+      entry =>
+        String(entry.id) === String(id)
+    );
+
+  const editor =
+    new Quill(
+      editorElement,
+      {
+        theme: "snow",
+        modules: {
+          toolbar:
+            quillToolbarOptions
+        }
+      }
+    );
+
+  if (
+    item &&
+    item.content_html
+  ) {
+    editor.clipboard
+      .dangerouslyPasteHTML(
+        item.content_html
+      );
+  }
+
+  editContentEditors[id] =
+    editor;
+}
+
+
+function getNewEditorHtml() {
+
+  if (!newContentEditor) {
+    return "";
+  }
+
+  const html =
+    newContentEditor.root
+      .innerHTML
+      .trim();
+
+  return html === "<p><br></p>"
+    ? ""
+    : html;
+}
+
+
+function getEditEditorHtml(id) {
+
+  const editor =
+    editContentEditors[id];
+
+  if (!editor) {
+    const item =
+      currentContentItems.find(
+        entry =>
+          String(entry.id) === String(id)
+      );
+
+    return item?.content_html || "";
+  }
+
+  const html =
+    editor.root
+      .innerHTML
+      .trim();
+
+  return html === "<p><br></p>"
+    ? ""
+    : html;
 }
 
 
