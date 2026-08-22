@@ -24,7 +24,9 @@
       color: #172033;
     }
 
-    /* HEADER */
+    /* =========================
+       HEADER
+    ========================= */
 
     header {
       position: relative;
@@ -62,7 +64,9 @@
       background: #e5e7eb;
     }
 
-    /* SEARCH */
+    /* =========================
+       SEARCH
+    ========================= */
 
     .search {
       max-width: 700px;
@@ -77,7 +81,9 @@
       font-size: 16px;
     }
 
-    /* GENERAL */
+    /* =========================
+       GENERAL
+    ========================= */
 
     .container {
       max-width: 1180px;
@@ -89,7 +95,9 @@
       margin-bottom: 22px;
     }
 
-    /* WATCH LIST */
+    /* =========================
+       WATCH LIST
+    ========================= */
 
     .watch-section {
       display: grid;
@@ -110,6 +118,7 @@
 
     .watch-panel h2 {
       margin-top: 0;
+      margin-bottom: 18px;
     }
 
     .watch-item {
@@ -121,6 +130,7 @@
       border-radius: 8px;
       text-align: left;
       cursor: pointer;
+      transition: 0.2s;
     }
 
     .watch-item:hover {
@@ -150,7 +160,9 @@
       line-height: 1.5;
     }
 
-    /* CHART */
+    /* =========================
+       CHART
+    ========================= */
 
     .chart-panel {
       overflow: hidden;
@@ -188,7 +200,9 @@
       height: 100%;
     }
 
-    /* CATEGORIES */
+    /* =========================
+       RESEARCH CATEGORIES
+    ========================= */
 
     .categories {
       display: grid;
@@ -255,7 +269,9 @@
       background: #e5e7eb;
     }
 
-    /* LIBRARY */
+    /* =========================
+       LIBRARY
+    ========================= */
 
     .library-header {
       display: flex;
@@ -322,7 +338,9 @@
       font-size: 13px;
     }
 
-    /* FOOTER */
+    /* =========================
+       FOOTER
+    ========================= */
 
     footer {
       margin-top: 70px;
@@ -331,6 +349,10 @@
       color: #9ca3af;
       text-align: center;
     }
+
+    /* =========================
+       MOBILE
+    ========================= */
 
     @media (max-width: 800px) {
 
@@ -350,6 +372,7 @@
         top: 15px;
         right: 15px;
       }
+
     }
 
   </style>
@@ -358,6 +381,10 @@
 
 <body>
 
+
+<!-- =========================
+     HEADER
+========================= -->
 
 <header>
 
@@ -384,12 +411,13 @@
 </header>
 
 
-<!-- WATCH LIST -->
+<!-- =========================
+     WATCH LIST + CHART
+========================= -->
 
 <div class="container">
 
   <div class="watch-section">
-
 
     <div class="watch-panel">
 
@@ -436,7 +464,9 @@
 </div>
 
 
-<!-- RESEARCH CATEGORIES -->
+<!-- =========================
+     RESEARCH CATEGORIES
+========================= -->
 
 <div class="container">
 
@@ -447,6 +477,8 @@
 
   <div class="categories">
 
+
+    <!-- Macro Trends -->
 
     <div class="category-card">
 
@@ -471,6 +503,8 @@
 
     </div>
 
+
+    <!-- Stock Analysis -->
 
     <div class="category-card">
 
@@ -506,6 +540,8 @@
     </div>
 
 
+    <!-- Trading Psychology -->
+
     <div class="category-card">
 
       <div class="category-icon">
@@ -528,6 +564,8 @@
 
     </div>
 
+
+    <!-- Trading Strategies -->
 
     <div class="category-card">
 
@@ -553,6 +591,8 @@
     </div>
 
 
+    <!-- My Trade Reviews -->
+
     <div class="category-card">
 
       <div class="category-icon">
@@ -576,6 +616,8 @@
 
     </div>
 
+
+    <!-- Videos -->
 
     <div class="category-card">
 
@@ -616,7 +658,9 @@
 </div>
 
 
-<!-- LIBRARY -->
+<!-- =========================
+     LIBRARY
+========================= -->
 
 <div class="container">
 
@@ -641,13 +685,19 @@
     class="cards"
     id="database-items"
   >
+
     <p>
       Loading investment items...
     </p>
+
   </div>
 
 </div>
 
+
+<!-- =========================
+     FOOTER
+========================= -->
 
 <footer>
 
@@ -664,11 +714,15 @@
 
 
 /* ========================================
-   WATCH LIST FROM SUPABASE
+   WATCH LIST DATA
 ======================================== */
 
 let watchListData = [];
 
+
+/* ========================================
+   LOAD WATCH LIST FROM SUPABASE
+======================================== */
 
 async function loadWatchList() {
 
@@ -701,7 +755,11 @@ async function loadWatchList() {
 
 
     container.innerHTML =
-      "<p class='watch-empty'>Unable to load Watch List.</p>";
+      `
+        <p class="watch-empty">
+          Unable to load Watch List.
+        </p>
+      `;
 
     return;
   }
@@ -711,7 +769,9 @@ async function loadWatchList() {
     data || [];
 
 
-  if (watchListData.length === 0) {
+  if (
+    watchListData.length === 0
+  ) {
 
     container.innerHTML =
       `
@@ -733,10 +793,12 @@ async function loadWatchList() {
             stock.ticker
           );
 
+
         const company =
           safeText(
             stock.company
           );
+
 
         const exchange =
           safeText(
@@ -745,8 +807,18 @@ async function loadWatchList() {
           );
 
 
+        /*
+          PRIORITY:
+          1. tradingview_symbol
+          2. old exchange + ticker
+        */
+
         const symbol =
-          exchange + ":" + ticker;
+          stock.tradingview_symbol
+            ? safeText(
+                stock.tradingview_symbol
+              )
+            : exchange + ":" + ticker;
 
 
         return `
@@ -784,21 +856,45 @@ async function loadWatchList() {
 
 
   /*
-    Automatically show the first
-    stock's chart.
+    Automatically show first stock.
   */
 
   const firstStock =
     watchListData[0];
 
 
+  const firstTicker =
+    firstStock.ticker
+      ? String(
+          firstStock.ticker
+        )
+        .trim()
+        .toUpperCase()
+      : "";
+
+
+  const firstExchange =
+    firstStock.exchange
+      ? String(
+          firstStock.exchange
+        )
+        .trim()
+        .toUpperCase()
+      : "NASDAQ";
+
+
   const firstSymbol =
-    (
-      firstStock.exchange ||
-      "NASDAQ"
-    )
-    + ":"
-    + firstStock.ticker;
+    firstStock.tradingview_symbol
+      ? String(
+          firstStock.tradingview_symbol
+        )
+        .trim()
+        .toUpperCase()
+      : (
+          firstExchange +
+          ":" +
+          firstTicker
+        );
 
 
   loadTradingViewChart(
@@ -808,9 +904,8 @@ async function loadWatchList() {
 }
 
 
-
 /* ========================================
-   WATCH STOCK CLICK
+   SELECT WATCH STOCK
 ======================================== */
 
 function selectWatchStock(
@@ -845,7 +940,6 @@ function selectWatchStock(
 }
 
 
-
 /* ========================================
    TRADINGVIEW CHART
 ======================================== */
@@ -869,7 +963,7 @@ function loadTradingViewChart(
 
 
   /*
-    Remove the previous chart.
+    Clear previous chart.
   */
 
   chartContainer.innerHTML =
@@ -969,13 +1063,16 @@ function loadTradingViewChart(
 }
 
 
-
 /* ========================================
-   LOAD CONTENT
+   INVESTMENT CONTENT
 ======================================== */
 
 let allInvestmentItems = [];
 
+
+/* ========================================
+   LOAD CONTENT FROM SUPABASE
+======================================== */
 
 async function loadInvestmentItems() {
 
@@ -1002,7 +1099,11 @@ async function loadInvestmentItems() {
         "database-items"
       )
       .innerHTML =
-      "<p>Unable to load investment items.</p>";
+      `
+        <p>
+          Unable to load investment items.
+        </p>
+      `;
 
 
     return;
@@ -1018,7 +1119,6 @@ async function loadInvestmentItems() {
   );
 
 }
-
 
 
 /* ========================================
@@ -1041,7 +1141,11 @@ function displayInvestmentItems(
   ) {
 
     container.innerHTML =
-      "<p>No investment items found.</p>";
+      `
+        <p>
+          No investment items found.
+        </p>
+      `;
 
     return;
   }
@@ -1056,35 +1160,42 @@ function displayInvestmentItems(
             item.ticker
           );
 
+
         const title =
           safeText(
             item.title
           );
+
 
         const description =
           safeText(
             item.description
           );
 
+
         const type =
           safeText(
             item.type
           );
+
 
         const category =
           safeText(
             item.category
           );
 
+
         const tags =
           safeText(
             item.tags
           );
 
+
         const note =
           safeText(
             item.my_note
           );
+
 
         const safeUrl =
           cleanUrl(
@@ -1109,31 +1220,51 @@ function displayInvestmentItems(
 
 
             ${description
-              ? `<p>${description}</p>`
+              ? `
+                <p>
+                  ${description}
+                </p>
+                `
               : ""
             }
 
 
             ${ticker
-              ? `<span class="tag">${ticker}</span>`
+              ? `
+                <span class="tag">
+                  ${ticker}
+                </span>
+                `
               : ""
             }
 
 
             ${type
-              ? `<span class="tag">${type}</span>`
+              ? `
+                <span class="tag">
+                  ${type}
+                </span>
+                `
               : ""
             }
 
 
             ${category
-              ? `<span class="tag">${category}</span>`
+              ? `
+                <span class="tag">
+                  ${category}
+                </span>
+                `
               : ""
             }
 
 
             ${tags
-              ? `<span class="tag">${tags}</span>`
+              ? `
+                <span class="tag">
+                  ${tags}
+                </span>
+                `
               : ""
             }
 
@@ -1141,7 +1272,10 @@ function displayInvestmentItems(
             ${note
               ? `
                 <p>
-                  <strong>My Note:</strong>
+                  <strong>
+                    My Note:
+                  </strong>
+
                   ${note}
                 </p>
                 `
@@ -1174,7 +1308,6 @@ function displayInvestmentItems(
     ).join("");
 
 }
-
 
 
 /* ========================================
@@ -1227,12 +1360,14 @@ function filterCategory(
       "library-title"
     )
     .scrollIntoView({
+
       behavior: "smooth",
+
       block: "start"
+
     });
 
 }
-
 
 
 /* ========================================
@@ -1269,7 +1404,6 @@ function clearFilter() {
   );
 
 }
-
 
 
 /* ========================================
@@ -1311,6 +1445,7 @@ document
         displayInvestmentItems(
           allInvestmentItems
         );
+
 
         return;
       }
@@ -1373,7 +1508,6 @@ document
   );
 
 
-
 /* ========================================
    TEXT SAFETY
 ======================================== */
@@ -1422,7 +1556,6 @@ function safeText(
 }
 
 
-
 /* ========================================
    URL SAFETY
 ======================================== */
@@ -1469,9 +1602,8 @@ function cleanUrl(
 }
 
 
-
 /* ========================================
-   START
+   START PAGE
 ======================================== */
 
 loadWatchList();
