@@ -1,1 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Category | My Investment Library</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+      color: #172033;
+    }
+
+    header {
+      background: #111827;
+      color: white;
+      padding: 18px 25px;
+    }
+
+    .header-inner {
+      max-width: 950px;
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .back-link,
+    .login-link {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .back-link:hover,
+    .login-link:hover {
+      text-decoration: underline;
+    }
+
+    .container {
+      max-width: 950px;
+      margin: 45px auto;
+      padding: 0 20px;
+    }
+
+    .category-header {
+      margin-bottom: 30px;
+    }
+
+    .category-header h1 {
+      margin: 0 0 10px;
+      font-size: 36px;
+    }
+
+    .category-header p {
+      margin: 0;
+      color: #6b7280;
+      line-height: 1.6;
+    }
+
+    .article-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .article-item {
+      background: white;
+      padding: 20px 24px;
+      border-radius: 10px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+      border-left: 4px solid #111827;
+    }
+
+    .article-title {
+      display: block;
+      color: #172033;
+      text-decoration: none;
+      font-size: 19px;
+      font-weight: bold;
+      line-height: 1.45;
+    }
+
+    .article-title:hover {
+      color: #2563eb;
+    }
+
+    .article-meta {
+      margin-top: 9px;
+      color: #6b7280;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .article-meta span {
+      display: inline-block;
+      margin-right: 14px;
+    }
+
+    .message {
+      background: white;
+      padding: 28px;
+      border-radius: 10px;
+      color: #6b7280;
+      text-align: center;
+    }
+
+    footer {
+      margin-top: 70px;
+      padding: 35px 20px;
+      background: #111827;
+      color: #9ca3af;
+      text-align: center;
+    }
+
+    @media (max-width: 700px) {
+      .category-header h1 {
+        font-size: 30px;
+      }
+
+      .header-inner {
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="header-inner">
+
+    <a href="index.html" class="back-link">
+      ← Back to Library
+    </a>
+
+    <a href="admin.html" class="login-link">
+      Log In
+    </a>
+
+  </div>
+</header>
+
+
+<div class="container">
+
+  <div class="category-header">
+
+    <h1 id="category-title">
+      Loading...
+    </h1>
+
+    <p id="category-description"></p>
+
+  </div>
+
+
+  <div
+    id="article-list"
+    class="article-list"
+  >
+
+    <div class="message">
+      Loading articles...
+    </div>
+
+  </div>
+
+</div>
+
+
+<footer>
+  My Investment Library
+  <br><br>
+  Personal investment research and content collection.
+</footer>
+
+
+<script>
+
+const categoryDescriptions = {
+
+  "Macro Trends":
+    "Interest rates, inflation, liquidity, economic cycles and broader market conditions.",
+
+  "Fundamental Analysis":
+    "Company fundamentals, financial performance, valuation, business quality and long-term outlook.",
+
+  "Price Action Analysis":
+    "Practical price action, technical structure, trend behavior, support, resistance and market positioning.",
+
+  "Trading Psychology":
+    "Trading discipline, decision-making, patience, emotion and behavioral patterns.",
+
+  "Trading Strategies":
+    "Trading setups, entries, exits, risk management, position sizing and execution.",
+
+  "My Trade Reviews":
+    "Personal trade reviews, lessons, mistakes, execution notes and post-trade analysis.",
+
+  "My Videos":
+    "My own investment and market-analysis videos.",
+
+  "Selected YouTube Videos":
+    "Selected YouTube videos related to investing, markets and trading."
+
+};
+
+
+function formatDate(value) {
+
+  if (!value) {
+    return "";
+  }
+
+  const date =
+    new Date(value);
+
+  if (
+    Number.isNaN(
+      date.getTime()
+    )
+  ) {
+    return "";
+  }
+
+  return date.toLocaleDateString(
+    "en-US",
+    {
+      year: "numeric",
+      month: "short",
+      day: "numeric"
+    }
+  );
+
+}
+
+
+function safeText(value) {
+
+  if (
+    value === null ||
+    value === undefined
+  ) {
+    return "";
+  }
+
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+
+async function loadCategory() {
+
+  const params =
+    new URLSearchParams(
+      window.location.search
+    );
+
+  const category =
+    params.get("name");
+
+
+  const titleElement =
+    document.getElementById(
+      "category-title"
+    );
+
+  const descriptionElement =
+    document.getElementById(
+      "category-description"
+    );
+
+  const listElement =
+    document.getElementById(
+      "article-list"
+    );
+
+
+  if (!category) {
+
+    titleElement.textContent =
+      "Category Not Found";
+
+    listElement.innerHTML = `
+      <div class="message">
+        No category was selected.
+      </div>
+    `;
+
+    return;
+  }
+
+
+  titleElement.textContent =
+    category;
+
+
+  descriptionElement.textContent =
+    categoryDescriptions[category] || "";
+
+
+  document.title =
+    category +
+    " | My Investment Library";
+
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .from("items")
+      .select("*")
+      .eq(
+        "category",
+        category
+      )
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
+      );
+
+
+  if (error) {
+
+    console.error(
+      "Category load error:",
+      error
+    );
+
+
+    listElement.innerHTML = `
+      <div class="message">
+        Unable to load articles.
+      </div>
+    `;
+
+    return;
+  }
+
+
+  if (
+    !data ||
+    data.length === 0
+  ) {
+
+    listElement.innerHTML = `
+      <div class="message">
+        No articles have been published in this category yet.
+      </div>
+    `;
+
+    return;
+  }
+
+
+  listElement.innerHTML =
+    data.map(
+      item => {
+
+        const id =
+          encodeURIComponent(
+            item.id
+          );
+
+        const title =
+          safeText(
+            item.title
+          );
+
+        const ticker =
+          safeText(
+            item.ticker
+          );
+
+        const type =
+          safeText(
+            item.type
+          );
+
+        const published =
+          formatDate(
+            item.created_at
+          );
+
+        const updated =
+          formatDate(
+            item.updated_at
+          );
+
+
+        return `
+
+          <div class="article-item">
+
+            <a
+              class="article-title"
+              href="article.html?id=${id}"
+            >
+
+              ${
+                ticker
+                  ? ticker + " — "
+                  : ""
+              }
+
+              ${title}
+
+            </a>
+
+
+            <div class="article-meta">
+
+              ${
+                ticker
+                  ? `
+                    <span>
+                      Ticker: ${ticker}
+                    </span>
+                  `
+                  : ""
+              }
+
+              ${
+                type
+                  ? `
+                    <span>
+                      ${type}
+                    </span>
+                  `
+                  : ""
+              }
+
+              ${
+                published
+                  ? `
+                    <span>
+                      Published: ${published}
+                    </span>
+                  `
+                  : ""
+              }
+
+              ${
+                updated &&
+                updated !== published
+                  ? `
+                    <span>
+                      Updated: ${updated}
+                    </span>
+                  `
+                  : ""
+              }
+
+            </div>
+
+          </div>
+
+        `;
+
+      }
+    ).join("");
+
+}
+
+
+loadCategory();
+
+</script>
+
+</body>
+
+</html>
