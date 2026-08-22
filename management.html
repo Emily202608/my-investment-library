@@ -25,10 +25,11 @@
     header {
       background: #111827;
       color: white;
-      padding: 20px 30px;
+      padding: 18px 28px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 15px;
     }
 
     header h1 {
@@ -43,12 +44,12 @@
 
     .header-actions a,
     .header-actions button {
-      padding: 10px 14px;
-      border-radius: 7px;
+      padding: 9px 13px;
       border: none;
-      text-decoration: none;
+      border-radius: 7px;
       font-size: 14px;
       cursor: pointer;
+      text-decoration: none;
     }
 
     .back-link {
@@ -62,63 +63,125 @@
     }
 
     .container {
-      max-width: 760px;
-      margin: 50px auto;
+      max-width: 1180px;
+      margin: 40px auto;
       padding: 0 20px;
     }
 
     .panel {
       background: white;
-      padding: 35px;
+      padding: 28px;
       border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+      margin-bottom: 30px;
     }
 
     h2 {
       margin-top: 0;
     }
 
+    h3 {
+      margin-top: 0;
+    }
+
     label {
       display: block;
-      margin-top: 12px;
       font-weight: bold;
+      margin-top: 10px;
     }
 
     input,
     textarea,
     select {
       width: 100%;
-      padding: 12px;
-      margin: 8px 0 16px;
+      padding: 11px;
+      margin: 7px 0 15px;
       border: 1px solid #ccc;
       border-radius: 6px;
       font-family: Arial, sans-serif;
-      font-size: 15px;
+      font-size: 14px;
     }
 
     textarea {
-      min-height: 90px;
+      min-height: 80px;
       resize: vertical;
     }
 
-    .publish-button {
-      width: 100%;
-      padding: 13px;
-      background: #111827;
-      color: white;
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .primary-button,
+    .secondary-button,
+    .danger-button {
+      padding: 10px 14px;
       border: none;
       border-radius: 7px;
-      font-size: 16px;
-      font-weight: bold;
       cursor: pointer;
+      font-weight: bold;
     }
 
-    .publish-button:hover {
-      background: #263247;
+    .primary-button {
+      background: #111827;
+      color: white;
     }
 
-    #publish-message {
+    .secondary-button {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .danger-button {
+      background: #b91c1c;
+      color: white;
+    }
+
+    .item-list {
+      display: grid;
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .item-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 18px;
+      background: #fafafa;
+    }
+
+    .item-card p {
+      margin: 6px 0;
+      color: #526071;
+      line-height: 1.5;
+    }
+
+    .item-actions {
+      margin-top: 14px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 5px 9px;
+      margin: 3px 3px 0 0;
+      background: #e8edf3;
+      border-radius: 18px;
+      font-size: 12px;
+    }
+
+    .edit-box {
       margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid #ddd;
+      display: none;
+    }
+
+    .message {
+      margin-top: 14px;
       font-weight: bold;
     }
 
@@ -127,6 +190,18 @@
       background: #fff3cd;
       padding: 20px;
       border-radius: 8px;
+      margin-bottom: 25px;
+    }
+
+    @media (max-width: 800px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+
+      header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
     }
   </style>
 </head>
@@ -139,11 +214,17 @@
 
   <div class="header-actions">
 
-    <a href="index.html" class="back-link">
+    <a
+      href="https://emily202608.github.io/my-investment-library/"
+      class="back-link"
+    >
       ← Back to Library
     </a>
 
-    <button class="logout-button" onclick="logout()">
+    <button
+      class="logout-button"
+      onclick="logout()"
+    >
       Log Out
     </button>
 
@@ -155,117 +236,172 @@
 <div class="container">
 
   <div id="login-warning">
-
     <strong>You are not logged in.</strong>
-
     <br><br>
-
-    <a href="admin.html">
-      Go to Log In
-    </a>
-
+    <a href="admin.html">Go to Log In</a>
   </div>
 
 
-  <div class="panel" id="management-panel">
-
-    <h2>➕ Add New Investment</h2>
-
-    <p>
-      Add an article, news story, video,
-      research report or investment idea.
-    </p>
+  <div id="management-content">
 
 
-    <label>Title</label>
+    <!-- =========================
+         ADD NEW CONTENT
+    ========================== -->
 
-    <input
-      type="text"
-      id="title"
-      placeholder="Article or video title"
-    >
+    <div class="panel">
 
+      <h2>➕ Add New Content</h2>
 
-    <label>URL</label>
+      <div class="grid-2">
 
-    <input
-      type="url"
-      id="url"
-      placeholder="https://..."
-    >
+        <div>
+          <label>Title</label>
+          <input id="new-title" type="text">
+        </div>
 
+        <div>
+          <label>URL</label>
+          <input id="new-url" type="url" placeholder="https://...">
+        </div>
 
-    <label>Type</label>
-
-    <select id="type">
-
-      <option value="Article">Article</option>
-      <option value="News">News</option>
-      <option value="Video">Video</option>
-      <option value="Research">Research</option>
-      <option value="Investment Idea">Investment Idea</option>
-
-    </select>
+      </div>
 
 
-    <label>Ticker</label>
+      <div class="grid-2">
 
-    <input
-      type="text"
-      id="ticker"
-      placeholder="MU, NVDA, COIN..."
-    >
+        <div>
+          <label>Type</label>
 
+          <select id="new-type">
+            <option value="Article">Article</option>
+            <option value="News">News</option>
+            <option value="Research">Research</option>
+            <option value="Video">Video</option>
+            <option value="Investment Idea">Investment Idea</option>
+          </select>
+        </div>
 
-    <label>Category</label>
+        <div>
+          <label>Ticker</label>
+          <input id="new-ticker" type="text" placeholder="MU, NVDA...">
+        </div>
 
-    <select id="category">
-
-      <option value="Market">Market</option>
-      <option value="Stocks">Stocks</option>
-      <option value="AI & Semiconductors">AI & Semiconductors</option>
-      <option value="Energy">Energy</option>
-      <option value="Financials">Financials</option>
-      <option value="Crypto">Crypto</option>
-      <option value="Macro Economy">Macro Economy</option>
-      <option value="News">News</option>
-
-    </select>
+      </div>
 
 
-    <label>Tags</label>
+      <label>Category</label>
 
-    <input
-      type="text"
-      id="tags"
-      placeholder="AI, HBM, Bitcoin, Earnings..."
-    >
-
-
-    <label>Description</label>
-
-    <textarea
-      id="description"
-      placeholder="Short description"
-    ></textarea>
+      <select id="new-category">
+        <option value="Macro Trends">Macro Trends</option>
+        <option value="Fundamental Analysis">Fundamental Analysis</option>
+        <option value="Price Action Analysis">Price Action Analysis</option>
+        <option value="Trading Psychology">Trading Psychology</option>
+        <option value="Trading Strategies">Trading Strategies</option>
+        <option value="My Trade Reviews">My Trade Reviews</option>
+        <option value="My Videos">My Videos</option>
+        <option value="Selected YouTube Videos">Selected YouTube Videos</option>
+      </select>
 
 
-    <label>My Note</label>
-
-    <textarea
-      id="my_note"
-      placeholder="Why I saved this"
-    ></textarea>
+      <label>Tags</label>
+      <input id="new-tags" type="text" placeholder="AI, HBM, Earnings...">
 
 
-    <button
-      class="publish-button"
-      onclick="addInvestment()"
-    >
-      Publish
-    </button>
+      <label>Description</label>
+      <textarea id="new-description"></textarea>
 
-    <p id="publish-message"></p>
+
+      <label>My Note</label>
+      <textarea id="new-note"></textarea>
+
+
+      <button
+        class="primary-button"
+        onclick="addContent()"
+      >
+        Publish
+      </button>
+
+      <div id="content-message" class="message"></div>
+
+    </div>
+
+
+    <!-- =========================
+         EXISTING CONTENT
+    ========================== -->
+
+    <div class="panel">
+
+      <h2>Existing Content</h2>
+
+      <div id="content-list" class="item-list">
+        Loading...
+      </div>
+
+    </div>
+
+
+    <!-- =========================
+         WATCH LIST MANAGEMENT
+    ========================== -->
+
+    <div class="panel">
+
+      <h2>⭐ Watch List Management</h2>
+
+      <div class="grid-2">
+
+        <div>
+          <label>Ticker</label>
+          <input id="watch-ticker" type="text" placeholder="MU">
+        </div>
+
+        <div>
+          <label>Company</label>
+          <input id="watch-company" type="text" placeholder="Micron Technology">
+        </div>
+
+      </div>
+
+
+      <div class="grid-2">
+
+        <div>
+          <label>Exchange</label>
+
+          <select id="watch-exchange">
+            <option value="NASDAQ">NASDAQ</option>
+            <option value="NYSE">NYSE</option>
+            <option value="AMEX">AMEX</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Display Order</label>
+          <input id="watch-order" type="number" value="0">
+        </div>
+
+      </div>
+
+
+      <button
+        class="primary-button"
+        onclick="addWatchStock()"
+      >
+        Add to Watch List
+      </button>
+
+      <div id="watch-message" class="message"></div>
+
+
+      <div id="watch-list" class="item-list">
+        Loading...
+      </div>
+
+    </div>
+
 
   </div>
 
@@ -274,125 +410,851 @@
 
 <script>
 
+/* ========================================
+   LOGIN CHECK
+======================================== */
+
 async function checkLogin() {
 
   const {
     data: { session }
   } = await supabaseClient.auth.getSession();
 
-
   if (!session) {
 
     document
-      .getElementById("management-panel")
+      .getElementById("management-content")
       .style.display = "none";
 
     document
       .getElementById("login-warning")
       .style.display = "block";
 
+    return;
   }
 
+  loadContent();
+  loadWatchList();
 }
 
 
-async function addInvestment() {
 
-  const publishMessage =
-    document.getElementById("publish-message");
+/* ========================================
+   ADD CONTENT
+======================================== */
 
+async function addContent() {
 
-  const newItem = {
+  const message =
+    document.getElementById("content-message");
+
+  const item = {
 
     title:
-      document.getElementById("title").value,
+      document.getElementById("new-title").value.trim(),
 
     url:
-      document.getElementById("url").value,
+      document.getElementById("new-url").value.trim(),
 
     type:
-      document.getElementById("type").value,
+      document.getElementById("new-type").value,
 
     ticker:
-      document.getElementById("ticker")
+      document.getElementById("new-ticker")
         .value
         .trim()
         .toUpperCase(),
 
     category:
-      document.getElementById("category").value,
+      document.getElementById("new-category").value,
 
     tags:
-      document.getElementById("tags").value,
+      document.getElementById("new-tags").value.trim(),
 
     description:
-      document.getElementById("description").value,
+      document.getElementById("new-description").value.trim(),
 
     my_note:
-      document.getElementById("my_note").value
-
+      document.getElementById("new-note").value.trim()
   };
 
 
-  if (!newItem.title) {
+  if (!item.title) {
 
-    publishMessage.textContent =
+    message.textContent =
       "Please enter a title.";
 
     return;
-
   }
 
 
-  publishMessage.textContent =
+  message.textContent =
     "Publishing...";
 
 
   const { error } =
     await supabaseClient
       .from("items")
-      .insert([newItem]);
+      .insert([item]);
 
 
   if (error) {
 
-    publishMessage.textContent =
+    message.textContent =
       "Publish failed: " + error.message;
 
-    console.error(error);
-
     return;
-
   }
 
 
-  publishMessage.textContent =
+  message.textContent =
     "Published successfully!";
 
 
-  document.getElementById("title").value = "";
-  document.getElementById("url").value = "";
-  document.getElementById("ticker").value = "";
-  document.getElementById("tags").value = "";
-  document.getElementById("description").value = "";
-  document.getElementById("my_note").value = "";
+  document.getElementById("new-title").value = "";
+  document.getElementById("new-url").value = "";
+  document.getElementById("new-ticker").value = "";
+  document.getElementById("new-tags").value = "";
+  document.getElementById("new-description").value = "";
+  document.getElementById("new-note").value = "";
 
+
+  loadContent();
 }
 
+
+
+/* ========================================
+   LOAD CONTENT
+======================================== */
+
+async function loadContent() {
+
+  const container =
+    document.getElementById("content-list");
+
+
+  const { data, error } =
+    await supabaseClient
+      .from("items")
+      .select("*")
+      .order("created_at", {
+        ascending: false
+      });
+
+
+  if (error) {
+
+    container.innerHTML =
+      "<p>Unable to load content.</p>";
+
+    return;
+  }
+
+
+  if (!data || data.length === 0) {
+
+    container.innerHTML =
+      "<p>No content yet.</p>";
+
+    return;
+  }
+
+
+  container.innerHTML =
+    data.map(item => {
+
+      const id = item.id;
+
+      return `
+
+        <div class="item-card">
+
+          <h3>
+            ${safe(item.ticker)
+              ? safe(item.ticker) + " — "
+              : ""
+            }
+            ${safe(item.title)}
+          </h3>
+
+          <p>
+            <strong>Category:</strong>
+            ${safe(item.category)}
+          </p>
+
+          <p>
+            <strong>Type:</strong>
+            ${safe(item.type)}
+          </p>
+
+          ${item.tags
+            ? `<span class="tag">${safe(item.tags)}</span>`
+            : ""
+          }
+
+          <div class="item-actions">
+
+            <button
+              class="secondary-button"
+              onclick="toggleEdit(${id})"
+            >
+              Edit
+            </button>
+
+            <button
+              class="danger-button"
+              onclick="deleteContent(${id})"
+            >
+              Delete
+            </button>
+
+          </div>
+
+
+          <div
+            class="edit-box"
+            id="edit-${id}"
+          >
+
+            <label>Title</label>
+            <input
+              id="edit-title-${id}"
+              value="${safeAttr(item.title)}"
+            >
+
+            <label>URL</label>
+            <input
+              id="edit-url-${id}"
+              value="${safeAttr(item.url)}"
+            >
+
+            <label>Type</label>
+
+            <select id="edit-type-${id}">
+              ${optionList(
+                [
+                  "Article",
+                  "News",
+                  "Research",
+                  "Video",
+                  "Investment Idea"
+                ],
+                item.type
+              )}
+            </select>
+
+
+            <label>Ticker</label>
+            <input
+              id="edit-ticker-${id}"
+              value="${safeAttr(item.ticker)}"
+            >
+
+
+            <label>Category</label>
+
+            <select id="edit-category-${id}">
+              ${optionList(
+                [
+                  "Macro Trends",
+                  "Fundamental Analysis",
+                  "Price Action Analysis",
+                  "Trading Psychology",
+                  "Trading Strategies",
+                  "My Trade Reviews",
+                  "My Videos",
+                  "Selected YouTube Videos"
+                ],
+                item.category
+              )}
+            </select>
+
+
+            <label>Tags</label>
+            <input
+              id="edit-tags-${id}"
+              value="${safeAttr(item.tags)}"
+            >
+
+
+            <label>Description</label>
+            <textarea id="edit-description-${id}">${safe(item.description)}</textarea>
+
+
+            <label>My Note</label>
+            <textarea id="edit-note-${id}">${safe(item.my_note)}</textarea>
+
+
+            <button
+              class="primary-button"
+              onclick="saveContent(${id})"
+            >
+              Save Changes
+            </button>
+
+            <button
+              class="secondary-button"
+              onclick="toggleEdit(${id})"
+            >
+              Cancel
+            </button>
+
+          </div>
+
+        </div>
+
+      `;
+
+    }).join("");
+}
+
+
+
+/* ========================================
+   EDIT CONTENT
+======================================== */
+
+function toggleEdit(id) {
+
+  const box =
+    document.getElementById(
+      "edit-" + id
+    );
+
+  box.style.display =
+    box.style.display === "block"
+      ? "none"
+      : "block";
+}
+
+
+
+async function saveContent(id) {
+
+  const updated = {
+
+    title:
+      document.getElementById(
+        "edit-title-" + id
+      ).value.trim(),
+
+    url:
+      document.getElementById(
+        "edit-url-" + id
+      ).value.trim(),
+
+    type:
+      document.getElementById(
+        "edit-type-" + id
+      ).value,
+
+    ticker:
+      document.getElementById(
+        "edit-ticker-" + id
+      ).value.trim().toUpperCase(),
+
+    category:
+      document.getElementById(
+        "edit-category-" + id
+      ).value,
+
+    tags:
+      document.getElementById(
+        "edit-tags-" + id
+      ).value.trim(),
+
+    description:
+      document.getElementById(
+        "edit-description-" + id
+      ).value.trim(),
+
+    my_note:
+      document.getElementById(
+        "edit-note-" + id
+      ).value.trim()
+  };
+
+
+  const { error } =
+    await supabaseClient
+      .from("items")
+      .update(updated)
+      .eq("id", id);
+
+
+  if (error) {
+
+    alert(
+      "Update failed: "
+      + error.message
+    );
+
+    return;
+  }
+
+
+  loadContent();
+}
+
+
+
+/* ========================================
+   DELETE CONTENT
+======================================== */
+
+async function deleteContent(id) {
+
+  const confirmed =
+    confirm(
+      "Delete this content?"
+    );
+
+
+  if (!confirmed) {
+    return;
+  }
+
+
+  const { error } =
+    await supabaseClient
+      .from("items")
+      .delete()
+      .eq("id", id);
+
+
+  if (error) {
+
+    alert(
+      "Delete failed: "
+      + error.message
+    );
+
+    return;
+  }
+
+
+  loadContent();
+}
+
+
+
+/* ========================================
+   ADD WATCH STOCK
+======================================== */
+
+async function addWatchStock() {
+
+  const message =
+    document.getElementById("watch-message");
+
+
+  const stock = {
+
+    ticker:
+      document.getElementById("watch-ticker")
+        .value
+        .trim()
+        .toUpperCase(),
+
+    company:
+      document.getElementById("watch-company")
+        .value
+        .trim(),
+
+    exchange:
+      document.getElementById("watch-exchange")
+        .value,
+
+    display_order:
+      Number(
+        document.getElementById("watch-order")
+          .value
+      ) || 0
+
+  };
+
+
+  if (!stock.ticker) {
+
+    message.textContent =
+      "Please enter a ticker.";
+
+    return;
+  }
+
+
+  const { error } =
+    await supabaseClient
+      .from("watchlist")
+      .insert([stock]);
+
+
+  if (error) {
+
+    message.textContent =
+      "Add failed: "
+      + error.message;
+
+    return;
+  }
+
+
+  message.textContent =
+    "Added successfully!";
+
+
+  document.getElementById("watch-ticker").value = "";
+  document.getElementById("watch-company").value = "";
+  document.getElementById("watch-order").value = "0";
+
+
+  loadWatchList();
+}
+
+
+
+/* ========================================
+   LOAD WATCH LIST
+======================================== */
+
+async function loadWatchList() {
+
+  const container =
+    document.getElementById("watch-list");
+
+
+  const { data, error } =
+    await supabaseClient
+      .from("watchlist")
+      .select("*")
+      .order(
+        "display_order",
+        { ascending: true }
+      )
+      .order(
+        "created_at",
+        { ascending: true }
+      );
+
+
+  if (error) {
+
+    container.innerHTML =
+      "<p>Unable to load Watch List.</p>";
+
+    return;
+  }
+
+
+  if (!data || data.length === 0) {
+
+    container.innerHTML =
+      "<p>No Watch List stocks yet.</p>";
+
+    return;
+  }
+
+
+  container.innerHTML =
+    data.map(stock => {
+
+      const id = stock.id;
+
+      return `
+
+        <div class="item-card">
+
+          <h3>
+            ${safe(stock.ticker)}
+            — ${safe(stock.company)}
+          </h3>
+
+          <p>
+            <strong>Exchange:</strong>
+            ${safe(stock.exchange)}
+          </p>
+
+          <p>
+            <strong>Display Order:</strong>
+            ${stock.display_order ?? 0}
+          </p>
+
+
+          <div class="item-actions">
+
+            <button
+              class="secondary-button"
+              onclick="toggleWatchEdit(${id})"
+            >
+              Edit
+            </button>
+
+            <button
+              class="danger-button"
+              onclick="deleteWatchStock(${id})"
+            >
+              Delete
+            </button>
+
+          </div>
+
+
+          <div
+            class="edit-box"
+            id="watch-edit-${id}"
+          >
+
+            <label>Ticker</label>
+            <input
+              id="watch-edit-ticker-${id}"
+              value="${safeAttr(stock.ticker)}"
+            >
+
+            <label>Company</label>
+            <input
+              id="watch-edit-company-${id}"
+              value="${safeAttr(stock.company)}"
+            >
+
+            <label>Exchange</label>
+
+            <select id="watch-edit-exchange-${id}">
+              ${optionList(
+                [
+                  "NASDAQ",
+                  "NYSE",
+                  "AMEX"
+                ],
+                stock.exchange
+              )}
+            </select>
+
+            <label>Display Order</label>
+
+            <input
+              type="number"
+              id="watch-edit-order-${id}"
+              value="${stock.display_order ?? 0}"
+            >
+
+
+            <button
+              class="primary-button"
+              onclick="saveWatchStock(${id})"
+            >
+              Save Changes
+            </button>
+
+            <button
+              class="secondary-button"
+              onclick="toggleWatchEdit(${id})"
+            >
+              Cancel
+            </button>
+
+          </div>
+
+        </div>
+
+      `;
+
+    }).join("");
+}
+
+
+
+/* ========================================
+   EDIT WATCH STOCK
+======================================== */
+
+function toggleWatchEdit(id) {
+
+  const box =
+    document.getElementById(
+      "watch-edit-" + id
+    );
+
+
+  box.style.display =
+    box.style.display === "block"
+      ? "none"
+      : "block";
+}
+
+
+
+async function saveWatchStock(id) {
+
+  const updated = {
+
+    ticker:
+      document.getElementById(
+        "watch-edit-ticker-" + id
+      )
+      .value
+      .trim()
+      .toUpperCase(),
+
+    company:
+      document.getElementById(
+        "watch-edit-company-" + id
+      )
+      .value
+      .trim(),
+
+    exchange:
+      document.getElementById(
+        "watch-edit-exchange-" + id
+      )
+      .value,
+
+    display_order:
+      Number(
+        document.getElementById(
+          "watch-edit-order-" + id
+        )
+        .value
+      ) || 0
+
+  };
+
+
+  const { error } =
+    await supabaseClient
+      .from("watchlist")
+      .update(updated)
+      .eq("id", id);
+
+
+  if (error) {
+
+    alert(
+      "Update failed: "
+      + error.message
+    );
+
+    return;
+  }
+
+
+  loadWatchList();
+}
+
+
+
+/* ========================================
+   DELETE WATCH STOCK
+======================================== */
+
+async function deleteWatchStock(id) {
+
+  const confirmed =
+    confirm(
+      "Remove this stock from the Watch List?"
+    );
+
+
+  if (!confirmed) {
+    return;
+  }
+
+
+  const { error } =
+    await supabaseClient
+      .from("watchlist")
+      .delete()
+      .eq("id", id);
+
+
+  if (error) {
+
+    alert(
+      "Delete failed: "
+      + error.message
+    );
+
+    return;
+  }
+
+
+  loadWatchList();
+}
+
+
+
+/* ========================================
+   LOG OUT
+======================================== */
 
 async function logout() {
 
   await supabaseClient.auth.signOut();
 
-  window.location.href = "index.html";
-
+  window.location.href =
+    "index.html";
 }
 
+
+
+/* ========================================
+   HELPERS
+======================================== */
+
+function safe(value) {
+
+  if (value === null || value === undefined) {
+    return "";
+  }
+
+
+  return String(value)
+
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+
+
+function safeAttr(value) {
+
+  return safe(value);
+}
+
+
+
+function optionList(
+  options,
+  selected
+) {
+
+  return options.map(option => `
+
+    <option
+      value="${safeAttr(option)}"
+      ${option === selected
+        ? "selected"
+        : ""
+      }
+    >
+      ${safe(option)}
+    </option>
+
+  `).join("");
+}
+
+
+
+/* ========================================
+   START
+======================================== */
 
 checkLogin();
 
 </script>
-
 
 </body>
 </html>
