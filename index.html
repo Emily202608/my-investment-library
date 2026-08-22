@@ -24,9 +24,7 @@
       color: #172033;
     }
 
-    /* =========================
-       HEADER
-    ========================= */
+    /* HEADER */
 
     header {
       position: relative;
@@ -51,15 +49,11 @@
       position: absolute;
       top: 20px;
       right: 30px;
-
       padding: 9px 14px;
-
       background: white;
       color: #111827;
-
       text-decoration: none;
       border-radius: 7px;
-
       font-size: 14px;
       font-weight: bold;
     }
@@ -68,9 +62,7 @@
       background: #e5e7eb;
     }
 
-    /* =========================
-       SEARCH
-    ========================= */
+    /* SEARCH */
 
     .search {
       max-width: 700px;
@@ -80,16 +72,12 @@
     .search input {
       width: 100%;
       padding: 16px 20px;
-
       border: none;
       border-radius: 10px;
-
       font-size: 16px;
     }
 
-    /* =========================
-       PAGE CONTAINER
-    ========================= */
+    /* GENERAL */
 
     .container {
       max-width: 1180px;
@@ -101,23 +89,18 @@
       margin-bottom: 22px;
     }
 
-    /* =========================
-       WATCH LIST
-    ========================= */
+    /* WATCH LIST */
 
     .watch-section {
       display: grid;
       grid-template-columns: 260px 1fr;
       gap: 25px;
-
-      align-items: stretch;
     }
 
     .watch-panel,
     .chart-panel {
       background: white;
       border-radius: 12px;
-
       box-shadow: 0 3px 12px rgba(0,0,0,0.06);
     }
 
@@ -127,23 +110,17 @@
 
     .watch-panel h2 {
       margin-top: 0;
-      margin-bottom: 18px;
     }
 
     .watch-item {
       width: 100%;
-
       margin-bottom: 10px;
       padding: 12px 14px;
-
       background: #f3f4f6;
       border: 1px solid transparent;
       border-radius: 8px;
-
       text-align: left;
       cursor: pointer;
-
-      transition: 0.2s;
     }
 
     .watch-item:hover {
@@ -157,7 +134,6 @@
 
     .watch-ticker {
       display: block;
-
       font-size: 17px;
       font-weight: bold;
     }
@@ -165,10 +141,16 @@
     .watch-company {
       display: block;
       margin-top: 4px;
-
       font-size: 12px;
       opacity: 0.75;
     }
+
+    .watch-empty {
+      color: #6b7280;
+      line-height: 1.5;
+    }
+
+    /* CHART */
 
     .chart-panel {
       overflow: hidden;
@@ -178,9 +160,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-
       padding: 18px 22px;
-
       border-bottom: 1px solid #e5e7eb;
     }
 
@@ -191,10 +171,8 @@
 
     #current-symbol {
       padding: 6px 10px;
-
       background: #eef2f7;
       border-radius: 20px;
-
       font-size: 13px;
       font-weight: bold;
     }
@@ -204,34 +182,25 @@
       height: 500px;
     }
 
-    .tradingview-widget-container {
-      height: 100%;
-      width: 100%;
-    }
-
+    .tradingview-widget-container,
     .tradingview-widget-container__widget {
-      height: 100%;
       width: 100%;
+      height: 100%;
     }
 
-    /* =========================
-       CATEGORIES
-    ========================= */
+    /* CATEGORIES */
 
     .categories {
       display: grid;
       grid-template-columns:
         repeat(auto-fit, minmax(290px, 1fr));
-
       gap: 20px;
     }
 
     .category-card {
       background: white;
       padding: 25px;
-
       border-radius: 12px;
-
       box-shadow: 0 3px 12px rgba(0,0,0,0.06);
     }
 
@@ -251,13 +220,10 @@
     .category-button {
       margin-top: 10px;
       padding: 9px 13px;
-
       border: none;
       border-radius: 7px;
-
       background: #111827;
       color: white;
-
       cursor: pointer;
       font-weight: bold;
     }
@@ -269,23 +235,18 @@
     .subcategories {
       margin-top: 15px;
       padding-top: 15px;
-
       border-top: 1px solid #e5e7eb;
     }
 
     .sub-button {
       display: block;
       width: 100%;
-
       margin-top: 8px;
       padding: 10px;
-
       background: #f3f4f6;
       color: #172033;
-
       border: none;
       border-radius: 7px;
-
       text-align: left;
       cursor: pointer;
     }
@@ -294,15 +255,12 @@
       background: #e5e7eb;
     }
 
-    /* =========================
-       LIBRARY
-    ========================= */
+    /* LIBRARY */
 
     .library-header {
       display: flex;
-      align-items: center;
       justify-content: space-between;
-
+      align-items: center;
       gap: 15px;
       margin-bottom: 20px;
     }
@@ -313,15 +271,11 @@
 
     .clear-button {
       display: none;
-
       padding: 9px 13px;
-
       background: #e5e7eb;
       color: #111827;
-
       border: none;
       border-radius: 7px;
-
       cursor: pointer;
     }
 
@@ -329,16 +283,13 @@
       display: grid;
       grid-template-columns:
         repeat(auto-fit, minmax(300px, 1fr));
-
       gap: 22px;
     }
 
     .card {
       background: white;
       padding: 25px;
-
       border-radius: 12px;
-
       box-shadow: 0 3px 12px rgba(0,0,0,0.06);
     }
 
@@ -364,33 +315,22 @@
 
     .tag {
       display: inline-block;
-
       margin: 4px 4px 0 0;
       padding: 6px 10px;
-
       background: #e8edf3;
       border-radius: 20px;
-
       font-size: 13px;
     }
 
-    /* =========================
-       FOOTER
-    ========================= */
+    /* FOOTER */
 
     footer {
       margin-top: 70px;
       padding: 35px 20px;
-
       background: #111827;
       color: #9ca3af;
-
       text-align: center;
     }
-
-    /* =========================
-       MOBILE
-    ========================= */
 
     @media (max-width: 800px) {
 
@@ -410,7 +350,6 @@
         top: 15px;
         right: 15px;
       }
-
     }
 
   </style>
@@ -419,9 +358,6 @@
 
 <body>
 
-<!-- =========================
-     PUBLIC HEADER
-========================= -->
 
 <header>
 
@@ -448,19 +384,20 @@
 </header>
 
 
-<!-- =========================
-     WATCH LIST + CHART
-========================= -->
+<!-- WATCH LIST -->
 
 <div class="container">
 
   <div class="watch-section">
 
+
     <div class="watch-panel">
 
       <h2>⭐ Watch List</h2>
 
-      <div id="watch-list"></div>
+      <div id="watch-list">
+        Loading Watch List...
+      </div>
 
     </div>
 
@@ -472,12 +409,25 @@
         <h2>📊 Interactive Chart</h2>
 
         <span id="current-symbol">
-          NASDAQ:MU
+          Select a stock
         </span>
 
       </div>
 
-      <div id="tradingview-chart"></div>
+
+      <div id="tradingview-chart">
+
+        <div
+          style="
+            padding:40px;
+            color:#6b7280;
+            text-align:center;
+          "
+        >
+          Select a stock from the Watch List.
+        </div>
+
+      </div>
 
     </div>
 
@@ -486,9 +436,7 @@
 </div>
 
 
-<!-- =========================
-     RESEARCH CATEGORIES
-========================= -->
+<!-- RESEARCH CATEGORIES -->
 
 <div class="container">
 
@@ -499,8 +447,6 @@
 
   <div class="categories">
 
-
-    <!-- Macro Trends -->
 
     <div class="category-card">
 
@@ -526,8 +472,6 @@
     </div>
 
 
-    <!-- Stock Analysis -->
-
     <div class="category-card">
 
       <div class="category-icon">
@@ -540,7 +484,6 @@
         Company research combining business
         fundamentals with practical price action.
       </p>
-
 
       <div class="subcategories">
 
@@ -562,8 +505,6 @@
 
     </div>
 
-
-    <!-- Trading Psychology -->
 
     <div class="category-card">
 
@@ -588,8 +529,6 @@
     </div>
 
 
-    <!-- Trading Strategies -->
-
     <div class="category-card">
 
       <div class="category-icon">
@@ -600,7 +539,7 @@
 
       <p>
         Trading setups, entries, exits,
-        position sizing, risk management
+        risk management, position sizing
         and execution.
       </p>
 
@@ -613,8 +552,6 @@
 
     </div>
 
-
-    <!-- My Trade Reviews -->
 
     <div class="category-card">
 
@@ -640,8 +577,6 @@
     </div>
 
 
-    <!-- Videos -->
-
     <div class="category-card">
 
       <div class="category-icon">
@@ -654,7 +589,6 @@
         My own investment videos and selected
         videos from YouTube.
       </p>
-
 
       <div class="subcategories">
 
@@ -682,9 +616,7 @@
 </div>
 
 
-<!-- =========================
-     LATEST LIBRARY
-========================= -->
+<!-- LIBRARY -->
 
 <div class="container">
 
@@ -709,19 +641,13 @@
     class="cards"
     id="database-items"
   >
-
     <p>
       Loading investment items...
     </p>
-
   </div>
 
 </div>
 
-
-<!-- =========================
-     FOOTER
-========================= -->
 
 <footer>
 
@@ -736,96 +662,155 @@
 
 <script>
 
+
 /* ========================================
-   WATCH LIST
+   WATCH LIST FROM SUPABASE
 ======================================== */
 
-/*
-  Temporary Watch List.
-
-  Next step:
-  We will move this into Supabase so you
-  can Add / Edit / Remove stocks from
-  Management.
-*/
-
-const WATCH_LIST = [
-
-  {
-    ticker: "MU",
-    company: "Micron Technology",
-    symbol: "NASDAQ:MU"
-  },
-
-  {
-    ticker: "NVDA",
-    company: "NVIDIA",
-    symbol: "NASDAQ:NVDA"
-  },
-
-  {
-    ticker: "COIN",
-    company: "Coinbase",
-    symbol: "NASDAQ:COIN"
-  },
-
-  {
-    ticker: "CRCL",
-    company: "Circle Internet Group",
-    symbol: "NYSE:CRCL"
-  }
-
-];
+let watchListData = [];
 
 
-let activeWatchSymbol =
-  WATCH_LIST[0].symbol;
+async function loadWatchList() {
 
-
-
-function renderWatchList() {
-
-  const watchContainer =
+  const container =
     document.getElementById(
       "watch-list"
     );
 
 
-  watchContainer.innerHTML =
-    WATCH_LIST.map((stock, index) => `
+  const { data, error } =
+    await supabaseClient
+      .from("watchlist")
+      .select("*")
+      .order(
+        "display_order",
+        { ascending: true }
+      )
+      .order(
+        "created_at",
+        { ascending: true }
+      );
 
-      <button
-        class="
-          watch-item
-          ${index === 0 ? "active" : ""}
-        "
-        data-symbol="${stock.symbol}"
-        onclick="
-          selectWatchStock(
-            '${stock.symbol}',
-            this
-          )
-        "
-      >
 
-        <span class="watch-ticker">
-          ${stock.ticker}
-        </span>
+  if (error) {
 
-        <span class="watch-company">
-          ${stock.company}
-        </span>
+    console.error(
+      "Watch List error:",
+      error
+    );
 
-      </button>
 
-    `).join("");
+    container.innerHTML =
+      "<p class='watch-empty'>Unable to load Watch List.</p>";
+
+    return;
+  }
+
+
+  watchListData =
+    data || [];
+
+
+  if (watchListData.length === 0) {
+
+    container.innerHTML =
+      `
+        <p class="watch-empty">
+          No stocks in the Watch List yet.
+        </p>
+      `;
+
+    return;
+  }
+
+
+  container.innerHTML =
+    watchListData.map(
+      (stock, index) => {
+
+        const ticker =
+          safeText(
+            stock.ticker
+          );
+
+        const company =
+          safeText(
+            stock.company
+          );
+
+        const exchange =
+          safeText(
+            stock.exchange ||
+            "NASDAQ"
+          );
+
+
+        const symbol =
+          exchange + ":" + ticker;
+
+
+        return `
+
+          <button
+            class="
+              watch-item
+              ${index === 0
+                ? "active"
+                : ""
+              }
+            "
+            onclick="
+              selectWatchStock(
+                '${symbol}',
+                this
+              )
+            "
+          >
+
+            <span class="watch-ticker">
+              ${ticker}
+            </span>
+
+            <span class="watch-company">
+              ${company}
+            </span>
+
+          </button>
+
+        `;
+
+      }
+    ).join("");
+
+
+  /*
+    Automatically show the first
+    stock's chart.
+  */
+
+  const firstStock =
+    watchListData[0];
+
+
+  const firstSymbol =
+    (
+      firstStock.exchange ||
+      "NASDAQ"
+    )
+    + ":"
+    + firstStock.ticker;
+
+
+  loadTradingViewChart(
+    firstSymbol
+  );
 
 }
 
 
 
 /* ========================================
-   SELECT WATCH STOCK
+   WATCH STOCK CLICK
 ======================================== */
 
 function selectWatchStock(
@@ -833,18 +818,19 @@ function selectWatchStock(
   button
 ) {
 
-  activeWatchSymbol = symbol;
-
-
   document
-    .querySelectorAll(".watch-item")
-    .forEach(item => {
+    .querySelectorAll(
+      ".watch-item"
+    )
+    .forEach(
+      item => {
 
-      item.classList.remove(
-        "active"
-      );
+        item.classList.remove(
+          "active"
+        );
 
-    });
+      }
+    );
 
 
   button.classList.add(
@@ -864,7 +850,9 @@ function selectWatchStock(
    TRADINGVIEW CHART
 ======================================== */
 
-function loadTradingViewChart(symbol) {
+function loadTradingViewChart(
+  symbol
+) {
 
   const chartContainer =
     document.getElementById(
@@ -876,18 +864,22 @@ function loadTradingViewChart(symbol) {
     .getElementById(
       "current-symbol"
     )
-    .textContent = symbol;
+    .textContent =
+    symbol;
 
 
   /*
-    Remove previous chart
+    Remove the previous chart.
   */
 
-  chartContainer.innerHTML = "";
+  chartContainer.innerHTML =
+    "";
 
 
   const outer =
-    document.createElement("div");
+    document.createElement(
+      "div"
+    );
 
 
   outer.className =
@@ -895,18 +887,24 @@ function loadTradingViewChart(symbol) {
 
 
   const widget =
-    document.createElement("div");
+    document.createElement(
+      "div"
+    );
 
 
   widget.className =
     "tradingview-widget-container__widget";
 
 
-  outer.appendChild(widget);
+  outer.appendChild(
+    widget
+  );
 
 
   const script =
-    document.createElement("script");
+    document.createElement(
+      "script"
+    );
 
 
   script.type =
@@ -917,7 +915,8 @@ function loadTradingViewChart(symbol) {
     "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
 
 
-  script.async = true;
+  script.async =
+    true;
 
 
   script.innerHTML =
@@ -937,15 +936,20 @@ function loadTradingViewChart(symbol) {
 
       locale: "en",
 
-      allow_symbol_change: true,
+      allow_symbol_change:
+        true,
 
-      withdateranges: true,
+      withdateranges:
+        true,
 
-      hide_side_toolbar: false,
+      hide_side_toolbar:
+        false,
 
-      save_image: false,
+      save_image:
+        false,
 
-      calendar: false,
+      calendar:
+        false,
 
       support_host:
         "https://www.tradingview.com"
@@ -953,7 +957,9 @@ function loadTradingViewChart(symbol) {
     });
 
 
-  outer.appendChild(script);
+  outer.appendChild(
+    script
+  );
 
 
   chartContainer.appendChild(
@@ -965,11 +971,10 @@ function loadTradingViewChart(symbol) {
 
 
 /* ========================================
-   SUPABASE LIBRARY
+   LOAD CONTENT
 ======================================== */
 
 let allInvestmentItems = [];
-
 
 
 async function loadInvestmentItems() {
@@ -997,12 +1002,10 @@ async function loadInvestmentItems() {
         "database-items"
       )
       .innerHTML =
-
       "<p>Unable to load investment items.</p>";
 
 
     return;
-
   }
 
 
@@ -1019,7 +1022,7 @@ async function loadInvestmentItems() {
 
 
 /* ========================================
-   DISPLAY LIBRARY ITEMS
+   DISPLAY CONTENT
 ======================================== */
 
 function displayInvestmentItems(
@@ -1041,115 +1044,134 @@ function displayInvestmentItems(
       "<p>No investment items found.</p>";
 
     return;
-
   }
 
 
   container.innerHTML =
-    items.map(item => {
+    items.map(
+      item => {
 
-      const ticker =
-        safeText(item.ticker);
+        const ticker =
+          safeText(
+            item.ticker
+          );
 
-      const title =
-        safeText(item.title);
+        const title =
+          safeText(
+            item.title
+          );
 
-      const description =
-        safeText(item.description);
+        const description =
+          safeText(
+            item.description
+          );
 
-      const type =
-        safeText(item.type);
+        const type =
+          safeText(
+            item.type
+          );
 
-      const category =
-        safeText(item.category);
+        const category =
+          safeText(
+            item.category
+          );
 
-      const tags =
-        safeText(item.tags);
+        const tags =
+          safeText(
+            item.tags
+          );
 
-      const note =
-        safeText(item.my_note);
+        const note =
+          safeText(
+            item.my_note
+          );
 
-      const safeUrl =
-        cleanUrl(item.url);
+        const safeUrl =
+          cleanUrl(
+            item.url
+          );
 
 
-      return `
+        return `
 
-        <div class="card">
+          <div class="card">
 
-          <h3>
+            <h3>
 
-            ${ticker
-              ? ticker + " — "
+              ${ticker
+                ? ticker + " — "
+                : ""
+              }
+
+              ${title}
+
+            </h3>
+
+
+            ${description
+              ? `<p>${description}</p>`
               : ""
             }
 
-            ${title}
 
-          </h3>
-
-
-          ${description
-            ? `<p>${description}</p>`
-            : ""
-          }
+            ${ticker
+              ? `<span class="tag">${ticker}</span>`
+              : ""
+            }
 
 
-          ${ticker
-            ? `<span class="tag">${ticker}</span>`
-            : ""
-          }
+            ${type
+              ? `<span class="tag">${type}</span>`
+              : ""
+            }
 
 
-          ${type
-            ? `<span class="tag">${type}</span>`
-            : ""
-          }
+            ${category
+              ? `<span class="tag">${category}</span>`
+              : ""
+            }
 
 
-          ${category
-            ? `<span class="tag">${category}</span>`
-            : ""
-          }
+            ${tags
+              ? `<span class="tag">${tags}</span>`
+              : ""
+            }
 
 
-          ${tags
-            ? `<span class="tag">${tags}</span>`
-            : ""
-          }
+            ${note
+              ? `
+                <p>
+                  <strong>My Note:</strong>
+                  ${note}
+                </p>
+                `
+              : ""
+            }
 
 
-          ${note
-            ? `
-              <p>
-                <strong>My Note:</strong>
-                ${note}
-              </p>
-              `
-            : ""
-          }
+            ${safeUrl
+              ? `
+                <p>
 
+                  <a
+                    href="${safeUrl}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Read original →
+                  </a>
 
-          ${safeUrl
-            ? `
-              <p>
-                <a
-                  href="${safeUrl}"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Read original →
-                </a>
-              </p>
-              `
-            : ""
-          }
+                </p>
+                `
+              : ""
+            }
 
-        </div>
+          </div>
 
-      `;
+        `;
 
-    }).join("");
+      }
+    ).join("");
 
 }
 
@@ -1205,11 +1227,8 @@ function filterCategory(
       "library-title"
     )
     .scrollIntoView({
-
       behavior: "smooth",
-
       block: "start"
-
     });
 
 }
@@ -1273,12 +1292,27 @@ document
 
       if (!searchText) {
 
+        document
+          .getElementById(
+            "library-title"
+          )
+          .textContent =
+          "📚 Latest From My Library";
+
+
+        document
+          .getElementById(
+            "clear-filter"
+          )
+          .style.display =
+          "none";
+
+
         displayInvestmentItems(
           allInvestmentItems
         );
 
         return;
-
       }
 
 
@@ -1286,23 +1320,24 @@ document
         allInvestmentItems.filter(
           item => {
 
-            const searchableText = [
+            const searchableText =
+              [
 
-              item.title,
-              item.ticker,
-              item.type,
-              item.category,
-              item.tags,
-              item.description,
-              item.my_note
+                item.title,
+                item.ticker,
+                item.type,
+                item.category,
+                item.tags,
+                item.description,
+                item.my_note
 
-            ]
+              ]
 
-            .filter(Boolean)
+              .filter(Boolean)
 
-            .join(" ")
+              .join(" ")
 
-            .toLowerCase();
+              .toLowerCase();
 
 
             return searchableText
@@ -1340,13 +1375,20 @@ document
 
 
 /* ========================================
-   BASIC TEXT SAFETY
+   TEXT SAFETY
 ======================================== */
 
-function safeText(value) {
+function safeText(
+  value
+) {
 
-  if (!value) {
+  if (
+    value === null ||
+    value === undefined
+  ) {
+
     return "";
+
   }
 
 
@@ -1385,7 +1427,9 @@ function safeText(value) {
    URL SAFETY
 ======================================== */
 
-function cleanUrl(value) {
+function cleanUrl(
+  value
+) {
 
   if (!value) {
     return "";
@@ -1395,7 +1439,9 @@ function cleanUrl(value) {
   try {
 
     const url =
-      new URL(value);
+      new URL(
+        value
+      );
 
 
     if (
@@ -1425,14 +1471,10 @@ function cleanUrl(value) {
 
 
 /* ========================================
-   START PAGE
+   START
 ======================================== */
 
-renderWatchList();
-
-loadTradingViewChart(
-  activeWatchSymbol
-);
+loadWatchList();
 
 loadInvestmentItems();
 
