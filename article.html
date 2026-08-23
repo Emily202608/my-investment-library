@@ -80,8 +80,8 @@
 
     .header-buttons {
       display: flex;
-      align-items: center;
       gap: 10px;
+      align-items: center;
     }
 
     .print-button {
@@ -95,8 +95,39 @@
       font-weight: bold;
     }
 
-    .print-button:hover {
-      background: #e5e7eb;
+    .members-badge {
+      display: inline-block;
+      background: #fff3cd;
+      color: #7c5b00;
+      padding: 6px 10px;
+      margin: 4px 4px 0 0;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .locked-card {
+      margin-top: 30px;
+      padding: 24px;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      background: #f9fafb;
+    }
+
+    .locked-card p {
+      color: #526071;
+      line-height: 1.7;
+    }
+
+    .login-to-read {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 11px 17px;
+      background: #111827;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
     }
 
     .container {
@@ -371,48 +402,6 @@
       text-align: center;
     }
 
-    @media print {
-      @page {
-        margin: 18mm;
-      }
-
-      body {
-        background: white;
-        color: black;
-      }
-
-      header,
-      #floating-toolbar,
-      #context-menu,
-      .edit-mode,
-      .original-link {
-        display: none !important;
-      }
-
-      .container {
-        max-width: none;
-        margin: 0;
-        padding: 0;
-      }
-
-      .article {
-        box-shadow: none;
-        border-radius: 0;
-        padding: 0;
-      }
-
-      .article-content,
-      .article-content p,
-      .section p {
-        color: black;
-      }
-
-      .article-content a {
-        color: black;
-        text-decoration: none;
-      }
-    }
-
     @media (max-width: 700px) {
       .article,
       .edit-mode {
@@ -594,9 +583,14 @@
 
 <script>
 
+const ADMIN_UID = "a5bc1b7d-ca11-49f3-8e95-1d99b12031fa";
+
 let currentArticle = null;
 let currentArticleId = null;
 let currentSession = null;
+
+let currentContentHtml = "";
+let currentMyNote = "";
 
 let inlineEditor = null;
 
@@ -681,78 +675,58 @@ const toolbarOptions = [
    AUTH UI
 ======================================== */
 
+function isAdminSession() {
+
+  return Boolean(
+    currentSession &&
+    currentSession.user &&
+    currentSession.user.id === ADMIN_UID
+  );
+}
+
+
 function updateAuthUI() {
 
   const editButton =
-    document.getElementById(
-      "edit-button"
-    );
+    document.getElementById("edit-button");
 
   const printButton =
-    document.getElementById(
-      "print-button"
-    );
+    document.getElementById("print-button");
 
 
-  if (currentSession) {
+  if (isAdminSession()) {
 
-    if (editButton) {
-      editButton.style.display =
-        "inline-block";
-    }
-
-    if (printButton) {
-      printButton.style.display =
-        "inline-block";
-    }
+    editButton.style.display = "inline-block";
+    printButton.style.display = "inline-block";
 
   } else {
 
-    if (editButton) {
-      editButton.style.display =
-        "none";
+    editButton.style.display = "none";
+    printButton.style.display = "none";
+
+    if (inlineEditor) {
+      forceExitEditMode();
     }
-
-    if (printButton) {
-      printButton.style.display =
-        "none";
-    }
-
-    forceExitEditMode();
-
   }
 }
 
 
 async function printArticle() {
 
-  const {
-    data: {
-      session
-    }
-  } =
-    await supabaseClient
-      .auth
-      .getSession();
+  const { data: { session } } =
+    await supabaseClient.auth.getSession();
 
+  currentSession = session;
 
-  if (!session) {
-
-    currentSession =
-      null;
-
+  if (
+    !session ||
+    session.user.id !== ADMIN_UID
+  ) {
     updateAuthUI();
-
-    alert(
-      "Please log in to print this article."
-    );
-
     return;
   }
 
-
   window.print();
-
 }
 
 
@@ -834,32 +808,22 @@ function forceExitEditMode() {
 async function loadArticle() {
 
   const container =
-    document.getElementById(
-      "article-container"
-    );
-
+    document.getElementById("article-container");
 
   const params =
-    new URLSearchParams(
-      window.location.search
-    );
-
+    new URLSearchParams(window.location.search);
 
   currentArticleId =
     params.get("id");
 
-
   if (!currentArticleId) {
-
     container.innerHTML = `
       <div class="message">
         Article not found.
       </div>
     `;
-
     return;
   }
-
 
   const {
     data,
@@ -867,38 +831,51 @@ async function loadArticle() {
   } =
     await supabaseClient
       .from("items")
-      .select("*")
-      .eq(
-        "id",
-        currentArticleId
+      .select(
+        "id, created_at, updated_at, title, type, ticker, tags, description, preview, url, category, access_level"
       )
+      .eq("id", currentArticleId)
       .single();
 
-
-  if (
-    error ||
-    !data
-  ) {
-
+  if (error || !data) {
     console.error(error);
-
-
     container.innerHTML = `
       <div class="message">
         Unable to load this article.
       </div>
     `;
-
     return;
   }
 
+  currentArticle = data;
+  currentContentHtml = "";
+  currentMyNote = "";
 
-  currentArticle =
-    data;
+  const {
+    data: protectedContent,
+    error: protectedError
+  } =
+    await supabaseClient
+      .from("item_content")
+      .select("content_html, my_note")
+      .eq("item_id", currentArticleId)
+      .maybeSingle();
 
+  if (protectedError) {
+    console.warn(
+      "Full content is not available for this session:",
+      protectedError
+    );
+  }
+
+  if (protectedContent) {
+    currentContentHtml =
+      protectedContent.content_html || "";
+    currentMyNote =
+      protectedContent.my_note || "";
+  }
 
   renderReadMode();
-
 }
 
 
@@ -946,227 +923,154 @@ function renderReadMode() {
 
   hideFloatingTools();
 
-
   const container =
-    document.getElementById(
-      "article-container"
-    );
+    document.getElementById("article-container");
 
+  const data = currentArticle;
 
-  const data =
-    currentArticle;
+  const title = safeText(data.title);
+  const ticker = safeText(data.ticker);
+  const category = safeText(data.category);
+  const type = safeText(data.type);
+  const tags = safeText(data.tags);
+  const description = safeText(data.description);
+  const preview = safeText(data.preview || data.description || "");
+  const note = safeText(currentMyNote);
+  const originalUrl = cleanUrl(data.url);
 
+  const published = formatDate(data.created_at);
+  const updated = formatDate(data.updated_at);
 
-  const title =
-    safeText(data.title);
+  const membersOnly =
+    data.access_level === "members";
 
-  const ticker =
-    safeText(data.ticker);
-
-  const category =
-    safeText(data.category);
-
-  const type =
-    safeText(data.type);
-
-  const tags =
-    safeText(data.tags);
-
-  const description =
-    safeText(data.description);
-
-  const note =
-    safeText(data.my_note);
-
-  const originalUrl =
-    cleanUrl(data.url);
-
-  const published =
-    formatDate(
-      data.created_at
-    );
-
-  const updated =
-    formatDate(
-      data.updated_at
-    );
-
+  const canReadFull =
+    !membersOnly || Boolean(currentSession);
 
   const contentHtml =
-    data.content_html
-      ? DOMPurify.sanitize(
-          data.content_html
-        )
+    canReadFull && currentContentHtml
+      ? DOMPurify.sanitize(currentContentHtml)
       : "";
-
 
   document.title =
     title
-      ? title
-        + " | My Investment Library"
+      ? title + " | My Investment Library"
       : "My Investment Library";
-
 
   container.innerHTML = `
 
     <article class="article">
 
       <h1>
-
-        ${
-          ticker
-            ? ticker + " — "
-            : ""
-        }
-
+        ${ticker ? ticker + " — " : ""}
         ${title}
-
       </h1>
-
 
       <div class="meta">
 
-        ${
-          category
-            ? `
-              <span class="tag">
-                ${category}
-              </span>
-            `
-            : ""
-        }
+        ${category ? `<span class="tag">${category}</span>` : ""}
+        ${ticker ? `<span class="tag">${ticker}</span>` : ""}
+        ${type ? `<span class="tag">${type}</span>` : ""}
+        ${tags ? `<span class="tag">${tags}</span>` : ""}
 
         ${
-          ticker
-            ? `
-              <span class="tag">
-                ${ticker}
-              </span>
-            `
-            : ""
-        }
-
-        ${
-          type
-            ? `
-              <span class="tag">
-                ${type}
-              </span>
-            `
-            : ""
-        }
-
-        ${
-          tags
-            ? `
-              <span class="tag">
-                ${tags}
-              </span>
-            `
+          membersOnly
+            ? `<span class="members-badge">🔒 Members Only</span>`
             : ""
         }
 
       </div>
-
 
       <div class="dates">
 
         ${
           published
-            ? `
-              <div>
-                <strong>Published:</strong>
-                ${published}
-              </div>
-            `
+            ? `<div><strong>Published:</strong> ${published}</div>`
             : ""
         }
 
-
         ${
           updated
-            ? `
-              <div>
-                <strong>Last Updated:</strong>
-                ${updated}
-              </div>
-            `
+            ? `<div><strong>Last Updated:</strong> ${updated}</div>`
             : ""
         }
 
       </div>
 
-
       ${
-        description
+        !canReadFull
           ? `
-            <div class="section">
+            <div class="locked-card">
 
-              <h2>
-                Description
-              </h2>
+              <h2>🔒 Members Only</h2>
+
+              ${preview ? `<p>${preview}</p>` : ""}
 
               <p>
-                ${description}
+                Log in to continue reading this article.
               </p>
 
-            </div>
-          `
-          : ""
-      }
-
-
-      ${
-        contentHtml
-          ? `
-            <div class="article-content">
-
-              ${contentHtml}
+              <a
+                href="admin.html"
+                class="login-to-read"
+              >
+                Log In to Read →
+              </a>
 
             </div>
           `
-          : ""
-      }
+          : `
+            ${
+              description
+                ? `
+                  <div class="section">
+                    <h2>Description</h2>
+                    <p>${description}</p>
+                  </div>
+                `
+                : ""
+            }
 
+            ${
+              contentHtml
+                ? `
+                  <div class="article-content">
+                    ${contentHtml}
+                  </div>
+                `
+                : ""
+            }
 
-      ${
-        note
-          ? `
-            <div class="section">
+            ${
+              note
+                ? `
+                  <div class="section">
+                    <h2>My Note</h2>
+                    <p>${note}</p>
+                  </div>
+                `
+                : ""
+            }
 
-              <h2>
-                My Note
-              </h2>
-
-              <p>
-                ${note}
-              </p>
-
-            </div>
+            ${
+              originalUrl
+                ? `
+                  <a
+                    href="${originalUrl}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="original-link"
+                  >
+                    Read Original →
+                  </a>
+                `
+                : ""
+            }
           `
-          : ""
-      }
-
-
-      ${
-        originalUrl
-          ? `
-            <a
-              href="${originalUrl}"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="original-link"
-            >
-              Read Original →
-            </a>
-          `
-          : ""
       }
 
     </article>
-
   `;
-
 }
 
 
@@ -1192,6 +1096,7 @@ async function enterEditMode() {
 
   if (
     !session ||
+    session.user.id !== ADMIN_UID ||
     !currentArticle
   ) {
 
@@ -1351,32 +1256,27 @@ async function enterEditMode() {
         id="edit-tags"
         type="text"
       >
-
-
       <label>
-        Description
+        Preview
       </label>
 
       <textarea
-        id="edit-description"
+        id="edit-preview"
       ></textarea>
 
 
       <label>
-        Article Content
+        Access
       </label>
 
+      <select id="edit-access-level">
+        <option value="public">Public</option>
+        <option value="members">Members Only</option>
+      </select>
 
-      <div class="helper">
-
-        Select text to format it.
-        The floating toolbar and
-        right-click editing menu are
-        available only while logged in.
-
-      </div>
-
-
+      <label>
+        Article Content
+      </label>
       <div id="inline-editor"></div>
 
 
@@ -1463,14 +1363,20 @@ async function enterEditMode() {
     )
     .value =
     currentArticle.tags || "";
+  document
+    .getElementById(
+      "edit-preview"
+    )
+    .value =
+    currentArticle.preview || "";
 
 
   document
     .getElementById(
-      "edit-description"
+      "edit-access-level"
     )
     .value =
-    currentArticle.description || "";
+    currentArticle.access_level || "public";
 
 
   document
@@ -1478,7 +1384,7 @@ async function enterEditMode() {
       "edit-note"
     )
     .value =
-    currentArticle.my_note || "";
+    currentMyNote || "";
 
 
   inlineEditor =
@@ -1514,50 +1420,33 @@ async function enterEditMode() {
 function loadExistingContentIntoEditor() {
 
   if (
-    !currentSession ||
+    !isAdminSession() ||
     !inlineEditor
   ) {
-
     return;
   }
 
-
-  if (
-    currentArticle.content_html
-  ) {
+  if (currentContentHtml) {
 
     inlineEditor
       .clipboard
       .dangerouslyPasteHTML(
-        currentArticle.content_html
+        currentContentHtml
       );
 
     return;
   }
 
-
-  if (
-    currentArticle.description
-  ) {
+  if (currentArticle.description) {
 
     const oldText =
-      safeText(
-        currentArticle.description
-      )
-      .replaceAll(
-        "\n",
-        "<br>"
-      );
-
+      safeText(currentArticle.description)
+        .replaceAll("\n", "<br>");
 
     inlineEditor
       .clipboard
-      .dangerouslyPasteHTML(
-        oldText
-      );
-
+      .dangerouslyPasteHTML(oldText);
   }
-
 }
 
 
@@ -1568,7 +1457,7 @@ function loadExistingContentIntoEditor() {
 function canFormat() {
 
   return Boolean(
-    currentSession &&
+    isAdminSession() &&
     inlineEditor &&
     lastSelection &&
     lastSelection.length > 0
@@ -2054,206 +1943,123 @@ function hideFloatingTools() {
 
 async function saveChanges() {
 
-  /*
-    IMPORTANT:
-    Check login AGAIN at save time.
-  */
+  const { data: { session } } =
+    await supabaseClient.auth.getSession();
 
-  const {
-    data: {
-      session
-    }
-  } =
-    await supabaseClient
-      .auth
-      .getSession();
+  currentSession = session;
 
-
-  currentSession =
-    session;
-
-
-  if (!session) {
-
-    alert(
-      "Your login session has ended. Please log in again before editing."
-    );
-
-
+  if (
+    !session ||
+    session.user.id !== ADMIN_UID
+  ) {
     updateAuthUI();
-
     return;
   }
-
 
   if (
     !inlineEditor ||
     !currentArticleId
   ) {
-
     return;
   }
-
 
   const message =
-    document.getElementById(
-      "save-message"
-    );
+    document.getElementById("save-message");
 
-
-  message.textContent =
-    "Saving...";
-
+  message.textContent = "Saving...";
 
   let contentHtml =
-    inlineEditor
-      .root
-      .innerHTML
-      .trim();
+    inlineEditor.root.innerHTML.trim();
 
-
-  if (
-    contentHtml ===
-    "<p><br></p>"
-  ) {
-
-    contentHtml =
-      "";
-
+  if (contentHtml === "<p><br></p>") {
+    contentHtml = "";
   }
 
-
-  const updated = {
-
-    title:
-      document
-        .getElementById(
-          "edit-title"
-        )
-        .value
-        .trim(),
-
-    url:
-      document
-        .getElementById(
-          "edit-url"
-        )
-        .value
-        .trim(),
-
-    type:
-      document
-        .getElementById(
-          "edit-type"
-        )
-        .value,
-
-    ticker:
-      document
-        .getElementById(
-          "edit-ticker"
-        )
-        .value
-        .trim()
-        .toUpperCase(),
-
-    category:
-      document
-        .getElementById(
-          "edit-category"
-        )
-        .value,
-
-    tags:
-      document
-        .getElementById(
-          "edit-tags"
-        )
-        .value
-        .trim(),
-
-    description:
-      document
-        .getElementById(
-          "edit-description"
-        )
-        .value
-        .trim(),
-
-    my_note:
-      document
-        .getElementById(
-          "edit-note"
-        )
-        .value
-        .trim(),
-
-    content_html:
-      contentHtml
-
+  const updatedItem = {
+    title: document.getElementById("edit-title").value.trim(),
+    url: document.getElementById("edit-url").value.trim(),
+    type: document.getElementById("edit-type").value,
+    ticker: document.getElementById("edit-ticker").value.trim().toUpperCase(),
+    category: document.getElementById("edit-category").value,
+    tags: document.getElementById("edit-tags").value.trim(),
+    preview: document.getElementById("edit-preview").value.trim(),
+    description: document.getElementById("edit-preview").value.trim(),
+    access_level: document.getElementById("edit-access-level").value
   };
 
-
-  if (!updated.title) {
-
-    message.textContent =
-      "Title cannot be empty.";
-
+  if (!updatedItem.title) {
+    message.textContent = "Title cannot be empty.";
     return;
   }
 
+  if (
+    updatedItem.access_level === "members" &&
+    !updatedItem.preview
+  ) {
+    message.textContent =
+      "Members Only articles need a short Preview.";
+    return;
+  }
 
   const {
-    data,
-    error
+    data: updatedRow,
+    error: itemError
   } =
     await supabaseClient
       .from("items")
-      .update(updated)
-      .eq(
-        "id",
-        currentArticleId
+      .update(updatedItem)
+      .eq("id", currentArticleId)
+      .select(
+        "id, created_at, updated_at, title, type, ticker, tags, description, preview, url, category, access_level"
       )
-      .select()
       .single();
 
-
-  if (error) {
-
-    console.error(error);
-
-
+  if (itemError) {
+    console.error(itemError);
     message.textContent =
-      "Save failed: "
-      + error.message;
-
-
+      "Save failed: " + itemError.message;
     return;
   }
 
+  const myNote =
+    document.getElementById("edit-note").value.trim();
 
-  currentArticle =
-    data;
+  const { error: contentError } =
+    await supabaseClient
+      .from("item_content")
+      .upsert(
+        {
+          item_id: currentArticleId,
+          content_html: contentHtml,
+          my_note: myNote
+        },
+        {
+          onConflict: "item_id"
+        }
+      );
 
+  if (contentError) {
+    console.error(contentError);
+    message.textContent =
+      "Full content save failed: "
+      + contentError.message;
+    return;
+  }
 
-  inlineEditor =
-    null;
+  currentArticle = updatedRow;
+  currentContentHtml = contentHtml;
+  currentMyNote = myNote;
 
-  lastSelection =
-    null;
-
+  inlineEditor = null;
+  lastSelection = null;
 
   hideFloatingTools();
-
-
   renderReadMode();
-
 
   window.scrollTo({
     top: 0,
     behavior: "smooth"
   });
-
 }
 
 
