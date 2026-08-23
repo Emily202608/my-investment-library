@@ -4,72 +4,263 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Investment Management</title>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
+
   <style>
+    * {
+      box-sizing: border-box;
+    }
 
-    * { box-sizing: border-box; }
-    body { margin:0; font-family:Arial,sans-serif; background:#f5f7fa; color:#172033; }
-    header { background:#111827; color:white; padding:18px 28px; display:flex; justify-content:space-between; align-items:center; gap:15px; }
-    header h1 { margin:0; font-size:24px; }
-    .header-actions { display:flex; gap:10px; }
-    .header-actions a,.header-actions button { padding:9px 13px; border:none; border-radius:7px; font-size:14px; cursor:pointer; text-decoration:none; }
-    .back-link { background:white; color:#111827; }
-    .logout-button { background:#374151; color:white; }
-    .container { max-width:1180px; margin:40px auto; padding:0 20px; }
-    #login-warning { display:none; background:#fff3cd; padding:20px; border-radius:8px; margin-bottom:25px; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+      color: #172033;
+    }
 
-    .dashboard { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:22px; }
-    .dashboard-card { display:block; background:white; padding:32px; border-radius:12px; box-shadow:0 3px 12px rgba(0,0,0,.06); color:#172033; text-decoration:none; transition:transform .15s, box-shadow .15s; }
-    .dashboard-card:hover { transform:translateY(-2px); box-shadow:0 6px 18px rgba(0,0,0,.09); }
-    .dashboard-card h2 { margin:0 0 10px; font-size:22px; }
-    .dashboard-card p { margin:0; color:#6b7280; line-height:1.6; }
-    @media(max-width:800px) { .dashboard { grid-template-columns:1fr; } header { align-items:flex-start; flex-direction:column; } }
+    header {
+      background: #111827;
+      color: white;
+      padding: 18px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .header-actions a,
+    .header-actions button {
+      padding: 9px 13px;
+      border: none;
+      border-radius: 7px;
+      font-size: 14px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .back-link {
+      background: white;
+      color: #111827;
+    }
+
+    .logout-button {
+      background: #374151;
+      color: white;
+    }
+
+    .container {
+      max-width: 1180px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    #login-warning {
+      display: none;
+      background: #fff3cd;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 25px;
+      line-height: 1.6;
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 22px;
+    }
+
+    .dashboard-card {
+      display: block;
+      background: white;
+      padding: 32px;
+      border-radius: 12px;
+      box-shadow: 0 3px 12px rgba(0,0,0,.06);
+      color: #172033;
+      text-decoration: none;
+      transition: transform .15s, box-shadow .15s;
+    }
+
+    .dashboard-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(0,0,0,.09);
+    }
+
+    .dashboard-card h2 {
+      margin: 0 0 10px;
+      font-size: 22px;
+    }
+
+    .dashboard-card p {
+      margin: 0;
+      color: #6b7280;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 800px) {
+      .dashboard {
+        grid-template-columns: 1fr;
+      }
+
+      header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
   </style>
 </head>
+
 <body>
+
 <header>
   <h1>Investment Management</h1>
+
   <div class="header-actions">
-    <a href="index.html" class="back-link">← Back to Library</a>
-    <button class="logout-button" onclick="logout()">Log Out</button>
+    <a href="index.html" class="back-link">
+      ← Back to Library
+    </a>
+
+    <button
+      class="logout-button"
+      onclick="logout()"
+    >
+      Log Out
+    </button>
   </div>
 </header>
 
+
 <div class="container">
+
   <div id="login-warning">
-    <strong>You are not logged in.</strong><br><br>
-    <a href="admin.html">Go to Log In</a>
+    <strong>Admin access only.</strong>
+    <br><br>
+    <a href="member.html">
+      Go to Member Log In
+    </a>
   </div>
 
-  <div id="management-content" class="dashboard">
-    <a class="dashboard-card" href="add-content.html">
+
+  <div
+    id="management-content"
+    class="dashboard"
+  >
+
+    <a
+      class="dashboard-card"
+      href="add-content.html"
+    >
       <h2>➕ Add New Content</h2>
-      <p>Create and publish new content.</p>
+      <p>
+        Create and publish new content.
+      </p>
     </a>
 
-    <a class="dashboard-card" href="watchlist-management.html">
+
+    <a
+      class="dashboard-card"
+      href="watchlist-management.html"
+    >
       <h2>⭐ Watch List Management</h2>
-      <p>Add, edit, reorder, or remove Watch List stocks.</p>
+      <p>
+        Add, edit, reorder, or remove Watch List stocks.
+      </p>
     </a>
+
+
+    <a
+      class="dashboard-card"
+      href="membership-management.html"
+    >
+      <h2>👥 Membership Management</h2>
+      <p>
+        Review membership applications and approve or reject users.
+      </p>
+    </a>
+
   </div>
+
 </div>
 
+
 <script>
+
+const ADMIN_UID =
+  "a5bc1b7d-ca11-49f3-8e95-1d99b12031fa";
+
+
 async function checkLogin() {
-  const { data: { session } } = await supabaseClient.auth.getSession();
-  if (!session) {
-    document.getElementById("management-content").style.display = "none";
-    document.getElementById("login-warning").style.display = "block";
+
+  const {
+    data: {
+      session
+    }
+  } =
+    await supabaseClient
+      .auth
+      .getSession();
+
+
+  const managementContent =
+    document.getElementById(
+      "management-content"
+    );
+
+  const warning =
+    document.getElementById(
+      "login-warning"
+    );
+
+
+  if (
+    !session ||
+    session.user.id !== ADMIN_UID
+  ) {
+
+    managementContent.style.display =
+      "none";
+
+    warning.style.display =
+      "block";
+
+    return;
   }
+
+
+  managementContent.style.display =
+    "grid";
+
+  warning.style.display =
+    "none";
 }
+
 
 async function logout() {
-  await supabaseClient.auth.signOut();
-  window.location.href = "index.html";
+
+  await supabaseClient
+    .auth
+    .signOut();
+
+
+  window.location.href =
+    "index.html";
 }
 
+
 checkLogin();
+
 </script>
+
 </body>
 </html>
