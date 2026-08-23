@@ -4,30 +4,136 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Membership Management | Waterside Library</title>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
+
   <style>
     * { box-sizing:border-box; }
-    body { margin:0; font-family:Arial,sans-serif; background:#f5f7fa; color:#172033; }
-    header { background:#111827; color:white; padding:18px 25px; }
-    .header-inner { max-width:1050px; margin:auto; display:flex; justify-content:space-between; gap:15px; align-items:center; }
-    .header-inner a { color:white; text-decoration:none; font-weight:bold; }
-    .container { max-width:1050px; margin:40px auto; padding:0 20px; }
-    .summary { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:25px; }
-    .summary span { background:white; padding:10px 14px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.05); font-weight:bold; }
-    .list { display:grid; gap:14px; }
-    .request { background:white; padding:20px; border-radius:10px; box-shadow:0 3px 12px rgba(0,0,0,.05); }
-    .request h3 { margin:0 0 8px; }
-    .meta { color:#6b7280; line-height:1.6; font-size:14px; }
-    .status { display:inline-block; margin-top:10px; padding:5px 9px; border-radius:999px; background:#eef2f7; font-size:12px; font-weight:bold; text-transform:uppercase; }
-    .actions { margin-top:15px; display:flex; gap:10px; flex-wrap:wrap; }
-    button { padding:9px 13px; border:none; border-radius:7px; font-weight:bold; cursor:pointer; }
-    .approve { background:#166534; color:white; }
-    .reject { background:#b91c1c; color:white; }
-    .message { background:white; padding:25px; border-radius:10px; color:#6b7280; }
+
+    body {
+      margin:0;
+      font-family:Arial,sans-serif;
+      background:#f5f7fa;
+      color:#172033;
+    }
+
+    header {
+      background:#111827;
+      color:white;
+      padding:18px 25px;
+    }
+
+    .header-inner {
+      max-width:1050px;
+      margin:auto;
+      display:flex;
+      justify-content:space-between;
+      gap:15px;
+      align-items:center;
+    }
+
+    .header-inner a {
+      color:white;
+      text-decoration:none;
+      font-weight:bold;
+    }
+
+    .container {
+      max-width:1050px;
+      margin:40px auto;
+      padding:0 20px;
+    }
+
+    .summary {
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:25px;
+    }
+
+    .summary span {
+      background:white;
+      padding:10px 14px;
+      border-radius:8px;
+      box-shadow:0 2px 8px rgba(0,0,0,.05);
+      font-weight:bold;
+    }
+
+    .list {
+      display:grid;
+      gap:14px;
+    }
+
+    .request {
+      background:white;
+      padding:20px;
+      border-radius:10px;
+      box-shadow:0 3px 12px rgba(0,0,0,.05);
+    }
+
+    .request h3 {
+      margin:0 0 8px;
+    }
+
+    .meta {
+      color:#6b7280;
+      line-height:1.6;
+      font-size:14px;
+    }
+
+    .status {
+      display:inline-block;
+      margin-top:10px;
+      padding:5px 9px;
+      border-radius:999px;
+      background:#eef2f7;
+      font-size:12px;
+      font-weight:bold;
+      text-transform:uppercase;
+    }
+
+    .actions {
+      margin-top:15px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    button {
+      padding:9px 13px;
+      border:none;
+      border-radius:7px;
+      font-weight:bold;
+      cursor:pointer;
+    }
+
+    button:disabled {
+      opacity:.6;
+      cursor:not-allowed;
+    }
+
+    .approve {
+      background:#166534;
+      color:white;
+    }
+
+    .reject {
+      background:#b91c1c;
+      color:white;
+    }
+
+    .message {
+      background:white;
+      padding:25px;
+      border-radius:10px;
+      color:#6b7280;
+    }
   </style>
 </head>
+
 <body>
+
 <header>
   <div class="header-inner">
     <a href="management.html">← Back to Management</a>
@@ -36,99 +142,265 @@
 </header>
 
 <div class="container">
+
   <div id="summary" class="summary"></div>
+
   <div id="request-list" class="list">
-    <div class="message">Loading membership requests...</div>
+    <div class="message">
+      Loading membership requests...
+    </div>
   </div>
+
 </div>
 
 <script>
-const ADMIN_UID = "a5bc1b7d-ca11-49f3-8e95-1d99b12031fa";
+
+const ADMIN_UID =
+  "a5bc1b7d-ca11-49f3-8e95-1d99b12031fa";
+
 let currentSession = null;
 
+
+/* ---------------------------------
+   CHECK ADMIN
+--------------------------------- */
+
 async function checkAdmin() {
-  const { data: { session } } = await supabaseClient.auth.getSession();
+
+  const {
+    data: { session }
+  } =
+    await supabaseClient.auth.getSession();
+
   currentSession = session;
 
-  if (!session || session.user.id !== ADMIN_UID) {
-    document.getElementById("request-list").innerHTML =
+  if (
+    !session ||
+    session.user.id !== ADMIN_UID
+  ) {
+
+    document.getElementById(
+      "request-list"
+    ).innerHTML =
       '<div class="message">Admin access only.</div>';
+
     return;
   }
 
   await loadRequests();
 }
 
+
+/* ---------------------------------
+   LOAD MEMBERSHIP REQUESTS
+--------------------------------- */
+
 async function loadRequests() {
+
   const { data, error } =
     await supabaseClient
       .from("membership_requests")
       .select("*")
-      .order("created_at", { ascending: false });
+      .order(
+        "created_at",
+        { ascending: false }
+      );
 
   if (error) {
+
     console.error(error);
-    document.getElementById("request-list").innerHTML =
+
+    document.getElementById(
+      "request-list"
+    ).innerHTML =
       '<div class="message">Unable to load membership requests.</div>';
+
     return;
   }
 
   const requests = data || [];
 
-  const pending = requests.filter(item => item.status === "pending").length;
-  const approved = requests.filter(item => item.status === "approved").length;
-  const rejected = requests.filter(item => item.status === "rejected").length;
+  const pending =
+    requests.filter(
+      item => item.status === "pending"
+    ).length;
 
-  document.getElementById("summary").innerHTML =
-    '<span>Pending: ' + pending + '</span>' +
-    '<span>Approved: ' + approved + '</span>' +
-    '<span>Rejected: ' + rejected + '</span>';
+  const approved =
+    requests.filter(
+      item => item.status === "approved"
+    ).length;
+
+  const rejected =
+    requests.filter(
+      item => item.status === "rejected"
+    ).length;
+
+
+  document.getElementById(
+    "summary"
+  ).innerHTML =
+
+    '<span>Pending: ' +
+    pending +
+    '</span>' +
+
+    '<span>Approved: ' +
+    approved +
+    '</span>' +
+
+    '<span>Rejected: ' +
+    rejected +
+    '</span>';
+
 
   if (requests.length === 0) {
-    document.getElementById("request-list").innerHTML =
+
+    document.getElementById(
+      "request-list"
+    ).innerHTML =
       '<div class="message">No membership applications yet.</div>';
+
     return;
   }
 
-  document.getElementById("request-list").innerHTML =
+
+  document.getElementById(
+    "request-list"
+  ).innerHTML =
+
     requests.map(request => {
+
       const created =
         request.created_at
-          ? new Date(request.created_at).toLocaleString()
+          ? new Date(
+              request.created_at
+            ).toLocaleString()
           : "";
+
 
       const actions =
         request.status === "pending"
+
           ? '<div class="actions">' +
-              '<button class="approve" onclick="setStatus(' + request.id + ', \'approved\')">Approve</button>' +
-              '<button class="reject" onclick="setStatus(' + request.id + ', \'rejected\')">Reject</button>' +
+
+              '<button class="approve" ' +
+              'onclick="setStatus(' +
+              request.id +
+              ', \'approved\')">' +
+              'Approve' +
+              '</button>' +
+
+              '<button class="reject" ' +
+              'onclick="setStatus(' +
+              request.id +
+              ', \'rejected\')">' +
+              'Reject' +
+              '</button>' +
+
             '</div>'
+
           : '';
 
+
       return (
+
         '<div class="request">' +
-          '<h3>' + safeText(request.name || "Unnamed applicant") + '</h3>' +
+
+          '<h3>' +
+            safeText(
+              request.name ||
+              "Unnamed applicant"
+            ) +
+          '</h3>' +
+
           '<div class="meta">' +
-            safeText(request.email) + '<br>' +
-            'Applied: ' + safeText(created) +
+            safeText(request.email) +
+            '<br>' +
+            'Applied: ' +
+            safeText(created) +
           '</div>' +
-          '<div class="status">' + safeText(request.status) + '</div>' +
+
+          '<div class="status">' +
+            safeText(request.status) +
+          '</div>' +
+
           actions +
+
         '</div>'
       );
+
     }).join("");
 }
 
+
+/* ---------------------------------
+   APPROVE / REJECT
+--------------------------------- */
+
 async function setStatus(id, status) {
-  if (!currentSession || currentSession.user.id !== ADMIN_UID) return;
+
+  if (
+    !currentSession ||
+    currentSession.user.id !== ADMIN_UID
+  ) {
+    return;
+  }
+
+
+  /*
+    First load the membership request.
+
+    We need the applicant's email and name
+    if an approval notification must be sent.
+  */
+
+  const {
+    data: requestData,
+    error: requestError
+  } =
+    await supabaseClient
+      .from("membership_requests")
+      .select(
+        "id, name, email, status"
+      )
+      .eq("id", id)
+      .single();
+
+
+  if (
+    requestError ||
+    !requestData
+  ) {
+
+    console.error(requestError);
+
+    alert(
+      "Unable to load membership request: " +
+      (
+        requestError
+          ? requestError.message
+          : "Unknown error"
+      )
+    );
+
+    return;
+  }
+
+
+  /*
+    Update membership status.
+  */
 
   const updateData = {
+
     status: status,
+
     approved_at:
       status === "approved"
         ? new Date().toISOString()
         : null
   };
+
 
   const { error } =
     await supabaseClient
@@ -136,25 +408,125 @@ async function setStatus(id, status) {
       .update(updateData)
       .eq("id", id);
 
+
   if (error) {
-    alert("Update failed: " + error.message);
+
+    console.error(error);
+
+    alert(
+      "Update failed: " +
+      error.message
+    );
+
     return;
   }
+
+
+  /*
+    Only send an email when the
+    administrator approves the application.
+  */
+
+  if (status === "approved") {
+
+    const {
+      data: emailData,
+      error: emailError
+    } =
+      await supabaseClient
+        .functions
+        .invoke(
+          "send-approval-email",
+          {
+            body: {
+              email:
+                requestData.email,
+
+              name:
+                requestData.name
+            }
+          }
+        );
+
+
+    if (emailError) {
+
+      console.error(
+        "Approval email failed:",
+        emailError
+      );
+
+      alert(
+        "Membership was approved, but the approval email could not be sent."
+      );
+
+    } else {
+
+      console.log(
+        "Approval email result:",
+        emailData
+      );
+
+      alert(
+        "Membership approved and notification email sent."
+      );
+    }
+  }
+
 
   await loadRequests();
 }
 
+
+/* ---------------------------------
+   SAFE TEXT
+--------------------------------- */
+
 function safeText(value) {
-  if (value === null || value === undefined) return "";
+
+  if (
+    value === null ||
+    value === undefined
+  ) {
+    return "";
+  }
+
   return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
 }
 
+
+/* ---------------------------------
+   START
+--------------------------------- */
+
 checkAdmin();
+
 </script>
+
 </body>
 </html>
