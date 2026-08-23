@@ -1,1 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Add New Content | My Investment Library</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+
+  <!-- Rich Text Editor -->
+  <link href="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.snow.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+      color: #172033;
+    }
+
+    header {
+      background: #111827;
+      color: white;
+      padding: 18px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .header-actions a,
+    .header-actions button {
+      padding: 9px 13px;
+      border: none;
+      border-radius: 7px;
+      font-size: 14px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .back-link {
+      background: white;
+      color: #111827;
+    }
+
+    .logout-button {
+      background: #374151;
+      color: white;
+    }
+
+    .container {
+      max-width: 1180px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    .panel {
+      background: white;
+      padding: 28px;
+      border-radius: 12px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+      margin-bottom: 30px;
+    }
+
+    h2,
+    h3 {
+      margin-top: 0;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      padding: 11px;
+      margin: 7px 0 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+    }
+
+    textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .primary-button,
+    .secondary-button,
+    .danger-button {
+      padding: 10px 14px;
+      border: none;
+      border-radius: 7px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .primary-button {
+      background: #111827;
+      color: white;
+    }
+
+    .secondary-button {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .danger-button {
+      background: #b91c1c;
+      color: white;
+    }
+
+    .item-list {
+      display: grid;
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .item-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 18px;
+      background: #fafafa;
+    }
+
+    .item-card p {
+      margin: 6px 0;
+      color: #526071;
+      line-height: 1.5;
+    }
+
+    .item-actions {
+      margin-top: 14px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 5px 9px;
+      margin: 3px 3px 0 0;
+      background: #e8edf3;
+      border-radius: 18px;
+      font-size: 12px;
+    }
+
+    .edit-box {
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid #ddd;
+      display: none;
+    }
+
+    .message {
+      margin-top: 14px;
+      font-weight: bold;
+    }
+
+    .helper {
+      margin-top: -8px;
+      margin-bottom: 14px;
+      color: #6b7280;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    #login-warning {
+      display: none;
+      background: #fff3cd;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 25px;
+    }
+
+    .rich-editor {
+      margin: 7px 0 15px;
+      background: white;
+    }
+
+    .rich-editor .ql-toolbar {
+      border-radius: 6px 6px 0 0;
+    }
+
+    .rich-editor .ql-container {
+      min-height: 300px;
+      border-radius: 0 0 6px 6px;
+      font-family: Arial, sans-serif;
+      font-size: 16px;
+    }
+
+    .rich-editor .ql-editor {
+      min-height: 300px;
+      line-height: 1.7;
+    }
+
+    .edit-box .rich-editor .ql-container,
+    .edit-box .rich-editor .ql-editor {
+      min-height: 240px;
+    }
+
+    @media (max-width: 800px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+
+      header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+
+  <h1>Add New Content</h1>
+
+  <div class="header-actions">
+
+    <a
+      href="management.html"
+      class="back-link"
+    >
+      ← Back to Management
+    </a>
+
+    <button
+      class="logout-button"
+      onclick="logout()"
+    >
+      Log Out
+    </button>
+
+  </div>
+
+</header>
+
+
+<div class="container">
+
+  <div id="login-warning">
+    <strong>You are not logged in.</strong>
+    <br><br>
+    <a href="admin.html">Go to Log In</a>
+  </div>
+
+
+  <div id="management-content">
+
+
+    <!-- =========================
+         ADD NEW CONTENT
+    ========================== -->
+
+    <div class="panel">
+
+      <h2>➕ Add New Content</h2>
+
+      <div class="grid-2">
+
+        <div>
+          <label>Title</label>
+          <input id="new-title" type="text">
+        </div>
+
+        <div>
+          <label>URL</label>
+          <input id="new-url" type="url" placeholder="https://...">
+        </div>
+
+      </div>
+
+
+      <div class="grid-2">
+
+        <div>
+
+          <label>Type</label>
+
+          <select id="new-type">
+            <option value="Article">Article</option>
+            <option value="News">News</option>
+            <option value="Research">Research</option>
+            <option value="Video">Video</option>
+            <option value="Investment Idea">Investment Idea</option>
+          </select>
+
+        </div>
+
+        <div>
+
+          <label>Ticker</label>
+
+          <input
+            id="new-ticker"
+            type="text"
+            placeholder="MU, NVDA..."
+          >
+
+        </div>
+
+      </div>
+
+
+      <label>Category</label>
+
+      <select id="new-category">
+
+        <option value="Macro Trends">
+          Macro Trends
+        </option>
+
+        <option value="Fundamental Analysis">
+          Fundamental Analysis
+        </option>
+
+        <option value="Price Action Analysis">
+          Price Action Analysis
+        </option>
+
+        <option value="Trading Psychology">
+          Trading Psychology
+        </option>
+
+        <option value="Trading Strategies">
+          Trading Strategies
+        </option>
+
+        <option value="My Trade Reviews">
+          My Trade Reviews
+        </option>
+
+        <option value="My Videos">
+          My Videos
+        </option>
+
+        <option value="Selected YouTube Videos">
+          Selected YouTube Videos
+        </option>
+
+      </select>
+
+
+      <label>Tags</label>
+
+      <input
+        id="new-tags"
+        type="text"
+        placeholder="AI, HBM, Earnings..."
+      >
+
+
+      <label>Description</label>
+
+      <textarea id="new-description" placeholder="Short summary shown in article lists."></textarea>
+
+
+      <label>Article Content</label>
+
+      <div class="helper">
+        Paste content from ChatGPT here, then reorganize paragraphs and format it.
+        You can use headings, font size, bold, italic, underline, text color,
+        highlight, lists, quotes and links.
+      </div>
+
+      <div id="new-content-editor" class="rich-editor"></div>
+
+
+      <label>My Note</label>
+
+      <textarea id="new-note"></textarea>
+
+
+      <button
+        class="primary-button"
+        onclick="addContent()"
+      >
+        Publish
+      </button>
+
+
+      <div
+        id="content-message"
+        class="message"
+      ></div>
+
+    </div>
+
+    <!-- WATCH LIST MANAGEMENT -->
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* ========================================
+   LOGIN CHECK
+======================================== */
+
+async function checkLogin() {
+
+  const {
+    data: { session }
+  } =
+    await supabaseClient.auth.getSession();
+
+
+  if (!session) {
+
+    document
+      .getElementById(
+        "management-content"
+      )
+      .style.display =
+      "none";
+
+
+    document
+      .getElementById(
+        "login-warning"
+      )
+      .style.display =
+      "block";
+
+
+    return;
+  }
+
+  initializeNewEditor();
+}
+
+
+/* ========================================
+   ADD CONTENT
+======================================== */
+
+async function addContent() {
+
+  const message =
+    document.getElementById(
+      "content-message"
+    );
+
+
+  const item = {
+
+    title:
+      document
+        .getElementById(
+          "new-title"
+        )
+        .value
+        .trim(),
+
+    url:
+      document
+        .getElementById(
+          "new-url"
+        )
+        .value
+        .trim(),
+
+    type:
+      document
+        .getElementById(
+          "new-type"
+        )
+        .value,
+
+    ticker:
+      document
+        .getElementById(
+          "new-ticker"
+        )
+        .value
+        .trim()
+        .toUpperCase(),
+
+    category:
+      document
+        .getElementById(
+          "new-category"
+        )
+        .value,
+
+    tags:
+      document
+        .getElementById(
+          "new-tags"
+        )
+        .value
+        .trim(),
+
+    description:
+      document
+        .getElementById(
+          "new-description"
+        )
+        .value
+        .trim(),
+
+    my_note:
+      document
+        .getElementById(
+          "new-note"
+        )
+        .value
+        .trim(),
+
+    content_html:
+      getNewEditorHtml()
+  };
+
+
+  if (!item.title) {
+
+    message.textContent =
+      "Please enter a title.";
+
+    return;
+  }
+
+
+  message.textContent =
+    "Publishing...";
+
+
+  const { error } =
+    await supabaseClient
+      .from("items")
+      .insert([item]);
+
+
+  if (error) {
+
+    console.error(error);
+
+    message.textContent =
+      "Publish failed: "
+      + error.message;
+
+    return;
+  }
+
+
+  message.textContent =
+    "Published successfully!";
+
+
+  document
+    .getElementById(
+      "new-title"
+    )
+    .value = "";
+
+
+  document
+    .getElementById(
+      "new-url"
+    )
+    .value = "";
+
+
+  document
+    .getElementById(
+      "new-ticker"
+    )
+    .value = "";
+
+
+  document
+    .getElementById(
+      "new-tags"
+    )
+    .value = "";
+
+
+  document
+    .getElementById(
+      "new-description"
+    )
+    .value = "";
+
+
+  document
+    .getElementById(
+      "new-note"
+    )
+    .value = "";
+
+  if (newContentEditor) {
+    newContentEditor.setContents([]);
+  }
+
+}
+
+
+/* ========================================
+   RICH TEXT EDITORS
+======================================== */
+
+const quillToolbarOptions = [
+  [{ header: [1, 2, 3, false] }],
+  [{ size: ["small", false, "large", "huge"] }],
+  ["bold", "italic", "underline", "strike"],
+  [{ color: [] }, { background: [] }],
+  [{ list: "ordered" }, { list: "bullet" }],
+  [{ indent: "-1" }, { indent: "+1" }],
+  [{ align: [] }],
+  ["blockquote", "link"],
+  ["clean"]
+];
+
+let newContentEditor = null;
+
+
+function initializeNewEditor() {
+
+  const editorElement =
+    document.getElementById(
+      "new-content-editor"
+    );
+
+  if (
+    !editorElement ||
+    newContentEditor
+  ) {
+    return;
+  }
+
+  newContentEditor =
+    new Quill(
+      editorElement,
+      {
+        theme: "snow",
+        placeholder:
+          "Paste or write the full article here...",
+        modules: {
+          toolbar:
+            quillToolbarOptions
+        }
+      }
+    );
+}
+
+
+
+function getNewEditorHtml() {
+
+  if (!newContentEditor) {
+    return "";
+  }
+
+  const html =
+    newContentEditor.root
+      .innerHTML
+      .trim();
+
+  return html === "<p><br></p>"
+    ? ""
+    : html;
+}
+
+
+
+
+/* ========================================
+   LOG OUT
+======================================== */
+
+async function logout() {
+
+  await supabaseClient.auth.signOut();
+
+  window.location.href =
+    "index.html";
+}
+
+
+/* ========================================
+   HELPERS
+======================================== */
+
+function safe(value) {
+
+  if (
+    value === null ||
+    value === undefined
+  ) {
+
+    return "";
+
+  }
+
+
+  return String(value)
+
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
+}
+
+
+function safeAttr(value) {
+
+  return safe(value);
+}
+
+
+function optionList(
+  options,
+  selected
+) {
+
+  return options
+    .map(
+      option => `
+
+        <option
+          value="${safeAttr(option)}"
+          ${
+            option === selected
+              ? "selected"
+              : ""
+          }
+        >
+          ${safe(option)}
+        </option>
+
+      `
+    )
+    .join("");
+}
+
+
+/* ========================================
+   START
+======================================== */
+
+checkLogin();
+
+</script>
+
+</body>
+
+</html>
