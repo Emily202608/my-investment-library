@@ -398,7 +398,7 @@
 
 <header>
 
-  <a href="member.html" class="login-link">
+  <a href="member.html" class="login-link" id="account-link">
     🔐 Member Log In
   </a>
 
@@ -1295,12 +1295,61 @@ function safeText(
 
 
 /* ========================================
+   ACCOUNT / ADMIN ACCESS
+======================================== */
+
+const ADMIN_UID =
+  "a5bc1b7d-ca11-49f3-8e95-1d99b12031fa";
+
+async function updateAccountLink() {
+
+  const accountLink =
+    document.getElementById("account-link");
+
+  if (!accountLink) {
+    return;
+  }
+
+  const {
+    data: { session }
+  } =
+    await supabaseClient.auth.getSession();
+
+  // Not logged in
+  if (!session) {
+    accountLink.href = "member.html";
+    accountLink.textContent = "🔐 Member Log In";
+    return;
+  }
+
+  // Administrator
+  if (session.user.id === ADMIN_UID) {
+    accountLink.href = "management.html";
+    accountLink.textContent = "⚙️ Management";
+    return;
+  }
+
+  // Regular logged-in member
+  accountLink.href = "#";
+  accountLink.textContent = "↪ Log Out";
+
+  accountLink.onclick = async function(event) {
+    event.preventDefault();
+    await supabaseClient.auth.signOut();
+    window.location.reload();
+  };
+}
+
+
+/* ========================================
    START
 ======================================== */
 
 loadWatchList();
 
 loadInvestmentItems();
+
+updateAccountLink();
 
 </script>
 
