@@ -380,21 +380,22 @@
         type="text"
         placeholder="AI, HBM, Earnings..."
       >
+      <label>Preview</label>
+
+      <textarea
+        id="new-preview"
+        placeholder="Write a short 1–2 line preview for readers."
+      ></textarea>
 
 
-      <label>Description</label>
+      <label>Access</label>
 
-      <textarea id="new-description" placeholder="Short summary shown in article lists."></textarea>
-
+      <select id="new-access-level">
+        <option value="public">Public</option>
+        <option value="members">Members Only</option>
+      </select>
 
       <label>Article Content</label>
-
-      <div class="helper">
-        Paste content from ChatGPT here, then reorganize paragraphs and format it.
-        You can use headings, font size, bold, italic, underline, text color,
-        highlight, lists, quotes and links.
-      </div>
-
       <div id="new-content-editor" class="rich-editor"></div>
 
 
@@ -427,35 +428,29 @@
 
 <script>
 
+const ADMIN_UID = "a5bc1b7d-ca11-49f3-8e95-1d99b12031fa";
+
 /* ========================================
    LOGIN CHECK
 ======================================== */
 
 async function checkLogin() {
 
-  const {
-    data: { session }
-  } =
+  const { data: { session } } =
     await supabaseClient.auth.getSession();
 
+  if (
+    !session ||
+    session.user.id !== ADMIN_UID
+  ) {
 
-  if (!session) {
+    document.getElementById("management-content").style.display = "none";
 
-    document
-      .getElementById(
-        "management-content"
-      )
-      .style.display =
-      "none";
-
-
-    document
-      .getElementById(
-        "login-warning"
-      )
-      .style.display =
-      "block";
-
+    const warning = document.getElementById("login-warning");
+    warning.style.display = "block";
+    warning.innerHTML = session
+      ? "<strong>Admin access only.</strong><br><br><a href='index.html'>Back to Library</a>"
+      : "<strong>You are not logged in.</strong><br><br><a href='admin.html'>Go to Log In</a>";
 
     return;
   }
@@ -471,161 +466,109 @@ async function checkLogin() {
 async function addContent() {
 
   const message =
-    document.getElementById(
-      "content-message"
-    );
+    document.getElementById("content-message");
 
+  const { data: { session } } =
+    await supabaseClient.auth.getSession();
+
+  if (
+    !session ||
+    session.user.id !== ADMIN_UID
+  ) {
+    message.textContent = "Admin access required.";
+    return;
+  }
 
   const item = {
-
-    title:
-      document
-        .getElementById(
-          "new-title"
-        )
-        .value
-        .trim(),
-
-    url:
-      document
-        .getElementById(
-          "new-url"
-        )
-        .value
-        .trim(),
-
-    type:
-      document
-        .getElementById(
-          "new-type"
-        )
-        .value,
-
-    ticker:
-      document
-        .getElementById(
-          "new-ticker"
-        )
-        .value
-        .trim()
-        .toUpperCase(),
-
-    category:
-      document
-        .getElementById(
-          "new-category"
-        )
-        .value,
-
-    tags:
-      document
-        .getElementById(
-          "new-tags"
-        )
-        .value
-        .trim(),
-
-    description:
-      document
-        .getElementById(
-          "new-description"
-        )
-        .value
-        .trim(),
-
-    my_note:
-      document
-        .getElementById(
-          "new-note"
-        )
-        .value
-        .trim(),
-
-    content_html:
-      getNewEditorHtml()
+    title: document.getElementById("new-title").value.trim(),
+    url: document.getElementById("new-url").value.trim(),
+    type: document.getElementById("new-type").value,
+    ticker: document.getElementById("new-ticker").value.trim().toUpperCase(),
+    category: document.getElementById("new-category").value,
+    tags: document.getElementById("new-tags").value.trim(),
+    preview: document.getElementById("new-preview").value.trim(),
+    description: document.getElementById("new-preview").value.trim(),
+    access_level: document.getElementById("new-access-level").value
   };
 
+  const contentHtml = getNewEditorHtml();
+  const myNote = document.getElementById("new-note").value.trim();
 
   if (!item.title) {
-
-    message.textContent =
-      "Please enter a title.";
-
+    message.textContent = "Please enter a title.";
     return;
   }
 
+  if (
+    item.access_level === "members" &&
+    !item.preview
+  ) {
+    message.textContent =
+      "Please add a short Preview for Members Only content.";
+    return;
+  }
 
-  message.textContent =
-    "Publishing...";
+  message.textContent = "Publishing...";
 
-
-  const { error } =
+  const {
+    data: insertedItem,
+    error: itemError
+  } =
     await supabaseClient
       .from("items")
-      .insert([item]);
+      .insert([item])
+      .select("id")
+      .single();
 
-
-  if (error) {
-
-    console.error(error);
-
+  if (itemError) {
+    console.error(itemError);
     message.textContent =
-      "Publish failed: "
-      + error.message;
-
+      "Publish failed: " + itemError.message;
     return;
   }
 
+  const { error: contentError } =
+    await supabaseClient
+      .from("item_content")
+      .insert([{
+        item_id: insertedItem.id,
+        content_html: contentHtml,
+        my_note: myNote
+      }]);
 
-  message.textContent =
-    "Published successfully!";
+  if (contentError) {
+    console.error(contentError);
 
+    await supabaseClient
+      .from("items")
+      .delete()
+      .eq("id", insertedItem.id);
 
-  document
-    .getElementById(
-      "new-title"
-    )
-    .value = "";
+    message.textContent =
+      "Publish failed while saving article content: "
+      + contentError.message;
+    return;
+  }
 
+  message.textContent = "Published successfully!";
 
-  document
-    .getElementById(
-      "new-url"
-    )
-    .value = "";
+  [
+    "new-title",
+    "new-url",
+    "new-ticker",
+    "new-tags",
+    "new-preview",
+    "new-note"
+  ].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = "";
+  });
 
-
-  document
-    .getElementById(
-      "new-ticker"
-    )
-    .value = "";
-
-
-  document
-    .getElementById(
-      "new-tags"
-    )
-    .value = "";
-
-
-  document
-    .getElementById(
-      "new-description"
-    )
-    .value = "";
-
-
-  document
-    .getElementById(
-      "new-note"
-    )
-    .value = "";
+  document.getElementById("new-access-level").value = "public";
 
   if (newContentEditor) {
     newContentEditor.setContents([]);
   }
-
 }
 
 
