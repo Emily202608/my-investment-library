@@ -3,131 +3,134 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Membership Management | Waterside Library</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
 
   <style>
-    * { box-sizing:border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
-      margin:0;
-      font-family:Arial,sans-serif;
-      background:#f5f7fa;
-      color:#172033;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+      color: #172033;
     }
 
     header {
-      background:#111827;
-      color:white;
-      padding:18px 25px;
+      background: #111827;
+      color: white;
+      padding: 18px 25px;
     }
 
     .header-inner {
-      max-width:1050px;
-      margin:auto;
-      display:flex;
-      justify-content:space-between;
-      gap:15px;
-      align-items:center;
+      max-width: 1050px;
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      align-items: center;
     }
 
     .header-inner a {
-      color:white;
-      text-decoration:none;
-      font-weight:bold;
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
     }
 
     .container {
-      max-width:1050px;
-      margin:40px auto;
-      padding:0 20px;
+      max-width: 1050px;
+      margin: 40px auto;
+      padding: 0 20px;
     }
 
     .summary {
-      display:flex;
-      gap:12px;
-      flex-wrap:wrap;
-      margin-bottom:25px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 25px;
     }
 
     .summary span {
-      background:white;
-      padding:10px 14px;
-      border-radius:8px;
-      box-shadow:0 2px 8px rgba(0,0,0,.05);
-      font-weight:bold;
+      background: white;
+      padding: 10px 14px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.05);
+      font-weight: bold;
     }
 
     .list {
-      display:grid;
-      gap:14px;
+      display: grid;
+      gap: 14px;
     }
 
     .request {
-      background:white;
-      padding:20px;
-      border-radius:10px;
-      box-shadow:0 3px 12px rgba(0,0,0,.05);
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 3px 12px rgba(0,0,0,.05);
     }
 
     .request h3 {
-      margin:0 0 8px;
+      margin: 0 0 8px;
     }
 
     .meta {
-      color:#6b7280;
-      line-height:1.6;
-      font-size:14px;
+      color: #6b7280;
+      line-height: 1.6;
+      font-size: 14px;
     }
 
     .status {
-      display:inline-block;
-      margin-top:10px;
-      padding:5px 9px;
-      border-radius:999px;
-      background:#eef2f7;
-      font-size:12px;
-      font-weight:bold;
-      text-transform:uppercase;
+      display: inline-block;
+      margin-top: 10px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: #eef2f7;
+      font-size: 12px;
+      font-weight: bold;
+      text-transform: uppercase;
     }
 
     .actions {
-      margin-top:15px;
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
+      margin-top: 15px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
     }
 
     button {
-      padding:9px 13px;
-      border:none;
-      border-radius:7px;
-      font-weight:bold;
-      cursor:pointer;
+      padding: 9px 13px;
+      border: none;
+      border-radius: 7px;
+      font-weight: bold;
+      cursor: pointer;
     }
 
     button:disabled {
-      opacity:.6;
-      cursor:not-allowed;
+      opacity: .6;
+      cursor: not-allowed;
     }
 
     .approve {
-      background:#166534;
-      color:white;
+      background: #166534;
+      color: white;
     }
 
     .reject {
-      background:#b91c1c;
-      color:white;
+      background: #b91c1c;
+      color: white;
     }
 
     .message {
-      background:white;
-      padding:25px;
-      border-radius:10px;
-      color:#6b7280;
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      color: #6b7280;
     }
   </style>
 </head>
@@ -174,6 +177,7 @@ async function checkAdmin() {
 
   currentSession = session;
 
+
   if (
     !session ||
     session.user.id !== ADMIN_UID
@@ -187,6 +191,7 @@ async function checkAdmin() {
     return;
   }
 
+
   await loadRequests();
 }
 
@@ -197,7 +202,10 @@ async function checkAdmin() {
 
 async function loadRequests() {
 
-  const { data, error } =
+  const {
+    data,
+    error
+  } =
     await supabaseClient
       .from("membership_requests")
       .select("*")
@@ -205,6 +213,7 @@ async function loadRequests() {
         "created_at",
         { ascending: false }
       );
+
 
   if (error) {
 
@@ -218,21 +227,29 @@ async function loadRequests() {
     return;
   }
 
-  const requests = data || [];
+
+  const requests =
+    data || [];
+
 
   const pending =
     requests.filter(
-      item => item.status === "pending"
+      item =>
+        item.status === "pending"
     ).length;
+
 
   const approved =
     requests.filter(
-      item => item.status === "approved"
+      item =>
+        item.status === "approved"
     ).length;
+
 
   const rejected =
     requests.filter(
-      item => item.status === "rejected"
+      item =>
+        item.status === "rejected"
     ).length;
 
 
@@ -314,14 +331,20 @@ async function loadRequests() {
           '</h3>' +
 
           '<div class="meta">' +
-            safeText(request.email) +
+            safeText(
+              request.email
+            ) +
             '<br>' +
             'Applied: ' +
-            safeText(created) +
+            safeText(
+              created
+            ) +
           '</div>' +
 
           '<div class="status">' +
-            safeText(request.status) +
+            safeText(
+              request.status
+            ) +
           '</div>' +
 
           actions +
@@ -348,10 +371,11 @@ async function setStatus(id, status) {
 
 
   /*
-    First load the membership request.
+    Load the membership request first.
 
-    We need the applicant's email and name
-    if an approval notification must be sent.
+    We need the applicant's email
+    and name when sending the
+    approval notification.
   */
 
   const {
@@ -363,7 +387,10 @@ async function setStatus(id, status) {
       .select(
         "id, name, email, status"
       )
-      .eq("id", id)
+      .eq(
+        "id",
+        id
+      )
       .single();
 
 
@@ -372,7 +399,9 @@ async function setStatus(id, status) {
     !requestData
   ) {
 
-    console.error(requestError);
+    console.error(
+      requestError
+    );
 
     alert(
       "Unable to load membership request: " +
@@ -388,7 +417,7 @@ async function setStatus(id, status) {
 
 
   /*
-    Update membership status.
+    Update the membership status.
   */
 
   const updateData = {
@@ -402,16 +431,25 @@ async function setStatus(id, status) {
   };
 
 
-  const { error } =
+  const {
+    error
+  } =
     await supabaseClient
       .from("membership_requests")
-      .update(updateData)
-      .eq("id", id);
+      .update(
+        updateData
+      )
+      .eq(
+        "id",
+        id
+      );
 
 
   if (error) {
 
-    console.error(error);
+    console.error(
+      error
+    );
 
     alert(
       "Update failed: " +
@@ -423,8 +461,8 @@ async function setStatus(id, status) {
 
 
   /*
-    Only send an email when the
-    administrator approves the application.
+    Send approval email only when
+    the administrator approves.
   */
 
   if (status === "approved") {
@@ -439,6 +477,7 @@ async function setStatus(id, status) {
           "send-approval-email",
           {
             body: {
+
               email:
                 requestData.email,
 
@@ -490,6 +529,7 @@ function safeText(value) {
   ) {
     return "";
   }
+
 
   return String(value)
 
