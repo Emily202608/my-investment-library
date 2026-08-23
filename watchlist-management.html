@@ -1,1 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Watch List Management | My Investment Library</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <style>
 
+    * { box-sizing: border-box; }
+    body { margin:0; font-family:Arial,sans-serif; background:#f5f7fa; color:#172033; }
+    header { background:#111827; color:white; padding:18px 28px; display:flex; justify-content:space-between; align-items:center; gap:15px; }
+    header h1 { margin:0; font-size:24px; }
+    .header-actions { display:flex; gap:10px; }
+    .header-actions a,.header-actions button { padding:9px 13px; border:none; border-radius:7px; font-size:14px; cursor:pointer; text-decoration:none; }
+    .back-link { background:white; color:#111827; }
+    .logout-button { background:#374151; color:white; }
+    .container { max-width:1180px; margin:40px auto; padding:0 20px; }
+    #login-warning { display:none; background:#fff3cd; padding:20px; border-radius:8px; margin-bottom:25px; }
+
+    .panel { background:white; padding:28px; border-radius:12px; box-shadow:0 3px 12px rgba(0,0,0,.06); margin-bottom:30px; }
+    h2,h3 { margin-top:0; }
+    label { display:block; font-weight:bold; margin-top:10px; }
+    input,textarea,select { width:100%; padding:11px; margin:7px 0 15px; border:1px solid #ccc; border-radius:6px; font-family:Arial,sans-serif; font-size:14px; }
+    .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+    .primary-button,.secondary-button,.danger-button { padding:10px 14px; border:none; border-radius:7px; cursor:pointer; font-weight:bold; }
+    .primary-button { background:#111827; color:white; }
+    .secondary-button { background:#e5e7eb; color:#111827; }
+    .danger-button { background:#b91c1c; color:white; }
+    .item-list { display:grid; gap:16px; margin-top:20px; }
+    .item-card { border:1px solid #e5e7eb; border-radius:10px; padding:18px; background:#fafafa; }
+    .item-card p { margin:6px 0; color:#526071; line-height:1.5; }
+    .item-actions { margin-top:14px; display:flex; gap:10px; flex-wrap:wrap; }
+    .edit-box { margin-top:15px; padding-top:15px; border-top:1px solid #ddd; display:none; }
+    .message { margin-top:14px; font-weight:bold; }
+    .helper { margin-top:-8px; margin-bottom:14px; color:#6b7280; font-size:13px; line-height:1.5; }
+    @media(max-width:800px) { .grid-2 { grid-template-columns:1fr; } header { align-items:flex-start; flex-direction:column; } }
+  </style>
+</head>
+<body>
+<header>
+  <h1>Watch List Management</h1>
+  <div class="header-actions">
+    <a href="management.html" class="back-link">← Back to Management</a>
+    <button class="logout-button" onclick="logout()">Log Out</button>
+  </div>
+</header>
+
+<div class="container">
+  <div id="login-warning">
+    <strong>You are not logged in.</strong><br><br>
+    <a href="admin.html">Go to Log In</a>
+  </div>
+
+  <div id="management-content">
+<div class="panel">
+
+      <h2>⭐ Watch List Management</h2>
+
+
+      <div class="grid-2">
+
+        <div>
+
+          <label>Ticker</label>
+
+          <input
+            id="watch-ticker"
+            type="text"
+            placeholder="CRCL"
+          >
+
+        </div>
+
+
+        <div>
+
+          <label>Company</label>
+
+          <input
+            id="watch-company"
+            type="text"
+            placeholder="Circle Internet Group"
+          >
+
+        </div>
+
+      </div>
+
+
+      <div class="grid-2">
+
+        <div>
+
+          <label>TradingView Symbol</label>
+
+          <input
+            id="watch-symbol"
+            type="text"
+            placeholder="NYSE:CRCL"
+          >
+
+          <div class="helper">
+
+            Examples:
+            NASDAQ:MU,
+            NASDAQ:NVDA,
+            NYSE:CRCL,
+            AMEX:SPY.
+
+          </div>
+
+        </div>
+
+
+        <div>
+
+          <label>Display Order</label>
+
+          <input
+            id="watch-order"
+            type="number"
+            value="0"
+          >
+
+        </div>
+
+      </div>
+
+
+      <button
+        class="primary-button"
+        onclick="addWatchStock()"
+      >
+        Add to Watch List
+      </button>
+
+
+      <div
+        id="watch-message"
+        class="message"
+      ></div>
+
+
+      <div
+        id="watch-list"
+        class="item-list"
+      >
+        Loading...
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+async function checkLogin() {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) {
+    document.getElementById("management-content").style.display = "none";
+    document.getElementById("login-warning").style.display = "block";
+    return;
+  }
+  await loadWatchList();
+}
+
+/* ========================================
+   ADD WATCH STOCK
+======================================== */
+
+async function addWatchStock() {
+
+  const message =
+    document.getElementById(
+      "watch-message"
+    );
+
+
+  const ticker =
+    document
+      .getElementById(
+        "watch-ticker"
+      )
+      .value
+      .trim()
+      .toUpperCase();
+
+
+  const company =
+    document
+      .getElementById(
+        "watch-company"
+      )
+      .value
+      .trim();
+
+
+  const tradingviewSymbol =
+    document
+      .getElementById(
+        "watch-symbol"
+      )
+      .value
+      .trim()
+      .toUpperCase();
+
+
+  const displayOrder =
+    Number(
+      document
+        .getElementById(
+          "watch-order"
+        )
+        .value
+    ) || 0;
+
+
+  if (!ticker) {
+
+    message.textContent =
+      "Please enter a ticker.";
+
+    return;
+  }
+
+
+  if (!tradingviewSymbol) {
+
+    message.textContent =
+      "Please enter a TradingView Symbol.";
+
+    return;
+  }
+
+
+  if (
+    !tradingviewSymbol.includes(":")
+  ) {
+
+    message.textContent =
+      "TradingView Symbol should look like NYSE:CRCL or NASDAQ:MU.";
+
+    return;
+  }
+
+
+  const exchange =
+    tradingviewSymbol
+      .split(":")[0]
+      .trim()
+      .toUpperCase();
+
+
+  const stock = {
+
+    ticker:
+      ticker,
+
+    company:
+      company,
+
+    tradingview_symbol:
+      tradingviewSymbol,
+
+    exchange:
+      exchange,
+
+    display_order:
+      displayOrder
+
+  };
+
+
+  message.textContent =
+    "Adding...";
+
+
+  const { data, error } =
+    await supabaseClient
+      .from("watchlist")
+      .insert([stock])
+      .select();
+
+
+  if (error) {
+
+    console.error(
+      "Watch List insert error:",
+      error
+    );
+
+
+    message.textContent =
+      "Add failed: "
+      + error.message;
+
+    return;
+  }
+
+
+  console.log(
+    "Inserted Watch List row:",
+    data
+  );
+
+
+  message.textContent =
+    "Added successfully!";
+
+
+  document
+    .getElementById(
+      "watch-ticker"
+    )
+    .value = "";
+
+
+  document
+    .getElementById(
+      "watch-company"
+    )
+    .value = "";
+
+
+  document
+    .getElementById(
+      "watch-symbol"
+    )
+    .value = "";
+
+
+  document
+    .getElementById(
+      "watch-order"
+    )
+    .value = "0";
+
+
+  await loadWatchList();
+}
+
+
+/* ========================================
+   LOAD WATCH LIST
+======================================== */
+
+async function loadWatchList() {
+
+  const container =
+    document.getElementById(
+      "watch-list"
+    );
+
+
+  const { data, error } =
+    await supabaseClient
+      .from("watchlist")
+      .select("*")
+      .order(
+        "display_order",
+        {
+          ascending: true
+        }
+      )
+      .order(
+        "created_at",
+        {
+          ascending: true
+        }
+      );
+
+
+  if (error) {
+
+    console.error(error);
+
+    container.innerHTML =
+      "<p>Unable to load Watch List.</p>";
+
+    return;
+  }
+
+
+  if (!data || data.length === 0) {
+
+    container.innerHTML =
+      "<p>No Watch List stocks yet.</p>";
+
+    return;
+  }
+
+
+  container.innerHTML =
+    data.map(
+      stock => {
+
+        const id =
+          stock.id;
+
+
+        return `
+
+          <div class="item-card">
+
+            <h3>
+
+              ${safe(stock.ticker)}
+
+              ${
+                stock.company
+                  ? " — " + safe(stock.company)
+                  : ""
+              }
+
+            </h3>
+
+
+            <p>
+
+              <strong>
+                TradingView Symbol:
+              </strong>
+
+              ${safe(stock.tradingview_symbol)}
+
+            </p>
+
+
+            <p>
+
+              <strong>
+                Exchange:
+              </strong>
+
+              ${safe(stock.exchange)}
+
+            </p>
+
+
+            <p>
+
+              <strong>
+                Display Order:
+              </strong>
+
+              ${stock.display_order ?? 0}
+
+            </p>
+
+
+            <div class="item-actions">
+
+              <button
+                class="secondary-button"
+                onclick="toggleWatchEdit(${id})"
+              >
+                Edit
+              </button>
+
+
+              <button
+                class="danger-button"
+                onclick="deleteWatchStock(${id})"
+              >
+                Delete
+              </button>
+
+            </div>
+
+
+            <div
+              class="edit-box"
+              id="watch-edit-${id}"
+            >
+
+
+              <label>
+                Ticker
+              </label>
+
+              <input
+                id="watch-edit-ticker-${id}"
+                value="${safeAttr(stock.ticker)}"
+              >
+
+
+              <label>
+                Company
+              </label>
+
+              <input
+                id="watch-edit-company-${id}"
+                value="${safeAttr(stock.company)}"
+              >
+
+
+              <label>
+                TradingView Symbol
+              </label>
+
+              <input
+                id="watch-edit-symbol-${id}"
+                value="${safeAttr(stock.tradingview_symbol)}"
+                placeholder="NYSE:CRCL"
+              >
+
+
+              <div class="helper">
+
+                Example:
+                NASDAQ:MU,
+                NYSE:CRCL,
+                AMEX:SPY.
+
+              </div>
+
+
+              <label>
+                Display Order
+              </label>
+
+              <input
+                type="number"
+                id="watch-edit-order-${id}"
+                value="${stock.display_order ?? 0}"
+              >
+
+
+              <button
+                class="primary-button"
+                onclick="saveWatchStock(${id})"
+              >
+                Save Changes
+              </button>
+
+
+              <button
+                class="secondary-button"
+                onclick="toggleWatchEdit(${id})"
+              >
+                Cancel
+              </button>
+
+            </div>
+
+          </div>
+
+        `;
+
+      }
+    )
+    .join("");
+}
+
+
+/* ========================================
+   EDIT WATCH STOCK
+======================================== */
+
+function toggleWatchEdit(id) {
+
+  const box =
+    document.getElementById(
+      "watch-edit-" + id
+    );
+
+
+  box.style.display =
+    box.style.display === "block"
+      ? "none"
+      : "block";
+}
+
+
+/* ========================================
+   SAVE WATCH STOCK
+======================================== */
+
+async function saveWatchStock(id) {
+
+  const ticker =
+    document
+      .getElementById(
+        "watch-edit-ticker-" + id
+      )
+      .value
+      .trim()
+      .toUpperCase();
+
+
+  const company =
+    document
+      .getElementById(
+        "watch-edit-company-" + id
+      )
+      .value
+      .trim();
+
+
+  const tradingviewSymbol =
+    document
+      .getElementById(
+        "watch-edit-symbol-" + id
+      )
+      .value
+      .trim()
+      .toUpperCase();
+
+
+  const displayOrder =
+    Number(
+      document
+        .getElementById(
+          "watch-edit-order-" + id
+        )
+        .value
+    ) || 0;
+
+
+  if (!ticker) {
+
+    alert(
+      "Ticker cannot be empty."
+    );
+
+    return;
+  }
+
+
+  if (!tradingviewSymbol) {
+
+    alert(
+      "TradingView Symbol cannot be empty."
+    );
+
+    return;
+  }
+
+
+  if (
+    !tradingviewSymbol.includes(":")
+  ) {
+
+    alert(
+      "TradingView Symbol should look like NYSE:CRCL or NASDAQ:MU."
+    );
+
+    return;
+  }
+
+
+  const exchange =
+    tradingviewSymbol
+      .split(":")[0]
+      .trim()
+      .toUpperCase();
+
+
+  const updated = {
+
+    ticker:
+      ticker,
+
+    company:
+      company,
+
+    tradingview_symbol:
+      tradingviewSymbol,
+
+    exchange:
+      exchange,
+
+    display_order:
+      displayOrder
+
+  };
+
+
+  const { data, error } =
+    await supabaseClient
+      .from("watchlist")
+      .update(updated)
+      .eq("id", id)
+      .select();
+
+
+  if (error) {
+
+    console.error(
+      "Watch List update error:",
+      error
+    );
+
+
+    alert(
+      "Update failed: "
+      + error.message
+    );
+
+    return;
+  }
+
+
+  console.log(
+    "Updated Watch List row:",
+    data
+  );
+
+
+  await loadWatchList();
+}
+
+
+/* ========================================
+   DELETE WATCH STOCK
+======================================== */
+
+async function deleteWatchStock(id) {
+
+  const confirmed =
+    confirm(
+      "Remove this stock from the Watch List?"
+    );
+
+
+  if (!confirmed) {
+    return;
+  }
+
+
+  const { error } =
+    await supabaseClient
+      .from("watchlist")
+      .delete()
+      .eq("id", id);
+
+
+  if (error) {
+
+    console.error(error);
+
+    alert(
+      "Delete failed: "
+      + error.message
+    );
+
+    return;
+  }
+
+
+  await loadWatchList();
+}
+
+
+/* ========================================
+   LOG OUT
+======================================== */
+
+async function logout() {
+
+  await supabaseClient.auth.signOut();
+
+  window.location.href =
+    "index.html";
+}
+
+
+/* ========================================
+   HELPERS
+======================================== */
+
+function safe(value) {
+
+  if (
+    value === null ||
+    value === undefined
+  ) {
+
+    return "";
+
+  }
+
+
+  return String(value)
+
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
+}
+
+
+function safeAttr(value) {
+
+  return safe(value);
+}
+
+
+function optionList(
+  options,
+  selected
+) {
+
+  return options
+    .map(
+      option => `
+
+        <option
+          value="${safeAttr(option)}"
+          ${
+            option === selected
+              ? "selected"
+              : ""
+          }
+        >
+          ${safe(option)}
+        </option>
+
+      `
+    )
+    .join("");
+}
+
+
+
+
+checkLogin();
+</script>
+</body>
+</html>
