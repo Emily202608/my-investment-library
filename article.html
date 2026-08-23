@@ -78,6 +78,27 @@
       background: #e5e7eb;
     }
 
+    .header-buttons {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .print-button {
+      display: none;
+      padding: 9px 14px;
+      background: white;
+      color: #111827;
+      border: none;
+      border-radius: 7px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .print-button:hover {
+      background: #e5e7eb;
+    }
+
     .container {
       max-width: 900px;
       margin: 45px auto;
@@ -350,6 +371,48 @@
       text-align: center;
     }
 
+    @media print {
+      @page {
+        margin: 18mm;
+      }
+
+      body {
+        background: white;
+        color: black;
+      }
+
+      header,
+      #floating-toolbar,
+      #context-menu,
+      .edit-mode,
+      .original-link {
+        display: none !important;
+      }
+
+      .container {
+        max-width: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      .article {
+        box-shadow: none;
+        border-radius: 0;
+        padding: 0;
+      }
+
+      .article-content,
+      .article-content p,
+      .section p {
+        color: black;
+      }
+
+      .article-content a {
+        color: black;
+        text-decoration: none;
+      }
+    }
+
     @media (max-width: 700px) {
       .article,
       .edit-mode {
@@ -383,13 +446,25 @@
       ← Back to Library
     </a>
 
-    <button
-      id="edit-button"
-      class="edit-button"
-      onclick="enterEditMode()"
-    >
-      ✏ Edit
-    </button>
+    <div class="header-buttons">
+
+      <button
+        id="print-button"
+        class="print-button"
+        onclick="printArticle()"
+      >
+        🖨 Print
+      </button>
+
+      <button
+        id="edit-button"
+        class="edit-button"
+        onclick="enterEditMode()"
+      >
+        ✏ Edit
+      </button>
+
+    </div>
 
   </div>
 </header>
@@ -608,25 +683,76 @@ const toolbarOptions = [
 
 function updateAuthUI() {
 
-  const button =
+  const editButton =
     document.getElementById(
       "edit-button"
+    );
+
+  const printButton =
+    document.getElementById(
+      "print-button"
     );
 
 
   if (currentSession) {
 
-    button.style.display =
-      "inline-block";
+    if (editButton) {
+      editButton.style.display =
+        "inline-block";
+    }
+
+    if (printButton) {
+      printButton.style.display =
+        "inline-block";
+    }
 
   } else {
 
-    button.style.display =
-      "none";
+    if (editButton) {
+      editButton.style.display =
+        "none";
+    }
+
+    if (printButton) {
+      printButton.style.display =
+        "none";
+    }
 
     forceExitEditMode();
 
   }
+}
+
+
+async function printArticle() {
+
+  const {
+    data: {
+      session
+    }
+  } =
+    await supabaseClient
+      .auth
+      .getSession();
+
+
+  if (!session) {
+
+    currentSession =
+      null;
+
+    updateAuthUI();
+
+    alert(
+      "Please log in to print this article."
+    );
+
+    return;
+  }
+
+
+  window.print();
+
 }
 
 
