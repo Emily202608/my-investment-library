@@ -325,6 +325,25 @@
       color: #6b7280;
     }
 
+    .library-toggle-wrap {
+      margin-top: 16px;
+      text-align: center;
+    }
+
+    .library-toggle {
+      background: none;
+      border: none;
+      padding: 6px 10px;
+      color: #2563eb;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .library-toggle:hover {
+      text-decoration: underline;
+    }
+
     /* =========================
        FOOTER
     ========================= */
@@ -1011,6 +1030,7 @@ function loadTradingViewChart(
 ======================================== */
 
 let allInvestmentItems = [];
+let libraryExpanded = false;
 
 
 /* ========================================
@@ -1094,8 +1114,14 @@ function displayArticleTitles(
   }
 
 
-  container.innerHTML =
-    items.map(
+  const visibleItems =
+    libraryExpanded
+      ? items
+      : items.slice(0, 6);
+
+
+  const articleHtml =
+    visibleItems.map(
       item => {
 
         const id =
@@ -1133,9 +1159,10 @@ function displayArticleTitles(
               href="article.html?id=${id}"
             >
 
-              ${ticker
-                ? ticker + " — "
-                : ""
+              ${
+                ticker
+                  ? ticker + " — "
+                  : ""
               }
 
               ${title}
@@ -1174,8 +1201,46 @@ function displayArticleTitles(
       }
     ).join("");
 
+
+  const toggleHtml =
+    items.length > 6
+      ? `
+        <div class="library-toggle-wrap">
+
+          <button
+            class="library-toggle"
+            onclick="toggleLibraryList()"
+          >
+            ${
+              libraryExpanded
+                ? "Show Less ↑"
+                : "Show More ↓"
+            }
+          </button>
+
+        </div>
+      `
+      : "";
+
+
+  container.innerHTML =
+    articleHtml +
+    toggleHtml;
+
 }
 
+
+function toggleLibraryList() {
+
+  libraryExpanded =
+    !libraryExpanded;
+
+
+  displayArticleTitles(
+    allInvestmentItems
+  );
+
+}
 
 /* ========================================
    TEXT SAFETY
