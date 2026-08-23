@@ -70,6 +70,48 @@
       line-height: 1.6;
     }
 
+    .sentiment-section {
+      display: none;
+      margin: 0 0 32px;
+    }
+
+    .sentiment-card {
+      background: white;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+    }
+
+    .sentiment-card h2 {
+      margin: 0 0 8px;
+      font-size: 22px;
+    }
+
+    .sentiment-card p {
+      margin: 0 0 20px;
+      color: #6b7280;
+      line-height: 1.6;
+    }
+
+    .sentiment-widget-wrap {
+      display: flex;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .sentiment-widget-wrap iframe {
+      width: 320px;
+      max-width: 100%;
+      height: 310px;
+      border: none;
+      border-radius: 16px;
+    }
+
+    .article-list-heading {
+      margin: 0 0 18px;
+      font-size: 24px;
+    }
+
     .article-list {
       display: grid;
       gap: 14px;
@@ -132,6 +174,10 @@
       .header-inner {
         align-items: flex-start;
       }
+
+      .sentiment-card {
+        padding: 20px;
+      }
     }
   </style>
 </head>
@@ -164,6 +210,42 @@
     <p id="category-description"></p>
 
   </div>
+
+
+  <section
+    id="sentiment-section"
+    class="sentiment-section"
+  >
+    <div class="sentiment-card">
+
+      <h2>Fear &amp; Greed Index</h2>
+
+      <p>
+        A live market-sentiment reference. Use it as context, not as a standalone trading signal.
+      </p>
+
+      <div class="sentiment-widget-wrap">
+
+        <iframe
+          src="https://feargreedchart.com/widget.html"
+          width="320"
+          height="310"
+          loading="lazy"
+          title="Fear and Greed Index"
+        ></iframe>
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <h2
+    id="article-list-heading"
+    class="article-list-heading"
+  >
+    Articles
+  </h2>
 
 
   <div
@@ -291,11 +373,24 @@ async function loadCategory() {
       "article-list"
     );
 
+  const listHeading =
+    document.getElementById(
+      "article-list-heading"
+    );
+
+  const sentimentSection =
+    document.getElementById(
+      "sentiment-section"
+    );
+
 
   if (!category) {
 
     titleElement.textContent =
       "Category Not Found";
+
+    listHeading.style.display =
+      "none";
 
     listElement.innerHTML = `
       <div class="message">
@@ -318,6 +413,28 @@ async function loadCategory() {
   document.title =
     category +
     " | My Investment Library";
+
+
+  if (
+    category ===
+    "Trading Psychology"
+  ) {
+
+    sentimentSection.style.display =
+      "block";
+
+    listHeading.textContent =
+      "Trading Psychology Articles";
+
+  } else {
+
+    sentimentSection.style.display =
+      "none";
+
+    listHeading.textContent =
+      category + " Articles";
+
+  }
 
 
   const {
