@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Investment Article</title>
+  <title>Investment Article | Waterside Library</title>
 
   <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -16,15 +16,10 @@
     href="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.snow.css"
     rel="stylesheet"
   >
-
-  <script
-    src="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.js"
-  ></script>
+  <script src="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.js"></script>
 
   <!-- HTML Sanitizer -->
-  <script
-    src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"
-  ></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
 
   <style>
     * {
@@ -63,71 +58,42 @@
       text-decoration: underline;
     }
 
-    .edit-button {
-      display: none;
-      padding: 9px 14px;
-      background: white;
-      color: #111827;
-      border: none;
-      border-radius: 7px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .edit-button:hover {
-      background: #e5e7eb;
-    }
-
     .header-buttons {
       display: flex;
       gap: 10px;
       align-items: center;
+      flex-wrap: wrap;
     }
 
-    .print-button {
+    .edit-button,
+    .print-button,
+    .delete-button {
       display: none;
       padding: 9px 14px;
-      background: white;
-      color: #111827;
       border: none;
       border-radius: 7px;
       cursor: pointer;
       font-weight: bold;
     }
 
-    .members-badge {
-      display: inline-block;
-      background: #fff3cd;
-      color: #7c5b00;
-      padding: 6px 10px;
-      margin: 4px 4px 0 0;
-      border-radius: 20px;
-      font-size: 13px;
-      font-weight: bold;
+    .edit-button,
+    .print-button {
+      background: white;
+      color: #111827;
     }
 
-    .locked-card {
-      margin-top: 30px;
-      padding: 24px;
-      border: 1px solid #e5e7eb;
-      border-radius: 10px;
-      background: #f9fafb;
+    .edit-button:hover,
+    .print-button:hover {
+      background: #e5e7eb;
     }
 
-    .locked-card p {
-      color: #526071;
-      line-height: 1.7;
-    }
-
-    .login-to-read {
-      display: inline-block;
-      margin-top: 8px;
-      padding: 11px 17px;
-      background: #111827;
+    .delete-button {
+      background: #b91c1c;
       color: white;
-      text-decoration: none;
-      border-radius: 8px;
-      font-weight: bold;
+    }
+
+    .delete-button:hover {
+      background: #991b1b;
     }
 
     .container {
@@ -161,6 +127,17 @@
       margin: 4px 4px 0 0;
       border-radius: 20px;
       font-size: 13px;
+    }
+
+    .members-badge {
+      display: inline-block;
+      background: #fff3cd;
+      color: #7c5b00;
+      padding: 6px 10px;
+      margin: 4px 4px 0 0;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: bold;
     }
 
     .dates {
@@ -235,9 +212,10 @@
       color: #2563eb;
     }
 
-    .original-link {
+    .original-link,
+    .login-to-read {
       display: inline-block;
-      margin-top: 30px;
+      margin-top: 18px;
       padding: 11px 17px;
       background: #111827;
       color: white;
@@ -246,8 +224,22 @@
       font-weight: bold;
     }
 
-    .original-link:hover {
+    .original-link:hover,
+    .login-to-read:hover {
       background: #263247;
+    }
+
+    .locked-card {
+      margin-top: 30px;
+      padding: 24px;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      background: #f9fafb;
+    }
+
+    .locked-card p {
+      color: #526071;
+      line-height: 1.7;
     }
 
     label {
@@ -420,6 +412,27 @@
         align-items: flex-start;
       }
     }
+
+    @media print {
+      header,
+      #floating-toolbar,
+      #context-menu {
+        display: none !important;
+      }
+
+      body {
+        background: white;
+      }
+
+      .container {
+        margin: 0 auto;
+      }
+
+      .article {
+        box-shadow: none;
+        padding: 0;
+      }
+    }
   </style>
 </head>
 
@@ -453,6 +466,14 @@
         ✏ Edit
       </button>
 
+      <button
+        id="delete-button"
+        class="delete-button"
+        onclick="deleteArticle()"
+      >
+        🗑 Delete
+      </button>
+
     </div>
 
   </div>
@@ -460,15 +481,11 @@
 
 
 <div class="container">
-
   <div id="article-container">
-
     <div class="message">
       Loading article...
     </div>
-
   </div>
-
 </div>
 
 
@@ -476,17 +493,9 @@
 
 <div id="floating-toolbar">
 
-  <button onclick="applyFormat('bold')">
-    B
-  </button>
-
-  <button onclick="applyFormat('italic')">
-    I
-  </button>
-
-  <button onclick="applyFormat('underline')">
-    U
-  </button>
+  <button onclick="applyFormat('bold')">B</button>
+  <button onclick="applyFormat('italic')">I</button>
+  <button onclick="applyFormat('underline')">U</button>
 
   <button
     class="highlight-icon"
@@ -495,13 +504,8 @@
     Highlight
   </button>
 
-  <button onclick="applySize('large')">
-    A+
-  </button>
-
-  <button onclick="applySize(false)">
-    A
-  </button>
+  <button onclick="applySize('large')">A+</button>
+  <button onclick="applySize(false)">A</button>
 
 </div>
 
@@ -510,80 +514,41 @@
 
 <div id="context-menu">
 
-  <button onclick="applyFormat('bold')">
-    Bold
-  </button>
-
-  <button onclick="applyFormat('italic')">
-    Italic
-  </button>
-
-  <button onclick="applyFormat('underline')">
-    Underline
-  </button>
+  <button onclick="applyFormat('bold')">Bold</button>
+  <button onclick="applyFormat('italic')">Italic</button>
+  <button onclick="applyFormat('underline')">Underline</button>
 
   <div class="menu-divider"></div>
 
-  <button onclick="toggleHighlight()">
-    Highlight
-  </button>
-
-  <button onclick="applyTextColor('#b91c1c')">
-    Red Text
-  </button>
-
-  <button onclick="applyTextColor('#2563eb')">
-    Blue Text
-  </button>
-
-  <button onclick="applyTextColor('#111827')">
-    Black Text
-  </button>
+  <button onclick="toggleHighlight()">Highlight</button>
+  <button onclick="applyTextColor('#b91c1c')">Red Text</button>
+  <button onclick="applyTextColor('#2563eb')">Blue Text</button>
+  <button onclick="applyTextColor('#111827')">Black Text</button>
 
   <div class="menu-divider"></div>
 
-  <button onclick="applySize('small')">
-    Small Text
-  </button>
-
-  <button onclick="applySize(false)">
-    Normal Text
-  </button>
-
-  <button onclick="applySize('large')">
-    Large Text
-  </button>
-
-  <button onclick="applySize('huge')">
-    Extra Large
-  </button>
+  <button onclick="applySize('small')">Small Text</button>
+  <button onclick="applySize(false)">Normal Text</button>
+  <button onclick="applySize('large')">Large Text</button>
+  <button onclick="applySize('huge')">Extra Large</button>
 
   <div class="menu-divider"></div>
 
-  <button onclick="applyFont(false)">
-    Sans Font
-  </button>
-
-  <button onclick="applyFont('serif')">
-    Serif Font
-  </button>
-
-  <button onclick="applyFont('monospace')">
-    Monospace Font
-  </button>
+  <button onclick="applyFont(false)">Sans Font</button>
+  <button onclick="applyFont('serif')">Serif Font</button>
+  <button onclick="applyFont('monospace')">Monospace Font</button>
 
   <div class="menu-divider"></div>
 
-  <button onclick="clearSelectedFormatting()">
-    Clear Formatting
-  </button>
+  <button onclick="clearSelectedFormatting()">Clear Formatting</button>
 
 </div>
 
 
 <script>
 
-const ADMIN_UID = "a5bc1b7d-ca11-49f3-8e95-1d99b12031fa";
+const ADMIN_UID =
+  "a5bc1b7d-ca11-49f3-8e95-1d99b12031fa";
 
 let currentArticle = null;
 let currentArticleId = null;
@@ -591,9 +556,9 @@ let currentSession = null;
 
 let currentContentHtml = "";
 let currentMyNote = "";
+let hasProtectedAccess = false;
 
 let inlineEditor = null;
-
 let lastSelection = null;
 
 
@@ -672,7 +637,7 @@ const toolbarOptions = [
 
 
 /* ========================================
-   AUTH UI
+   ADMIN CHECK
 ======================================== */
 
 function isAdminSession() {
@@ -682,8 +647,13 @@ function isAdminSession() {
     currentSession.user &&
     currentSession.user.id === ADMIN_UID
   );
+
 }
 
+
+/* ========================================
+   AUTH UI
+======================================== */
 
 function updateAuthUI() {
 
@@ -693,16 +663,31 @@ function updateAuthUI() {
   const printButton =
     document.getElementById("print-button");
 
+  const deleteButton =
+    document.getElementById("delete-button");
+
 
   if (isAdminSession()) {
 
-    editButton.style.display = "inline-block";
-    printButton.style.display = "inline-block";
+    editButton.style.display =
+      "inline-block";
+
+    printButton.style.display =
+      "inline-block";
+
+    deleteButton.style.display =
+      "inline-block";
 
   } else {
 
-    editButton.style.display = "none";
-    printButton.style.display = "none";
+    editButton.style.display =
+      "none";
+
+    printButton.style.display =
+      "none";
+
+    deleteButton.style.display =
+      "none";
 
     if (inlineEditor) {
       forceExitEditMode();
@@ -711,22 +696,165 @@ function updateAuthUI() {
 }
 
 
+/* ========================================
+   PRINT
+======================================== */
+
 async function printArticle() {
 
-  const { data: { session } } =
+  const {
+    data: {
+      session
+    }
+  } =
     await supabaseClient.auth.getSession();
 
-  currentSession = session;
 
-  if (
-    !session ||
-    session.user.id !== ADMIN_UID
-  ) {
+  currentSession =
+    session;
+
+
+  if (!isAdminSession()) {
+
     updateAuthUI();
+
     return;
   }
 
+
   window.print();
+
+}
+
+
+/* ========================================
+   DELETE
+======================================== */
+
+async function deleteArticle() {
+
+  const {
+    data: {
+      session
+    }
+  } =
+    await supabaseClient.auth.getSession();
+
+
+  currentSession =
+    session;
+
+
+  if (!isAdminSession()) {
+
+    updateAuthUI();
+
+    alert(
+      "Admin access only."
+    );
+
+    return;
+  }
+
+
+  if (!currentArticleId) {
+    return;
+  }
+
+
+  const title =
+    currentArticle &&
+    currentArticle.title
+      ? currentArticle.title
+      : "this article";
+
+
+  const confirmed =
+    window.confirm(
+      'Permanently delete "' +
+      title +
+      '"?\n\nThis cannot be undone.'
+    );
+
+
+  if (!confirmed) {
+    return;
+  }
+
+
+  /*
+    Delete protected content first.
+    This works whether the row exists or not.
+  */
+
+  const {
+    error: contentError
+  } =
+    await supabaseClient
+      .from("item_content")
+      .delete()
+      .eq(
+        "item_id",
+        currentArticleId
+      );
+
+
+  if (contentError) {
+
+    console.error(
+      "Protected content delete error:",
+      contentError
+    );
+
+    alert(
+      "Delete failed: " +
+      contentError.message
+    );
+
+    return;
+  }
+
+
+  /*
+    Delete the main article record.
+  */
+
+  const {
+    error: itemError
+  } =
+    await supabaseClient
+      .from("items")
+      .delete()
+      .eq(
+        "id",
+        currentArticleId
+      );
+
+
+  if (itemError) {
+
+    console.error(
+      "Article delete error:",
+      itemError
+    );
+
+    alert(
+      "Delete failed: " +
+      itemError.message
+    );
+
+    return;
+  }
+
+
+  alert(
+    "Article deleted."
+  );
+
+
+  window.location.href =
+    "index.html";
+
 }
 
 
@@ -770,8 +898,11 @@ supabaseClient
       currentSession =
         session;
 
-
       updateAuthUI();
+
+      if (currentArticle) {
+        loadArticle();
+      }
 
     }
   );
@@ -793,9 +924,7 @@ function forceExitEditMode() {
 
 
   if (currentArticle) {
-
     renderReadMode();
-
   }
 
 }
@@ -808,22 +937,33 @@ function forceExitEditMode() {
 async function loadArticle() {
 
   const container =
-    document.getElementById("article-container");
+    document.getElementById(
+      "article-container"
+    );
+
 
   const params =
-    new URLSearchParams(window.location.search);
+    new URLSearchParams(
+      window.location.search
+    );
+
 
   currentArticleId =
     params.get("id");
 
+
   if (!currentArticleId) {
-    container.innerHTML = `
-      <div class="message">
-        Article not found.
-      </div>
-    `;
+
+    container.innerHTML =
+      `
+        <div class="message">
+          Article not found.
+        </div>
+      `;
+
     return;
   }
+
 
   const {
     data,
@@ -834,22 +974,43 @@ async function loadArticle() {
       .select(
         "id, created_at, updated_at, title, type, ticker, tags, description, preview, url, category, access_level"
       )
-      .eq("id", currentArticleId)
+      .eq(
+        "id",
+        currentArticleId
+      )
       .single();
 
-  if (error || !data) {
+
+  if (
+    error ||
+    !data
+  ) {
+
     console.error(error);
-    container.innerHTML = `
-      <div class="message">
-        Unable to load this article.
-      </div>
-    `;
+
+    container.innerHTML =
+      `
+        <div class="message">
+          Unable to load this article.
+        </div>
+      `;
+
     return;
   }
 
-  currentArticle = data;
-  currentContentHtml = "";
-  currentMyNote = "";
+
+  currentArticle =
+    data;
+
+  currentContentHtml =
+    "";
+
+  currentMyNote =
+    "";
+
+  hasProtectedAccess =
+    false;
+
 
   const {
     data: protectedContent,
@@ -857,25 +1018,42 @@ async function loadArticle() {
   } =
     await supabaseClient
       .from("item_content")
-      .select("content_html, my_note")
-      .eq("item_id", currentArticleId)
+      .select(
+        "content_html, my_note"
+      )
+      .eq(
+        "item_id",
+        currentArticleId
+      )
       .maybeSingle();
 
+
   if (protectedError) {
+
     console.warn(
       "Full content is not available for this session:",
       protectedError
     );
+
   }
+
 
   if (protectedContent) {
+
+    hasProtectedAccess =
+      true;
+
     currentContentHtml =
       protectedContent.content_html || "";
+
     currentMyNote =
       protectedContent.my_note || "";
+
   }
 
+
   renderReadMode();
+
 }
 
 
@@ -923,154 +1101,301 @@ function renderReadMode() {
 
   hideFloatingTools();
 
+
   const container =
-    document.getElementById("article-container");
+    document.getElementById(
+      "article-container"
+    );
 
-  const data = currentArticle;
 
-  const title = safeText(data.title);
-  const ticker = safeText(data.ticker);
-  const category = safeText(data.category);
-  const type = safeText(data.type);
-  const tags = safeText(data.tags);
-  const description = safeText(data.description);
-  const preview = safeText(data.preview || data.description || "");
-  const note = safeText(currentMyNote);
-  const originalUrl = cleanUrl(data.url);
+  const data =
+    currentArticle;
 
-  const published = formatDate(data.created_at);
-  const updated = formatDate(data.updated_at);
+
+  if (!data) {
+    return;
+  }
+
+
+  const title =
+    safeText(
+      data.title
+    );
+
+  const ticker =
+    safeText(
+      data.ticker
+    );
+
+  const category =
+    safeText(
+      data.category
+    );
+
+  const type =
+    safeText(
+      data.type
+    );
+
+  const tags =
+    safeText(
+      data.tags
+    );
+
+  const description =
+    safeText(
+      data.description
+    );
+
+  const preview =
+    safeText(
+      data.preview ||
+      data.description ||
+      ""
+    );
+
+  const note =
+    safeText(
+      currentMyNote
+    );
+
+  const originalUrl =
+    cleanUrl(
+      data.url
+    );
+
+  const published =
+    formatDate(
+      data.created_at
+    );
+
+  const updated =
+    formatDate(
+      data.updated_at
+    );
 
   const membersOnly =
     data.access_level === "members";
 
+
+  /*
+    For Members Only articles, item_content is the protected source.
+    Approved members/admins receive that row through RLS.
+    Pending users and public visitors do not.
+  */
+
   const canReadFull =
-    !membersOnly || Boolean(currentSession);
+    !membersOnly ||
+    hasProtectedAccess ||
+    isAdminSession();
+
 
   const contentHtml =
-    canReadFull && currentContentHtml
-      ? DOMPurify.sanitize(currentContentHtml)
+    canReadFull &&
+    currentContentHtml
+      ? DOMPurify.sanitize(
+          currentContentHtml
+        )
       : "";
+
 
   document.title =
     title
-      ? title + " | Waterside Library"
+      ? title +
+        " | Waterside Library"
       : "Waterside Library";
 
-  container.innerHTML = `
 
-    <article class="article">
+  container.innerHTML =
+    `
 
-      <h1>
-        ${ticker ? ticker + " — " : ""}
-        ${title}
-      </h1>
+      <article class="article">
 
-      <div class="meta">
+        <h1>
+          ${
+            ticker
+              ? ticker + " — "
+              : ""
+          }
+          ${title}
+        </h1>
 
-        ${category ? `<span class="tag">${category}</span>` : ""}
-        ${ticker ? `<span class="tag">${ticker}</span>` : ""}
-        ${type ? `<span class="tag">${type}</span>` : ""}
-        ${tags ? `<span class="tag">${tags}</span>` : ""}
+
+        <div class="meta">
+
+          ${
+            category
+              ? `
+                <span class="tag">
+                  ${category}
+                </span>
+              `
+              : ""
+          }
+
+          ${
+            ticker
+              ? `
+                <span class="tag">
+                  ${ticker}
+                </span>
+              `
+              : ""
+          }
+
+          ${
+            type
+              ? `
+                <span class="tag">
+                  ${type}
+                </span>
+              `
+              : ""
+          }
+
+          ${
+            tags
+              ? `
+                <span class="tag">
+                  ${tags}
+                </span>
+              `
+              : ""
+          }
+
+          ${
+            membersOnly
+              ? `
+                <span class="members-badge">
+                  🔒 Members Only
+                </span>
+              `
+              : ""
+          }
+
+        </div>
+
+
+        <div class="dates">
+
+          ${
+            published
+              ? `
+                <div>
+                  <strong>Published:</strong>
+                  ${published}
+                </div>
+              `
+              : ""
+          }
+
+          ${
+            updated
+              ? `
+                <div>
+                  <strong>Last Updated:</strong>
+                  ${updated}
+                </div>
+              `
+              : ""
+          }
+
+        </div>
+
 
         ${
-          membersOnly
-            ? `<span class="members-badge">🔒 Members Only</span>`
-            : ""
+          !canReadFull
+            ? `
+
+              <div class="locked-card">
+
+                <h2>
+                  🔒 Members Only
+                </h2>
+
+                ${
+                  preview
+                    ? `
+                      <p>
+                        ${preview}
+                      </p>
+                    `
+                    : ""
+                }
+
+                <p>
+                  Log in to continue reading this article.
+                </p>
+
+                <a
+                  href="member.html"
+                  class="login-to-read"
+                >
+                  Member Log In →
+                </a>
+
+              </div>
+
+            `
+            : `
+
+              ${
+                description
+                  ? `
+                    <div class="section">
+                      <h2>Description</h2>
+                      <p>${description}</p>
+                    </div>
+                  `
+                  : ""
+              }
+
+
+              ${
+                contentHtml
+                  ? `
+                    <div class="article-content">
+                      ${contentHtml}
+                    </div>
+                  `
+                  : ""
+              }
+
+
+              ${
+                note
+                  ? `
+                    <div class="section">
+                      <h2>My Note</h2>
+                      <p>${note}</p>
+                    </div>
+                  `
+                  : ""
+              }
+
+
+              ${
+                originalUrl
+                  ? `
+                    <a
+                      href="${originalUrl}"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="original-link"
+                    >
+                      Read Original →
+                    </a>
+                  `
+                  : ""
+              }
+
+            `
         }
 
-      </div>
+      </article>
 
-      <div class="dates">
+    `;
 
-        ${
-          published
-            ? `<div><strong>Published:</strong> ${published}</div>`
-            : ""
-        }
-
-        ${
-          updated
-            ? `<div><strong>Last Updated:</strong> ${updated}</div>`
-            : ""
-        }
-
-      </div>
-
-      ${
-        !canReadFull
-          ? `
-            <div class="locked-card">
-
-              <h2>🔒 Members Only</h2>
-
-              ${preview ? `<p>${preview}</p>` : ""}
-
-              <p>
-                Log in to continue reading this article.
-              </p>
-
-              <a
-                href="admin.html"
-                class="login-to-read"
-              >
-                Log In to Read →
-              </a>
-
-            </div>
-          `
-          : `
-            ${
-              description
-                ? `
-                  <div class="section">
-                    <h2>Description</h2>
-                    <p>${description}</p>
-                  </div>
-                `
-                : ""
-            }
-
-            ${
-              contentHtml
-                ? `
-                  <div class="article-content">
-                    ${contentHtml}
-                  </div>
-                `
-                : ""
-            }
-
-            ${
-              note
-                ? `
-                  <div class="section">
-                    <h2>My Note</h2>
-                    <p>${note}</p>
-                  </div>
-                `
-                : ""
-            }
-
-            ${
-              originalUrl
-                ? `
-                  <a
-                    href="${originalUrl}"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="original-link"
-                  >
-                    Read Original →
-                  </a>
-                `
-                : ""
-            }
-          `
-      }
-
-    </article>
-  `;
 }
 
 
@@ -1094,20 +1419,33 @@ async function enterEditMode() {
     session;
 
 
-  if (
-    !session ||
-    session.user.id !== ADMIN_UID ||
-    !currentArticle
-  ) {
+  if (!isAdminSession()) {
 
     updateAuthUI();
+
+    alert(
+      "Admin access only."
+    );
 
     return;
   }
 
 
-  hideFloatingTools();
+  if (!currentArticle) {
+    return;
+  }
 
+
+  renderEditMode();
+
+}
+
+
+/* ========================================
+   EDIT MODE
+======================================== */
+
+function renderEditMode() {
 
   const container =
     document.getElementById(
@@ -1115,204 +1453,214 @@ async function enterEditMode() {
     );
 
 
-  container.innerHTML = `
+  container.innerHTML =
+    `
 
-    <div class="edit-mode">
+      <div class="edit-mode">
 
-      <h2>
-        ✏ Edit Article
-      </h2>
-
-
-      <div class="grid-2">
-
-        <div>
-
-          <label>
-            Title
-          </label>
-
-          <input
-            id="edit-title"
-            type="text"
-          >
-
-        </div>
+        <h1>
+          Edit Article
+        </h1>
 
 
-        <div>
+        <label>
+          Title
+        </label>
 
-          <label>
-            URL
-          </label>
-
-          <input
-            id="edit-url"
-            type="url"
-          >
-
-        </div>
-
-      </div>
-
-
-      <div class="grid-2">
-
-        <div>
-
-          <label>
-            Type
-          </label>
-
-          <select id="edit-type">
-
-            <option value="Article">
-              Article
-            </option>
-
-            <option value="News">
-              News
-            </option>
-
-            <option value="Research">
-              Research
-            </option>
-
-            <option value="Video">
-              Video
-            </option>
-
-            <option value="Investment Idea">
-              Investment Idea
-            </option>
-
-          </select>
-
-        </div>
-
-
-        <div>
-
-          <label>
-            Ticker
-          </label>
-
-          <input
-            id="edit-ticker"
-            type="text"
-          >
-
-        </div>
-
-      </div>
-
-
-      <label>
-        Category
-      </label>
-
-      <select id="edit-category">
-
-        <option value="Macro Trends">
-          Macro Trends
-        </option>
-
-        <option value="Fundamental Analysis">
-          Fundamental Analysis
-        </option>
-
-        <option value="Price Action Analysis">
-          Price Action Analysis
-        </option>
-
-        <option value="Trading Psychology">
-          Trading Psychology
-        </option>
-
-        <option value="Trading Strategies">
-          Trading Strategies
-        </option>
-
-        <option value="My Trade Reviews">
-          My Trade Reviews
-        </option>
-
-        <option value="My Videos">
-          My Videos
-        </option>
-
-        <option value="Selected YouTube Videos">
-          Selected YouTube Videos
-        </option>
-
-      </select>
-
-
-      <label>
-        Tags
-      </label>
-
-      <input
-        id="edit-tags"
-        type="text"
-      >
-      <label>
-        Preview
-      </label>
-
-      <textarea
-        id="edit-preview"
-      ></textarea>
-
-
-      <label>
-        Access
-      </label>
-
-      <select id="edit-access-level">
-        <option value="public">Public</option>
-        <option value="members">Members Only</option>
-      </select>
-
-      <label>
-        Article Content
-      </label>
-      <div id="inline-editor"></div>
-
-
-      <label>
-        My Note
-      </label>
-
-      <textarea
-        id="edit-note"
-      ></textarea>
-
-
-      <div class="edit-actions">
-
-        <button
-          class="save-button"
-          onclick="saveChanges()"
+        <input
+          id="edit-title"
+          type="text"
         >
-          Save Changes
-        </button>
 
-        <button
-          class="cancel-button"
-          onclick="cancelEdit()"
+
+        <label>
+          Original URL
+        </label>
+
+        <input
+          id="edit-url"
+          type="url"
         >
-          Cancel
-        </button>
+
+
+        <div class="grid-2">
+
+          <div>
+
+            <label>
+              Type
+            </label>
+
+            <select id="edit-type">
+              <option value="Article">Article</option>
+              <option value="Video">Video</option>
+              <option value="Research">Research</option>
+              <option value="Note">Note</option>
+            </select>
+
+          </div>
+
+
+          <div>
+
+            <label>
+              Ticker
+            </label>
+
+            <input
+              id="edit-ticker"
+              type="text"
+            >
+
+          </div>
+
+        </div>
+
+
+        <div class="grid-2">
+
+          <div>
+
+            <label>
+              Category
+            </label>
+
+            <select id="edit-category">
+
+              <option value="Macroeconomy">
+                Macroeconomy
+              </option>
+
+              <option value="Fundamental Analysis">
+                Fundamental Analysis
+              </option>
+
+              <option value="Price Action Analysis">
+                Price Action Analysis
+              </option>
+
+              <option value="Trading Psychology">
+                Trading Psychology
+              </option>
+
+              <option value="Trading Strategies">
+                Trading Strategies
+              </option>
+
+              <option value="My Trade Reviews">
+                My Trade Reviews
+              </option>
+
+              <option value="My Videos">
+                My Videos
+              </option>
+
+              <option value="Selected YouTube Videos">
+                Selected YouTube Videos
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <div>
+
+            <label>
+              Access
+            </label>
+
+            <select id="edit-access">
+
+              <option value="public">
+                Public
+              </option>
+
+              <option value="members">
+                Members Only
+              </option>
+
+            </select>
+
+          </div>
+
+        </div>
+
+
+        <label>
+          Tags
+        </label>
+
+        <input
+          id="edit-tags"
+          type="text"
+        >
+
+
+        <label>
+          Preview
+        </label>
+
+        <textarea
+          id="edit-preview"
+        ></textarea>
+
+
+        <label>
+          Description
+        </label>
+
+        <textarea
+          id="edit-description"
+        ></textarea>
+
+
+        <label>
+          Article Content
+        </label>
+
+        <div class="helper">
+          Select text to format it.
+          The floating toolbar and right-click editing menu
+          are available only to the administrator.
+        </div>
+
+        <div id="inline-editor"></div>
+
+
+        <label>
+          My Note
+        </label>
+
+        <textarea
+          id="edit-note"
+        ></textarea>
+
+
+        <div class="edit-actions">
+
+          <button
+            class="save-button"
+            onclick="saveChanges()"
+          >
+            Save Changes
+          </button>
+
+          <button
+            class="cancel-button"
+            onclick="cancelEdit()"
+          >
+            Cancel
+          </button>
+
+        </div>
+
+
+        <div id="save-message"></div>
 
       </div>
 
-
-      <div id="save-message"></div>
-
-    </div>
-
-  `;
+    `;
 
 
   document
@@ -1354,7 +1702,16 @@ async function enterEditMode() {
     )
     .value =
     currentArticle.category ||
-    "Macro Trends";
+    "Macroeconomy";
+
+
+  document
+    .getElementById(
+      "edit-access"
+    )
+    .value =
+    currentArticle.access_level ||
+    "public";
 
 
   document
@@ -1363,6 +1720,8 @@ async function enterEditMode() {
     )
     .value =
     currentArticle.tags || "";
+
+
   document
     .getElementById(
       "edit-preview"
@@ -1373,10 +1732,10 @@ async function enterEditMode() {
 
   document
     .getElementById(
-      "edit-access-level"
+      "edit-description"
     )
     .value =
-    currentArticle.access_level || "public";
+    currentArticle.description || "";
 
 
   document
@@ -1392,10 +1751,8 @@ async function enterEditMode() {
       "#inline-editor",
       {
         theme: "snow",
-
         placeholder:
           "Write or edit the article here...",
-
         modules: {
           toolbar:
             toolbarOptions
@@ -1403,28 +1760,6 @@ async function enterEditMode() {
       }
     );
 
-
-  loadExistingContentIntoEditor();
-
-  setupSelectionToolbar();
-
-  setupRightClickMenu();
-
-}
-
-
-/* ========================================
-   LOAD EXISTING CONTENT
-======================================== */
-
-function loadExistingContentIntoEditor() {
-
-  if (
-    !isAdminSession() ||
-    !inlineEditor
-  ) {
-    return;
-  }
 
   if (currentContentHtml) {
 
@@ -1434,24 +1769,442 @@ function loadExistingContentIntoEditor() {
         currentContentHtml
       );
 
-    return;
   }
 
-  if (currentArticle.description) {
 
-    const oldText =
-      safeText(currentArticle.description)
-        .replaceAll("\n", "<br>");
+  setupSelectionToolbar();
+  setupRightClickMenu();
 
-    inlineEditor
-      .clipboard
-      .dangerouslyPasteHTML(oldText);
-  }
 }
 
 
 /* ========================================
-   FORMAT PERMISSION CHECK
+   SAVE
+======================================== */
+
+async function saveChanges() {
+
+  const {
+    data: {
+      session
+    }
+  } =
+    await supabaseClient
+      .auth
+      .getSession();
+
+
+  currentSession =
+    session;
+
+
+  if (!isAdminSession()) {
+
+    alert(
+      "Your admin session has ended. Please log in again."
+    );
+
+    updateAuthUI();
+
+    return;
+  }
+
+
+  if (
+    !inlineEditor ||
+    !currentArticleId
+  ) {
+    return;
+  }
+
+
+  const message =
+    document.getElementById(
+      "save-message"
+    );
+
+
+  message.textContent =
+    "Saving...";
+
+
+  let contentHtml =
+    inlineEditor
+      .root
+      .innerHTML
+      .trim();
+
+
+  if (
+    contentHtml ===
+    "<p><br></p>"
+  ) {
+    contentHtml =
+      "";
+  }
+
+
+  const updatedItem = {
+
+    title:
+      document
+        .getElementById(
+          "edit-title"
+        )
+        .value
+        .trim(),
+
+    url:
+      document
+        .getElementById(
+          "edit-url"
+        )
+        .value
+        .trim(),
+
+    type:
+      document
+        .getElementById(
+          "edit-type"
+        )
+        .value,
+
+    ticker:
+      document
+        .getElementById(
+          "edit-ticker"
+        )
+        .value
+        .trim()
+        .toUpperCase(),
+
+    category:
+      document
+        .getElementById(
+          "edit-category"
+        )
+        .value,
+
+    access_level:
+      document
+        .getElementById(
+          "edit-access"
+        )
+        .value,
+
+    tags:
+      document
+        .getElementById(
+          "edit-tags"
+        )
+        .value
+        .trim(),
+
+    preview:
+      document
+        .getElementById(
+          "edit-preview"
+        )
+        .value
+        .trim(),
+
+    description:
+      document
+        .getElementById(
+          "edit-description"
+        )
+        .value
+        .trim(),
+
+    updated_at:
+      new Date().toISOString()
+
+  };
+
+
+  if (!updatedItem.title) {
+
+    message.textContent =
+      "Title cannot be empty.";
+
+    return;
+  }
+
+
+  const {
+    data: savedItem,
+    error: itemError
+  } =
+    await supabaseClient
+      .from("items")
+      .update(
+        updatedItem
+      )
+      .eq(
+        "id",
+        currentArticleId
+      )
+      .select()
+      .single();
+
+
+  if (itemError) {
+
+    console.error(
+      itemError
+    );
+
+    message.textContent =
+      "Save failed: " +
+      itemError.message;
+
+    return;
+  }
+
+
+  const protectedUpdate = {
+
+    item_id:
+      Number(
+        currentArticleId
+      ),
+
+    content_html:
+      contentHtml,
+
+    my_note:
+      document
+        .getElementById(
+          "edit-note"
+        )
+        .value
+        .trim()
+
+  };
+
+
+  const {
+    error: protectedError
+  } =
+    await supabaseClient
+      .from("item_content")
+      .upsert(
+        protectedUpdate,
+        {
+          onConflict: "item_id"
+        }
+      );
+
+
+  if (protectedError) {
+
+    console.error(
+      protectedError
+    );
+
+    message.textContent =
+      "Article details were saved, but protected content could not be saved: " +
+      protectedError.message;
+
+    return;
+  }
+
+
+  currentArticle =
+    savedItem;
+
+  currentContentHtml =
+    protectedUpdate.content_html;
+
+  currentMyNote =
+    protectedUpdate.my_note;
+
+  hasProtectedAccess =
+    true;
+
+
+  inlineEditor =
+    null;
+
+  lastSelection =
+    null;
+
+
+  hideFloatingTools();
+
+  renderReadMode();
+
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+
+}
+
+
+/* ========================================
+   CANCEL EDIT
+======================================== */
+
+function cancelEdit() {
+
+  inlineEditor =
+    null;
+
+  lastSelection =
+    null;
+
+  hideFloatingTools();
+
+  renderReadMode();
+
+}
+
+
+/* ========================================
+   SELECTION TOOLBAR
+======================================== */
+
+function setupSelectionToolbar() {
+
+  if (!inlineEditor) {
+    return;
+  }
+
+
+  inlineEditor.on(
+    "selection-change",
+    function(
+      range
+    ) {
+
+      if (
+        !isAdminSession() ||
+        !range ||
+        range.length <= 0
+      ) {
+
+        lastSelection =
+          null;
+
+        hideFloatingToolbar();
+
+        return;
+      }
+
+
+      lastSelection =
+        {
+          index:
+            range.index,
+
+          length:
+            range.length
+        };
+
+
+      const bounds =
+        inlineEditor.getBounds(
+          range.index,
+          range.length
+        );
+
+
+      const editorRect =
+        inlineEditor
+          .container
+          .getBoundingClientRect();
+
+
+      const toolbar =
+        document.getElementById(
+          "floating-toolbar"
+        );
+
+
+      toolbar.style.left =
+        (
+          editorRect.left +
+          bounds.left
+        ) +
+        "px";
+
+
+      toolbar.style.top =
+        (
+          editorRect.top +
+          bounds.top -
+          45
+        ) +
+        "px";
+
+
+      toolbar.style.display =
+        "flex";
+
+    }
+  );
+
+}
+
+
+/* ========================================
+   RIGHT CLICK MENU
+======================================== */
+
+function setupRightClickMenu() {
+
+  if (!inlineEditor) {
+    return;
+  }
+
+
+  inlineEditor
+    .root
+    .addEventListener(
+      "contextmenu",
+      function(event) {
+
+        if (
+          !isAdminSession() ||
+          !lastSelection ||
+          lastSelection.length <= 0
+        ) {
+          return;
+        }
+
+
+        event.preventDefault();
+
+
+        const menu =
+          document.getElementById(
+            "context-menu"
+          );
+
+
+        menu.style.left =
+          event.clientX +
+          "px";
+
+
+        menu.style.top =
+          event.clientY +
+          "px";
+
+
+        menu.style.display =
+          "block";
+
+      }
+    );
+
+}
+
+
+/* ========================================
+   FORMAT HELPERS
 ======================================== */
 
 function canFormat() {
@@ -1466,249 +2219,6 @@ function canFormat() {
 }
 
 
-/* ========================================
-   FLOATING TOOLBAR
-======================================== */
-
-function setupSelectionToolbar() {
-
-  if (
-    !currentSession ||
-    !inlineEditor
-  ) {
-    return;
-  }
-
-
-  inlineEditor.on(
-    "selection-change",
-    function(range) {
-
-      if (
-        !currentSession ||
-        !range ||
-        range.length === 0
-      ) {
-
-        hideFloatingToolbar();
-
-        return;
-      }
-
-
-      lastSelection =
-        range;
-
-
-      showFloatingToolbar(
-        range
-      );
-
-    }
-  );
-
-}
-
-
-/* ========================================
-   SHOW FLOATING TOOLBAR
-======================================== */
-
-function showFloatingToolbar(
-  range
-) {
-
-  if (
-    !currentSession ||
-    !inlineEditor
-  ) {
-
-    return;
-  }
-
-
-  const toolbar =
-    document.getElementById(
-      "floating-toolbar"
-    );
-
-
-  const editorElement =
-    document.querySelector(
-      "#inline-editor .ql-editor"
-    );
-
-
-  if (
-    !toolbar ||
-    !editorElement
-  ) {
-
-    return;
-  }
-
-
-  const bounds =
-    inlineEditor.getBounds(
-      range.index,
-      range.length
-    );
-
-
-  const editorRect =
-    editorElement
-      .getBoundingClientRect();
-
-
-  let left =
-    editorRect.left +
-    bounds.left;
-
-
-  let top =
-    editorRect.top +
-    bounds.top -
-    45;
-
-
-  left =
-    Math.max(
-      10,
-      Math.min(
-        left,
-        window.innerWidth - 360
-      )
-    );
-
-
-  top =
-    Math.max(
-      10,
-      top
-    );
-
-
-  toolbar.style.left =
-    left + "px";
-
-
-  toolbar.style.top =
-    top + "px";
-
-
-  toolbar.style.display =
-    "flex";
-
-}
-
-
-/* ========================================
-   RIGHT CLICK MENU
-======================================== */
-
-function setupRightClickMenu() {
-
-  if (
-    !currentSession ||
-    !inlineEditor
-  ) {
-
-    return;
-  }
-
-
-  const editorElement =
-    document.querySelector(
-      "#inline-editor .ql-editor"
-    );
-
-
-  if (!editorElement) {
-    return;
-  }
-
-
-  editorElement.addEventListener(
-    "contextmenu",
-    function(event) {
-
-      if (
-        !currentSession ||
-        !lastSelection ||
-        lastSelection.length === 0
-      ) {
-
-        return;
-      }
-
-
-      event.preventDefault();
-
-
-      const menu =
-        document.getElementById(
-          "context-menu"
-        );
-
-
-      let x =
-        event.clientX;
-
-      let y =
-        event.clientY;
-
-
-      if (
-        x + 200 >
-        window.innerWidth
-      ) {
-
-        x =
-          window.innerWidth -
-          210;
-
-      }
-
-
-      if (
-        y + 430 >
-        window.innerHeight
-      ) {
-
-        y =
-          window.innerHeight -
-          440;
-
-      }
-
-
-      menu.style.left =
-        Math.max(
-          5,
-          x
-        ) + "px";
-
-
-      menu.style.top =
-        Math.max(
-          5,
-          y
-        ) + "px";
-
-
-      menu.style.display =
-        "block";
-
-    }
-  );
-
-}
-
-
-/* ========================================
-   APPLY FORMAT
-======================================== */
-
 function applyFormat(format) {
 
   if (!canFormat()) {
@@ -1718,7 +2228,8 @@ function applyFormat(format) {
 
   const current =
     inlineEditor.getFormat(
-      lastSelection
+      lastSelection.index,
+      lastSelection.length
     );
 
 
@@ -1730,70 +2241,10 @@ function applyFormat(format) {
   );
 
 
-  keepSelection();
+  hideContextMenu();
 
 }
 
-
-/* ========================================
-   HIGHLIGHT
-======================================== */
-
-function toggleHighlight() {
-
-  if (!canFormat()) {
-    return;
-  }
-
-
-  const current =
-    inlineEditor.getFormat(
-      lastSelection
-    );
-
-
-  inlineEditor.formatText(
-    lastSelection.index,
-    lastSelection.length,
-    "background",
-    current.background
-      ? false
-      : "#fff59d"
-  );
-
-
-  keepSelection();
-
-}
-
-
-/* ========================================
-   TEXT COLOR
-======================================== */
-
-function applyTextColor(color) {
-
-  if (!canFormat()) {
-    return;
-  }
-
-
-  inlineEditor.formatText(
-    lastSelection.index,
-    lastSelection.length,
-    "color",
-    color
-  );
-
-
-  keepSelection();
-
-}
-
-
-/* ========================================
-   SIZE
-======================================== */
 
 function applySize(size) {
 
@@ -1810,14 +2261,10 @@ function applySize(size) {
   );
 
 
-  keepSelection();
+  hideContextMenu();
 
 }
 
-
-/* ========================================
-   FONT
-======================================== */
 
 function applyFont(font) {
 
@@ -1834,14 +2281,66 @@ function applyFont(font) {
   );
 
 
-  keepSelection();
+  hideContextMenu();
 
 }
 
 
-/* ========================================
-   CLEAR FORMATTING
-======================================== */
+function applyTextColor(color) {
+
+  if (!canFormat()) {
+    return;
+  }
+
+
+  inlineEditor.formatText(
+    lastSelection.index,
+    lastSelection.length,
+    "color",
+    color
+  );
+
+
+  hideContextMenu();
+
+}
+
+
+function toggleHighlight() {
+
+  if (!canFormat()) {
+    return;
+  }
+
+
+  const current =
+    inlineEditor.getFormat(
+      lastSelection.index,
+      lastSelection.length
+    );
+
+
+  const highlighted =
+    current.background ===
+    "#fff59d" ||
+    current.background ===
+    "rgb(255, 245, 157)";
+
+
+  inlineEditor.formatText(
+    lastSelection.index,
+    lastSelection.length,
+    "background",
+    highlighted
+      ? false
+      : "#fff59d"
+  );
+
+
+  hideContextMenu();
+
+}
+
 
 function clearSelectedFormatting() {
 
@@ -1853,33 +2352,6 @@ function clearSelectedFormatting() {
   inlineEditor.removeFormat(
     lastSelection.index,
     lastSelection.length
-  );
-
-
-  keepSelection();
-
-}
-
-
-/* ========================================
-   KEEP SELECTION
-======================================== */
-
-function keepSelection() {
-
-  if (
-    !currentSession ||
-    !inlineEditor ||
-    !lastSelection
-  ) {
-    return;
-  }
-
-
-  inlineEditor.setSelection(
-    lastSelection.index,
-    lastSelection.length,
-    "silent"
   );
 
 
@@ -1901,10 +2373,8 @@ function hideFloatingToolbar() {
 
 
   if (toolbar) {
-
     toolbar.style.display =
       "none";
-
   }
 
 }
@@ -1919,10 +2389,8 @@ function hideContextMenu() {
 
 
   if (menu) {
-
     menu.style.display =
       "none";
-
   }
 
 }
@@ -1931,155 +2399,7 @@ function hideContextMenu() {
 function hideFloatingTools() {
 
   hideFloatingToolbar();
-
   hideContextMenu();
-
-}
-
-
-/* ========================================
-   SAVE
-======================================== */
-
-async function saveChanges() {
-
-  const { data: { session } } =
-    await supabaseClient.auth.getSession();
-
-  currentSession = session;
-
-  if (
-    !session ||
-    session.user.id !== ADMIN_UID
-  ) {
-    updateAuthUI();
-    return;
-  }
-
-  if (
-    !inlineEditor ||
-    !currentArticleId
-  ) {
-    return;
-  }
-
-  const message =
-    document.getElementById("save-message");
-
-  message.textContent = "Saving...";
-
-  let contentHtml =
-    inlineEditor.root.innerHTML.trim();
-
-  if (contentHtml === "<p><br></p>") {
-    contentHtml = "";
-  }
-
-  const updatedItem = {
-    title: document.getElementById("edit-title").value.trim(),
-    url: document.getElementById("edit-url").value.trim(),
-    type: document.getElementById("edit-type").value,
-    ticker: document.getElementById("edit-ticker").value.trim().toUpperCase(),
-    category: document.getElementById("edit-category").value,
-    tags: document.getElementById("edit-tags").value.trim(),
-    preview: document.getElementById("edit-preview").value.trim(),
-    description: document.getElementById("edit-preview").value.trim(),
-    access_level: document.getElementById("edit-access-level").value
-  };
-
-  if (!updatedItem.title) {
-    message.textContent = "Title cannot be empty.";
-    return;
-  }
-
-  if (
-    updatedItem.access_level === "members" &&
-    !updatedItem.preview
-  ) {
-    message.textContent =
-      "Members Only articles need a short Preview.";
-    return;
-  }
-
-  const {
-    data: updatedRow,
-    error: itemError
-  } =
-    await supabaseClient
-      .from("items")
-      .update(updatedItem)
-      .eq("id", currentArticleId)
-      .select(
-        "id, created_at, updated_at, title, type, ticker, tags, description, preview, url, category, access_level"
-      )
-      .single();
-
-  if (itemError) {
-    console.error(itemError);
-    message.textContent =
-      "Save failed: " + itemError.message;
-    return;
-  }
-
-  const myNote =
-    document.getElementById("edit-note").value.trim();
-
-  const { error: contentError } =
-    await supabaseClient
-      .from("item_content")
-      .upsert(
-        {
-          item_id: currentArticleId,
-          content_html: contentHtml,
-          my_note: myNote
-        },
-        {
-          onConflict: "item_id"
-        }
-      );
-
-  if (contentError) {
-    console.error(contentError);
-    message.textContent =
-      "Full content save failed: "
-      + contentError.message;
-    return;
-  }
-
-  currentArticle = updatedRow;
-  currentContentHtml = contentHtml;
-  currentMyNote = myNote;
-
-  inlineEditor = null;
-  lastSelection = null;
-
-  hideFloatingTools();
-  renderReadMode();
-
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
-}
-
-
-/* ========================================
-   CANCEL
-======================================== */
-
-function cancelEdit() {
-
-  inlineEditor =
-    null;
-
-  lastSelection =
-    null;
-
-
-  hideFloatingTools();
-
-
-  renderReadMode();
 
 }
 
@@ -2104,9 +2424,7 @@ document.addEventListener(
         event.target
       )
     ) {
-
       hideContextMenu();
-
     }
 
   }
@@ -2123,19 +2441,31 @@ function safeText(value) {
     value === null ||
     value === undefined
   ) {
-
     return "";
-
   }
 
 
   return String(value)
-
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
 
 }
 
@@ -2161,9 +2491,7 @@ function cleanUrl(value) {
       url.protocol !== "http:" &&
       url.protocol !== "https:"
     ) {
-
       return "";
-
     }
 
 
@@ -2173,10 +2501,9 @@ function cleanUrl(value) {
 
   }
 
+
   catch {
-
     return "";
-
   }
 
 }
@@ -2200,4 +2527,5 @@ startPage();
 </script>
 
 </body>
+
 </html>
