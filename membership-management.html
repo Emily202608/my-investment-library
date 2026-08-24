@@ -544,7 +544,7 @@ async function deleteMember(id) {
     await supabaseClient
       .from("membership_requests")
       .select(
-        "id, name, email, status"
+        "id, name, email, status, user_id"
       )
       .eq(
         "id",
@@ -558,6 +558,10 @@ async function deleteMember(id) {
     !requestData
   ) {
 
+    console.error(
+      requestError
+    );
+
     alert(
       "Unable to load membership record."
     );
@@ -568,11 +572,11 @@ async function deleteMember(id) {
 
   const confirmed =
     window.confirm(
-      "Delete this membership record?\n\n" +
+      "Permanently delete this member?\n\n" +
       (requestData.name || "") +
       "\n" +
       (requestData.email || "") +
-      "\n\nThis will remove the member's approved status."
+      "\n\nThis will delete both the membership record and the user's login account."
     );
 
 
@@ -582,35 +586,74 @@ async function deleteMember(id) {
 
 
   const {
-    error
+    data: deleteData,
+    error: deleteError
   } =
     await supabaseClient
-      .from("membership_requests")
-      .delete()
-      .eq(
-        "id",
-        id
+      .functions
+      .invoke(
+        "delete-member",
+        {
+          body: {
+
+            membershipId:
+              requestData.id,
+
+            userId:
+              requestData.user_id,
+
+            email:
+              requestData.email
+          }
+        }
       );
 
 
-  if (error) {
+  if (deleteError) {
 
     console.error(
-      "Delete failed:",
-      error
+      "Delete member failed:",
+      deleteError
     );
 
     alert(
-      "Delete failed: " +
-      error.message
+      "Delete failed. The member was not fully removed."
     );
 
     return;
   }
 
 
+  if (
+    deleteData &&
+    deleteData.success === false
+  ) {
+
+    console.error(
+      "Delete member returned an error:",
+      deleteData
+    );
+
+    alert(
+      "Delete failed: " +
+      (
+        deleteData.error ||
+        "Unknown error"
+      )
+    );
+
+    return;
+  }
+
+
+  console.log(
+    "Delete member result:",
+    deleteData
+  );
+
+
   alert(
-    "Membership record deleted."
+    "Member account and membership record deleted."
   );
 
 
