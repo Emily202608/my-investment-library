@@ -122,8 +122,17 @@
     }
 
     .reject {
+      background: #b45309;
+      color: white;
+    }
+
+    .delete {
       background: #b91c1c;
       color: white;
+    }
+
+    .delete:hover {
+      background: #991b1b;
     }
 
     .message {
@@ -295,28 +304,42 @@ async function loadRequests() {
           : "";
 
 
-      const actions =
+      let actions =
+        '<div class="actions">';
+
+
+      if (
         request.status === "pending"
+      ) {
 
-          ? '<div class="actions">' +
+        actions +=
 
-              '<button class="approve" ' +
-              'onclick="setStatus(' +
-              request.id +
-              ', \'approved\')">' +
-              'Approve' +
-              '</button>' +
+          '<button class="approve" ' +
+          'onclick="setStatus(' +
+          request.id +
+          ', \'approved\')">' +
+          'Approve' +
+          '</button>' +
 
-              '<button class="reject" ' +
-              'onclick="setStatus(' +
-              request.id +
-              ', \'rejected\')">' +
-              'Reject' +
-              '</button>' +
+          '<button class="reject" ' +
+          'onclick="setStatus(' +
+          request.id +
+          ', \'rejected\')">' +
+          'Reject' +
+          '</button>';
+      }
 
-            '</div>'
 
-          : '';
+      actions +=
+
+        '<button class="delete" ' +
+        'onclick="deleteMember(' +
+        request.id +
+        ')">' +
+        'Delete' +
+        '</button>' +
+
+        '</div>';
 
 
       return (
@@ -370,14 +393,6 @@ async function setStatus(id, status) {
   }
 
 
-  /*
-    Load the membership request first.
-
-    We need the applicant's email
-    and name when sending the
-    approval notification.
-  */
-
   const {
     data: requestData,
     error: requestError
@@ -415,10 +430,6 @@ async function setStatus(id, status) {
     return;
   }
 
-
-  /*
-    Update the membership status.
-  */
 
   const updateData = {
 
@@ -459,11 +470,6 @@ async function setStatus(id, status) {
     return;
   }
 
-
-  /*
-    Send approval email only when
-    the administrator approves.
-  */
 
   if (status === "approved") {
 
@@ -511,6 +517,101 @@ async function setStatus(id, status) {
       );
     }
   }
+
+
+  await loadRequests();
+}
+
+
+/* ---------------------------------
+   DELETE MEMBER
+--------------------------------- */
+
+async function deleteMember(id) {
+
+  if (
+    !currentSession ||
+    currentSession.user.id !== ADMIN_UID
+  ) {
+    return;
+  }
+
+
+  const {
+    data: requestData,
+    error: requestError
+  } =
+    await supabaseClient
+      .from("membership_requests")
+      .select(
+        "id, name, email, status"
+      )
+      .eq(
+        "id",
+        id
+      )
+      .single();
+
+
+  if (
+    requestError ||
+    !requestData
+  ) {
+
+    alert(
+      "Unable to load membership record."
+    );
+
+    return;
+  }
+
+
+  const confirmed =
+    window.confirm(
+      "Delete this membership record?\n\n" +
+      (requestData.name || "") +
+      "\n" +
+      (requestData.email || "") +
+      "\n\nThis will remove the member's approved status."
+    );
+
+
+  if (!confirmed) {
+    return;
+  }
+
+
+  const {
+    error
+  } =
+    await supabaseClient
+      .from("membership_requests")
+      .delete()
+      .eq(
+        "id",
+        id
+      );
+
+
+  if (error) {
+
+    console.error(
+      "Delete failed:",
+      error
+    );
+
+    alert(
+      "Delete failed: " +
+      error.message
+    );
+
+    return;
+  }
+
+
+  alert(
+    "Membership record deleted."
+  );
 
 
   await loadRequests();
