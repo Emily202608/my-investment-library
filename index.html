@@ -147,6 +147,27 @@
       line-height: 1.5;
     }
 
+
+    .watchlist-more-wrap {
+      margin-top: 14px;
+      text-align: center;
+    }
+
+    .watchlist-more-link {
+      display: inline-block;
+      padding: 9px 13px;
+      border-radius: 7px;
+      background: #111827;
+      color: white;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .watchlist-more-link:hover {
+      background: #263247;
+    }
+
     /* =========================
        CHART
     ========================= */
@@ -643,6 +664,12 @@
         Loading Watch List...
       </div>
 
+      <div class="watchlist-more-wrap">
+        <a class="watchlist-more-link" href="watchlist.html">
+          View All Watchlist →
+        </a>
+      </div>
+
     </div>
 
 
@@ -786,8 +813,12 @@ async function loadWatchList() {
   }
 
 
+  const homepageWatchList =
+    watchListData.slice(0, 5);
+
+
   container.innerHTML =
-    watchListData.map(
+    homepageWatchList.map(
       (stock, index) => {
 
         const ticker =
