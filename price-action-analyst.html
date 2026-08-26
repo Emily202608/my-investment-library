@@ -4,10 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>AI Price Action Analyst | Waterside Library</title>
+  <title>Price Action Analyst | Waterside Library</title>
 
+  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
+
+  <!-- Lightweight Charts -->
+  <script src="https://unpkg.com/lightweight-charts@4.2.2/dist/lightweight-charts.standalone.production.js"></script>
 
   <style>
     * {
@@ -28,12 +32,12 @@
     }
 
     .topbar-inner {
-      max-width: 1200px;
+      max-width: 1220px;
       margin: 0 auto;
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      gap: 20px;
+      align-items: center;
+      gap: 16px;
     }
 
     .topbar h1 {
@@ -41,21 +45,42 @@
       font-size: 22px;
     }
 
-    .back-link {
-      color: white;
-      text-decoration: none;
+    .topbar-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .top-link,
+    .print-button {
+      display: inline-block;
+      padding: 9px 13px;
+      border-radius: 7px;
       font-size: 14px;
       font-weight: bold;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .top-link {
+      color: white;
+      border: 1px solid rgba(255,255,255,0.25);
+    }
+
+    .print-button {
+      border: none;
+      background: white;
+      color: #111827;
     }
 
     .container {
-      max-width: 1200px;
-      margin: 35px auto;
+      max-width: 1220px;
+      margin: 34px auto;
       padding: 0 20px;
     }
 
     .intro {
-      margin-bottom: 24px;
+      margin-bottom: 22px;
     }
 
     .intro h2 {
@@ -72,16 +97,16 @@
     .control-panel {
       background: white;
       border-radius: 12px;
-      padding: 22px;
+      padding: 20px;
       box-shadow: 0 3px 12px rgba(0,0,0,0.06);
-      margin-bottom: 24px;
+      margin-bottom: 22px;
     }
 
     .controls {
       display: flex;
       flex-wrap: wrap;
-      align-items: end;
       gap: 16px;
+      align-items: end;
     }
 
     .field {
@@ -103,6 +128,11 @@
       border-radius: 8px;
       font-size: 16px;
       text-transform: uppercase;
+      outline: none;
+    }
+
+    #ticker-input:focus {
+      border-color: #667085;
     }
 
     .timeframes {
@@ -152,16 +182,23 @@
     }
 
     .status {
-      margin-top: 14px;
+      margin-top: 12px;
       min-height: 20px;
-      color: #667085;
       font-size: 14px;
+      color: #667085;
+    }
+
+    .report-meta {
+      display: none;
+      margin-bottom: 14px;
+      color: #667085;
+      font-size: 13px;
     }
 
     .main-grid {
       display: grid;
-      grid-template-columns: minmax(0, 1.65fr) minmax(320px, 0.85fr);
-      gap: 24px;
+      grid-template-columns: minmax(0, 1.55fr) minmax(340px, 0.85fr);
+      gap: 22px;
       align-items: start;
     }
 
@@ -176,8 +213,8 @@
       padding: 17px 20px;
       border-bottom: 1px solid #e4e7ec;
       display: flex;
-      align-items: center;
       justify-content: space-between;
+      align-items: center;
       gap: 12px;
     }
 
@@ -193,17 +230,24 @@
       border-radius: 18px;
       font-size: 12px;
       font-weight: bold;
+      white-space: nowrap;
     }
 
-    #tradingview-chart {
+    #price-chart {
       width: 100%;
-      height: 620px;
+      height: 610px;
+      position: relative;
     }
 
-    .tradingview-widget-container,
-    .tradingview-widget-container__widget {
-      width: 100%;
-      height: 100%;
+    .chart-empty {
+      height: 610px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: #667085;
+      padding: 30px;
+      line-height: 1.6;
     }
 
     .analysis-body {
@@ -215,7 +259,7 @@
       justify-content: space-between;
       align-items: center;
       padding-bottom: 17px;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
       border-bottom: 1px solid #eaecf0;
     }
 
@@ -264,15 +308,21 @@
       background: #f8fafc;
       border-radius: 10px;
       padding: 14px;
-      margin-top: 14px;
       line-height: 1.6;
     }
 
     .empty-analysis {
-      padding: 35px 20px;
+      padding: 36px 20px;
       color: #667085;
       text-align: center;
       line-height: 1.6;
+    }
+
+    .legend-note {
+      padding: 10px 18px 16px;
+      color: #667085;
+      font-size: 12px;
+      line-height: 1.5;
     }
 
     footer {
@@ -289,26 +339,30 @@
         grid-template-columns: 1fr;
       }
 
-      #tradingview-chart {
+      #price-chart,
+      .chart-empty {
         height: 500px;
       }
     }
 
     @media (max-width: 600px) {
       .topbar-inner {
-        align-items: flex-start;
         flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .topbar-actions {
+        width: 100%;
+        flex-wrap: wrap;
       }
 
       .intro h2 {
         font-size: 25px;
       }
 
-      #ticker-input {
-        width: 100%;
-      }
-
-      .field {
+      .field,
+      #ticker-input,
+      #analyze-button {
         width: 100%;
       }
 
@@ -316,12 +370,76 @@
         align-items: stretch;
       }
 
-      #analyze-button {
-        width: 100%;
+      #price-chart,
+      .chart-empty {
+        height: 430px;
+      }
+    }
+
+    @media print {
+      body {
+        background: white;
+        color: #111827;
       }
 
-      #tradingview-chart {
-        height: 430px;
+      .topbar,
+      .control-panel,
+      footer {
+        display: none !important;
+      }
+
+      .container {
+        max-width: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      .intro {
+        margin-bottom: 10px;
+      }
+
+      .intro p {
+        display: none;
+      }
+
+      .report-meta {
+        display: block;
+      }
+
+      .main-grid {
+        grid-template-columns: 1.45fr 0.85fr;
+        gap: 12px;
+      }
+
+      .panel {
+        box-shadow: none;
+        border: 1px solid #d0d5dd;
+        break-inside: avoid;
+      }
+
+      #price-chart {
+        height: 520px !important;
+      }
+
+      .legend-note {
+        display: none;
+      }
+
+      .analysis-body {
+        padding: 14px;
+      }
+
+      .analysis-item {
+        padding: 10px 0;
+      }
+
+      .panel-header {
+        padding: 12px 14px;
+      }
+
+      @page {
+        size: landscape;
+        margin: 10mm;
       }
     }
   </style>
@@ -332,22 +450,27 @@
   <div class="topbar">
     <div class="topbar-inner">
       <h1>Waterside Library</h1>
-      <a href="index.html" class="back-link">← Back to Library</a>
+
+      <div class="topbar-actions">
+        <a href="index.html" class="top-link">← Back to Library</a>
+        <button class="print-button" onclick="window.print()">🖨 Print / Save PDF</button>
+      </div>
     </div>
   </div>
 
   <div class="container">
 
     <div class="intro">
-      <h2>AI Price Action Analyst</h2>
+      <h2>Price Action Analyst</h2>
       <p>
         Analyze market structure, key support and resistance,
         breakouts, breakdowns, volume confirmation and recent price action.
       </p>
     </div>
 
-    <div class="control-panel">
+    <div id="report-meta" class="report-meta"></div>
 
+    <div class="control-panel">
       <div class="controls">
 
         <div class="field">
@@ -356,8 +479,9 @@
             id="ticker-input"
             type="text"
             value="MU"
-            placeholder="MU or NYSE:CRCL"
-            maxlength="25"
+            placeholder="MU"
+            maxlength="15"
+            autocomplete="off"
           >
         </div>
 
@@ -365,93 +489,50 @@
           <label>Timeframe</label>
 
           <div class="timeframes">
-
-            <button
-              class="timeframe-button"
-              data-interval="5min"
-              data-tv-interval="5"
-            >
-              5M
-            </button>
-
-            <button
-              class="timeframe-button"
-              data-interval="15min"
-              data-tv-interval="15"
-            >
-              15M
-            </button>
-
-            <button
-              class="timeframe-button"
-              data-interval="1h"
-              data-tv-interval="60"
-            >
-              1H
-            </button>
-
-            <button
-              class="timeframe-button active"
-              data-interval="1day"
-              data-tv-interval="D"
-            >
-              1D
-            </button>
-
-            <button
-              class="timeframe-button"
-              data-interval="1week"
-              data-tv-interval="W"
-            >
-              1W
-            </button>
-
+            <button class="timeframe-button" data-interval="5min">5M</button>
+            <button class="timeframe-button" data-interval="15min">15M</button>
+            <button class="timeframe-button" data-interval="1h">1H</button>
+            <button class="timeframe-button active" data-interval="1day">1D</button>
+            <button class="timeframe-button" data-interval="1week">1W</button>
           </div>
         </div>
 
-        <button id="analyze-button">
-          Analyze
-        </button>
-
+        <button id="analyze-button">Analyze</button>
       </div>
 
       <div id="status" class="status"></div>
-
     </div>
 
     <div class="main-grid">
 
       <div class="panel">
-
         <div class="panel-header">
-          <h3>Interactive Chart</h3>
-          <span id="chart-symbol" class="symbol-badge">
-            NASDAQ:MU · 1D
-          </span>
+          <h3>Price Chart</h3>
+          <span id="chart-symbol" class="symbol-badge">MU · 1D</span>
         </div>
 
-        <div id="tradingview-chart"></div>
+        <div id="price-chart">
+          <div class="chart-empty">
+            Enter a ticker, select a timeframe, then click Analyze.
+          </div>
+        </div>
 
+        <div class="legend-note">
+          Candlesticks and volume are built from the same OHLCV data used by the Price Action analysis.
+        </div>
       </div>
 
       <div class="panel">
-
         <div class="panel-header">
           <h3>Price Action Analysis</h3>
-          <span id="analysis-symbol" class="symbol-badge">
-            MU · 1D
-          </span>
+          <span id="analysis-symbol" class="symbol-badge">MU · 1D</span>
         </div>
 
         <div id="analysis-content">
-
           <div class="empty-analysis">
-            Enter a ticker, choose a timeframe,
-            then click Analyze.
+            Enter a ticker, choose a timeframe, then click Analyze.
           </div>
-
         </div>
-
       </div>
 
     </div>
@@ -459,14 +540,18 @@
   </div>
 
   <footer>
-    Waterside Library · Price Action Analysis
+    Waterside Library · Price Action Analyst
   </footer>
 
   <script>
-
     let selectedInterval = "1day";
-    let selectedTvInterval = "D";
     let selectedLabel = "1D";
+
+    let chart = null;
+    let candleSeries = null;
+    let volumeSeries = null;
+    let supportLine = null;
+    let resistanceLine = null;
 
     const tickerInput =
       document.getElementById("ticker-input");
@@ -486,45 +571,36 @@
     const analysisSymbol =
       document.getElementById("analysis-symbol");
 
+    const reportMeta =
+      document.getElementById("report-meta");
+
 
     document
       .querySelectorAll(".timeframe-button")
       .forEach(button => {
+        button.addEventListener("click", () => {
 
-        button.addEventListener(
-          "click",
-          () => {
+          document
+            .querySelectorAll(".timeframe-button")
+            .forEach(item => item.classList.remove("active"));
 
-            document
-              .querySelectorAll(".timeframe-button")
-              .forEach(item => {
-                item.classList.remove("active");
-              });
+          button.classList.add("active");
 
-            button.classList.add("active");
+          selectedInterval =
+            button.dataset.interval;
 
-            selectedInterval =
-              button.dataset.interval;
-
-            selectedTvInterval =
-              button.dataset.tvInterval;
-
-            selectedLabel =
-              button.textContent.trim();
-          }
-        );
-
+          selectedLabel =
+            button.textContent.trim();
+        });
       });
 
 
     tickerInput.addEventListener(
       "keydown",
       event => {
-
         if (event.key === "Enter") {
           analyzeStock();
         }
-
       }
     );
 
@@ -536,167 +612,287 @@
 
 
     function normalizeTicker(value) {
-
       return String(value || "")
         .trim()
         .toUpperCase();
-
     }
 
 
-    function getTradingViewSymbol(ticker) {
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
 
-      /*
-        TradingView needs the correct exchange for some symbols.
-        Users may also enter an explicit symbol such as NYSE:CRCL.
-      */
 
-      if (ticker.includes(":")) {
-        return ticker;
+    function formatPrice(value) {
+      const number = Number(value);
+
+      if (!Number.isFinite(number)) {
+        return "—";
       }
 
-      const exchangeMap = {
-        CRCL: "NYSE",
-        BE: "NYSE",
-        SPY: "AMEX",
-        QQQ: "NASDAQ",
-        IWM: "AMEX",
-        DIA: "AMEX",
-        GLD: "AMEX",
-        SLV: "AMEX",
-        TLT: "NASDAQ",
-        MU: "NASDAQ",
-        COIN: "NASDAQ",
-        MRNA: "NASDAQ",
-        NVDA: "NASDAQ",
-        AAPL: "NASDAQ",
-        MSFT: "NASDAQ",
-        AMZN: "NASDAQ",
-        META: "NASDAQ",
-        GOOGL: "NASDAQ",
-        TSLA: "NASDAQ"
-      };
-
-      const exchange =
-        exchangeMap[ticker] || "NASDAQ";
-
-      return exchange + ":" + ticker;
-
+      return "$" + number.toLocaleString(
+        "en-US",
+        {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        }
+      );
     }
 
 
-    function loadTradingViewChart(
-      ticker,
-      tvInterval
-    ) {
+    function toChartTime(datetime) {
+      if (!datetime) {
+        return null;
+      }
 
-      const container =
-        document.getElementById(
-          "tradingview-chart"
+      const clean =
+        String(datetime).trim();
+
+      if (/^\d{4}-\d{2}-\d{2}$/.test(clean)) {
+        return clean;
+      }
+
+      const normalized =
+        clean.replace(" ", "T");
+
+      const timestamp =
+        Math.floor(
+          new Date(normalized).getTime() / 1000
         );
 
-      const symbol =
-        getTradingViewSymbol(ticker);
+      if (!Number.isFinite(timestamp)) {
+        return null;
+      }
 
-      container.innerHTML = "";
-
-      const outer =
-        document.createElement("div");
-
-      outer.className =
-        "tradingview-widget-container";
+      return timestamp;
+    }
 
 
-      const widget =
-        document.createElement("div");
+    function clearChart() {
+      if (chart) {
+        chart.remove();
+      }
 
-      widget.className =
-        "tradingview-widget-container__widget";
+      chart = null;
+      candleSeries = null;
+      volumeSeries = null;
+      supportLine = null;
+      resistanceLine = null;
 
-      outer.appendChild(widget);
+      document.getElementById("price-chart").innerHTML = "";
+    }
 
 
-      const script =
-        document.createElement("script");
+    function renderChart(data) {
+      const container =
+        document.getElementById("price-chart");
 
-      script.type =
-        "text/javascript";
+      clearChart();
 
-      script.src =
-        "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
+      chart =
+        LightweightCharts.createChart(
+          container,
+          {
+            width: container.clientWidth,
+            height: container.clientHeight,
+            layout: {
+              background: {
+                type: "solid",
+                color: "#ffffff"
+              },
+              textColor: "#475467"
+            },
+            grid: {
+              vertLines: {
+                color: "#f2f4f7"
+              },
+              horzLines: {
+                color: "#f2f4f7"
+              }
+            },
+            rightPriceScale: {
+              borderColor: "#d0d5dd"
+            },
+            timeScale: {
+              borderColor: "#d0d5dd",
+              timeVisible:
+                selectedInterval === "5min" ||
+                selectedInterval === "15min" ||
+                selectedInterval === "1h",
+              secondsVisible: false,
+              rightOffset: 5,
+              barSpacing: 7
+            },
+            crosshair: {
+              mode: LightweightCharts.CrosshairMode.Normal
+            }
+          }
+        );
 
-      script.async = true;
 
-      script.innerHTML =
-        JSON.stringify({
-
-          autosize: true,
-
-          symbol: symbol,
-
-          interval: tvInterval,
-
-          timezone: "exchange",
-
-          theme: "light",
-
-          style: "1",
-
-          locale: "en",
-
-          allow_symbol_change: true,
-
-          withdateranges: true,
-
-          hide_side_toolbar: false,
-
-          save_image: false,
-
-          calendar: false,
-
-          support_host:
-            "https://www.tradingview.com"
-
+      candleSeries =
+        chart.addCandlestickSeries({
+          upColor: "#16a34a",
+          downColor: "#dc2626",
+          borderVisible: false,
+          wickUpColor: "#16a34a",
+          wickDownColor: "#dc2626",
+          priceScaleId: "right"
         });
 
 
-      outer.appendChild(script);
+      volumeSeries =
+        chart.addHistogramSeries({
+          priceFormat: {
+            type: "volume"
+          },
+          priceScaleId: "",
+          scaleMargins: {
+            top: 0.80,
+            bottom: 0
+          }
+        });
 
-      container.appendChild(outer);
 
-      chartSymbol.textContent =
-        symbol + " · " + selectedLabel;
+      const candles =
+        (data.candles || [])
+          .map(c => {
+            const time =
+              toChartTime(c.datetime);
 
+            if (time === null) {
+              return null;
+            }
+
+            return {
+              time,
+              open: Number(c.open),
+              high: Number(c.high),
+              low: Number(c.low),
+              close: Number(c.close)
+            };
+          })
+          .filter(Boolean);
+
+
+      const volumes =
+        (data.candles || [])
+          .map(c => {
+            const time =
+              toChartTime(c.datetime);
+
+            if (
+              time === null ||
+              c.volume === null ||
+              c.volume === undefined
+            ) {
+              return null;
+            }
+
+            const open =
+              Number(c.open);
+
+            const close =
+              Number(c.close);
+
+            return {
+              time,
+              value: Number(c.volume),
+              color:
+                close >= open
+                  ? "rgba(22,163,74,0.35)"
+                  : "rgba(220,38,38,0.35)"
+            };
+          })
+          .filter(Boolean);
+
+
+      candleSeries.setData(candles);
+
+      if (volumes.length) {
+        volumeSeries.setData(volumes);
+      }
+
+
+      const support =
+        Number(data?.analysis?.keySupport);
+
+      const resistance =
+        Number(data?.analysis?.keyResistance);
+
+
+      if (Number.isFinite(support)) {
+        supportLine =
+          candleSeries.createPriceLine({
+            price: support,
+            color: "#2563eb",
+            lineWidth: 1,
+            lineStyle: LightweightCharts.LineStyle.Dashed,
+            axisLabelVisible: true,
+            title: "Support"
+          });
+      }
+
+
+      if (Number.isFinite(resistance)) {
+        resistanceLine =
+          candleSeries.createPriceLine({
+            price: resistance,
+            color: "#7c3aed",
+            lineWidth: 1,
+            lineStyle: LightweightCharts.LineStyle.Dashed,
+            axisLabelVisible: true,
+            title: "Resistance"
+          });
+      }
+
+
+      chart.timeScale().fitContent();
+
+
+      const resizeObserver =
+        new ResizeObserver(entries => {
+          if (!chart || !entries.length) {
+            return;
+          }
+
+          const rect =
+            entries[0].contentRect;
+
+          chart.applyOptions({
+            width: rect.width,
+            height: rect.height
+          });
+        });
+
+      resizeObserver.observe(container);
     }
 
 
     async function analyzeStock() {
-
       const ticker =
-        normalizeTicker(
-          tickerInput.value
-        );
+        normalizeTicker(tickerInput.value);
 
       if (
         !ticker ||
-        !/^(?:[A-Z]+:)?[A-Z0-9.\-]{1,15}$/.test(ticker)
+        !/^[A-Z0-9.\-]{1,15}$/.test(ticker)
       ) {
-
         statusElement.textContent =
           "Please enter a valid ticker.";
-
         return;
       }
 
 
       analyzeButton.disabled = true;
-
-      analyzeButton.textContent =
-        "Analyzing...";
+      analyzeButton.textContent = "Analyzing...";
 
       statusElement.textContent =
         "Loading market data and analyzing price action...";
-
 
       analysisContent.innerHTML =
         `
@@ -705,38 +901,23 @@
           </div>
         `;
 
-
-      const analysisTicker =
-        ticker.includes(":")
-          ? ticker.split(":").pop()
-          : ticker;
-
-
-      loadTradingViewChart(
-        ticker,
-        selectedTvInterval
-      );
-
+      chartSymbol.textContent =
+        ticker + " · " + selectedLabel;
 
       analysisSymbol.textContent =
-        analysisTicker + " · " + selectedLabel;
+        ticker + " · " + selectedLabel;
 
 
       try {
-
-        const {
-          data,
-          error
-        } =
+        const { data, error } =
           await supabaseClient
             .functions
             .invoke(
               "price-action-data",
               {
                 body: {
-                  ticker: analysisTicker,
-                  interval:
-                    selectedInterval
+                  ticker: ticker,
+                  interval: selectedInterval
                 }
               }
             );
@@ -761,13 +942,29 @@
         }
 
 
+        if (
+          !Array.isArray(data.candles) ||
+          data.candles.length === 0
+        ) {
+          throw new Error(
+            "No OHLCV data returned."
+          );
+        }
+
+
+        renderChart(data);
         renderAnalysis(data);
+
+        const now =
+          new Date();
+
+        reportMeta.textContent =
+          `${ticker} · ${selectedLabel} · Generated ${now.toLocaleString()}`;
 
         statusElement.textContent =
           "Analysis updated successfully.";
 
       } catch (error) {
-
         console.error(
           "Price Action Analyst error:",
           error
@@ -784,23 +981,28 @@
             </div>
           `;
 
+        clearChart();
+
+        document
+          .getElementById("price-chart")
+          .innerHTML =
+          `
+            <div class="chart-empty">
+              Unable to load chart data.
+            </div>
+          `;
+
         statusElement.textContent =
           "Analysis failed.";
 
       } finally {
-
         analyzeButton.disabled = false;
-
-        analyzeButton.textContent =
-          "Analyze";
-
+        analyzeButton.textContent = "Analyze";
       }
-
     }
 
 
     function renderAnalysis(data) {
-
       const analysis =
         data.analysis || {};
 
@@ -812,7 +1014,6 @@
 
       const volume =
         analysis.volumeConfirmation || {};
-
 
       const price =
         formatPrice(
@@ -977,55 +1178,7 @@
 
           </div>
         `;
-
     }
-
-
-    function formatPrice(value) {
-
-      const number =
-        Number(value);
-
-      if (!Number.isFinite(number)) {
-        return "—";
-      }
-
-      return "$" +
-        number.toLocaleString(
-          "en-US",
-          {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-          }
-        );
-
-    }
-
-
-    function escapeHtml(value) {
-
-      return String(
-        value ?? ""
-      )
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-
-    }
-
-
-    /*
-      Load MU Daily as the initial chart.
-      Analysis still runs only when Analyze is pressed.
-    */
-
-    loadTradingViewChart(
-      "MU",
-      "D"
-    );
-
   </script>
 
 </body>
