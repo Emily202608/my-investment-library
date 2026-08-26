@@ -356,8 +356,8 @@
             id="ticker-input"
             type="text"
             value="MU"
-            placeholder="MU"
-            maxlength="15"
+            placeholder="MU or NYSE:CRCL"
+            maxlength="25"
           >
         </div>
 
@@ -547,14 +547,40 @@
     function getTradingViewSymbol(ticker) {
 
       /*
-        First version:
-        most stocks will resolve correctly with NASDAQ.
-        TradingView also allows symbol changes inside the chart.
-
-        Later we can improve automatic exchange detection.
+        TradingView needs the correct exchange for some symbols.
+        Users may also enter an explicit symbol such as NYSE:CRCL.
       */
 
-      return "NASDAQ:" + ticker;
+      if (ticker.includes(":")) {
+        return ticker;
+      }
+
+      const exchangeMap = {
+        CRCL: "NYSE",
+        BE: "NYSE",
+        SPY: "AMEX",
+        QQQ: "NASDAQ",
+        IWM: "AMEX",
+        DIA: "AMEX",
+        GLD: "AMEX",
+        SLV: "AMEX",
+        TLT: "NASDAQ",
+        MU: "NASDAQ",
+        COIN: "NASDAQ",
+        MRNA: "NASDAQ",
+        NVDA: "NASDAQ",
+        AAPL: "NASDAQ",
+        MSFT: "NASDAQ",
+        AMZN: "NASDAQ",
+        META: "NASDAQ",
+        GOOGL: "NASDAQ",
+        TSLA: "NASDAQ"
+      };
+
+      const exchange =
+        exchangeMap[ticker] || "NASDAQ";
+
+      return exchange + ":" + ticker;
 
     }
 
@@ -653,7 +679,7 @@
 
       if (
         !ticker ||
-        !/^[A-Z0-9.\-]{1,15}$/.test(ticker)
+        !/^(?:[A-Z]+:)?[A-Z0-9.\-]{1,15}$/.test(ticker)
       ) {
 
         statusElement.textContent =
@@ -680,6 +706,12 @@
         `;
 
 
+      const analysisTicker =
+        ticker.includes(":")
+          ? ticker.split(":").pop()
+          : ticker;
+
+
       loadTradingViewChart(
         ticker,
         selectedTvInterval
@@ -687,7 +719,7 @@
 
 
       analysisSymbol.textContent =
-        ticker + " · " + selectedLabel;
+        analysisTicker + " · " + selectedLabel;
 
 
       try {
@@ -702,7 +734,7 @@
               "price-action-data",
               {
                 body: {
-                  ticker: ticker,
+                  ticker: analysisTicker,
                   interval:
                     selectedInterval
                 }
