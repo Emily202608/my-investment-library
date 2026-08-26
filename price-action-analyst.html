@@ -438,6 +438,13 @@
       .panel:first-child {
         break-inside: avoid-page !important;
         page-break-inside: avoid !important;
+        margin-bottom: 0 !important;
+      }
+
+      .panel:nth-child(2) {
+        break-before: page !important;
+        page-break-before: always !important;
+        margin-top: 0 !important;
       }
 
       .panel-header {
@@ -455,14 +462,14 @@
 
       #price-chart {
         width: 100% !important;
-        height: 300px !important;
-        min-height: 300px !important;
+        height: 430px !important;
+        min-height: 430px !important;
         break-inside: avoid-page !important;
         page-break-inside: avoid !important;
       }
 
       .analysis-body {
-        padding: 9px 12px !important;
+        padding: 8px 12px 10px !important;
       }
 
       .price-row {
@@ -476,9 +483,9 @@
       }
 
       .analysis-item {
-        padding: 6px 0 !important;
-        break-inside: auto !important;
-        page-break-inside: auto !important;
+        padding: 5px 0 !important;
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
       }
 
       .analysis-label {
@@ -493,8 +500,8 @@
 
       .analysis-detail,
       .conclusion {
-        font-size: 9pt !important;
-        line-height: 1.3 !important;
+        font-size: 8.6pt !important;
+        line-height: 1.25 !important;
       }
 
       .conclusion {
