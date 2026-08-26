@@ -206,6 +206,20 @@
     .article-content ul,
     .article-content ol {
       line-height: 1.8;
+      padding-left: 1.6em;
+    }
+
+    .article-content ol {
+      list-style-type: decimal;
+    }
+
+    .article-content ul {
+      list-style-type: disc;
+    }
+
+    .article-content li {
+      display: list-item;
+      margin: 8px 0;
     }
 
     .article-content a {
@@ -1396,6 +1410,13 @@ function renderReadMode() {
 
     `;
 
+
+  fixOrderedListNumbering(
+    container.querySelector(
+      ".article-content"
+    )
+  );
+
 }
 
 
@@ -1844,6 +1865,15 @@ async function saveChanges() {
   }
 
 
+  const descriptionValue =
+    document
+      .getElementById(
+        "edit-description"
+      )
+      .value
+      .trim();
+
+
   const updatedItem = {
 
     title:
@@ -1908,14 +1938,6 @@ async function saveChanges() {
         .value
         .trim(),
 
-    description:
-      document
-        .getElementById(
-          "edit-description"
-        )
-        .value
-        .trim(),
-
     updated_at:
       new Date().toISOString()
 
@@ -1962,6 +1984,61 @@ async function saveChanges() {
   }
 
 
+  /*
+    Save Description separately.
+    This avoids it being skipped when the rest
+    of the item fields are updated.
+  */
+
+  const {
+    data: descriptionRows,
+    error: descriptionError
+  } =
+    await supabaseClient
+      .from("items")
+      .update({
+        description:
+          descriptionValue,
+        updated_at:
+          new Date().toISOString()
+      })
+      .eq(
+        "id",
+        currentArticleId
+      )
+      .select(
+        "description, updated_at"
+      );
+
+
+  if (descriptionError) {
+
+    console.error(
+      "Description update error:",
+      descriptionError
+    );
+
+    message.textContent =
+      "Article details were saved, but Description could not be saved: " +
+      descriptionError.message;
+
+    return;
+  }
+
+
+  if (
+    descriptionRows &&
+    descriptionRows.length > 0
+  ) {
+
+    savedItem.description =
+      descriptionRows[0].description;
+
+    savedItem.updated_at =
+      descriptionRows[0].updated_at;
+  }
+
+
   const protectedUpdate = {
 
     content_html:
@@ -1973,7 +2050,10 @@ async function saveChanges() {
           "edit-note"
         )
         .value
-        .trim()
+        .trim(),
+
+    updated_at:
+      new Date().toISOString()
 
   };
 
@@ -2038,7 +2118,10 @@ async function saveChanges() {
                   "edit-note"
                 )
                 .value
-                .trim()
+                .trim(),
+
+            updated_at:
+              new Date().toISOString()
           }
         ]);
 
@@ -2479,6 +2562,70 @@ document.addEventListener(
 
   }
 );
+
+
+/* ========================================
+   ORDERED LIST DISPLAY FIX
+======================================== */
+
+function fixOrderedListNumbering(root) {
+
+  if (!root) {
+    return;
+  }
+
+  const orderedLists =
+    Array.from(
+      root.querySelectorAll("ol")
+    );
+
+  let nextNumber =
+    1;
+
+  let previousWasOrderedList =
+    false;
+
+
+  orderedLists.forEach(
+    function(list) {
+
+      const previous =
+        list.previousElementSibling;
+
+      const continuesPreviousList =
+        previous &&
+        previous.tagName === "OL";
+
+
+      if (!continuesPreviousList) {
+        nextNumber =
+          1;
+      }
+
+
+      if (
+        nextNumber > 1 &&
+        !list.hasAttribute("start")
+      ) {
+        list.setAttribute(
+          "start",
+          String(nextNumber)
+        );
+      }
+
+
+      nextNumber +=
+        list.querySelectorAll(
+          ":scope > li"
+        ).length;
+
+
+      previousWasOrderedList =
+        true;
+    }
+  );
+
+}
 
 
 /* ========================================
