@@ -421,7 +421,7 @@
       }
 
       .main-grid {
-        display: block !important;
+        display: contents !important;
       }
 
       .panel {
@@ -435,16 +435,24 @@
         page-break-inside: auto !important;
       }
 
-      .panel:first-child {
-        break-inside: avoid-page !important;
+      .chart-panel {
+        display: block !important;
+        width: 100% !important;
+        margin: 0 !important;
+        break-inside: avoid !important;
         page-break-inside: avoid !important;
-        margin-bottom: 0 !important;
+        break-after: page !important;
+        page-break-after: always !important;
       }
 
-      .panel:nth-child(2) {
+      .analysis-panel {
+        display: block !important;
+        width: 100% !important;
+        margin: 0 !important;
         break-before: page !important;
         page-break-before: always !important;
-        margin-top: 0 !important;
+        break-inside: auto !important;
+        page-break-inside: auto !important;
       }
 
       .panel-header {
@@ -462,14 +470,26 @@
 
       #price-chart {
         width: 100% !important;
-        height: 430px !important;
-        min-height: 430px !important;
+        height: 400px !important;
+        min-height: 400px !important;
         break-inside: avoid-page !important;
         page-break-inside: avoid !important;
       }
 
       .analysis-body {
         padding: 8px 12px 10px !important;
+      }
+
+      .analysis-panel .panel-header,
+      .analysis-panel .analysis-body {
+        break-before: auto !important;
+        page-break-before: auto !important;
+      }
+
+      .analysis-panel::before {
+        content: "";
+        display: block;
+        height: 0;
       }
 
       .price-row {
@@ -577,7 +597,7 @@
 
     <div class="main-grid">
 
-      <div class="panel">
+      <div class="panel chart-panel">
         <div class="panel-header">
           <h3>Price Chart</h3>
           <span id="chart-symbol" class="symbol-badge">MU · 1D</span>
@@ -594,7 +614,7 @@
         </div>
       </div>
 
-      <div class="panel">
+      <div class="panel analysis-panel">
         <div class="panel-header">
           <h3>Price Action Analysis</h3>
           <span id="analysis-symbol" class="symbol-badge">MU · 1D</span>
