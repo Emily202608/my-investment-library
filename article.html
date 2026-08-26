@@ -1964,11 +1964,6 @@ async function saveChanges() {
 
   const protectedUpdate = {
 
-    item_id:
-      Number(
-        currentArticleId
-      ),
-
     content_html:
       contentHtml,
 
@@ -1984,29 +1979,84 @@ async function saveChanges() {
 
 
   const {
+    data: updatedContent,
     error: protectedError
   } =
     await supabaseClient
       .from("item_content")
-      .upsert(
-        protectedUpdate,
-        {
-          onConflict: "item_id"
-        }
-      );
+      .update(
+        protectedUpdate
+      )
+      .eq(
+        "item_id",
+        currentArticleId
+      )
+      .select();
 
 
   if (protectedError) {
 
     console.error(
+      "Article content update error:",
       protectedError
     );
 
     message.textContent =
-      "Article details were saved, but protected content could not be saved: " +
+      "Article details were saved, but article content could not be saved: " +
       protectedError.message;
 
     return;
+  }
+
+
+  /*
+    If this article does not yet have
+    an item_content row, create one.
+  */
+
+  if (
+    !updatedContent ||
+    updatedContent.length === 0
+  ) {
+
+    const {
+      error: insertContentError
+    } =
+      await supabaseClient
+        .from("item_content")
+        .insert([
+          {
+            item_id:
+              currentArticleId,
+
+            content_html:
+              contentHtml,
+
+            my_note:
+              document
+                .getElementById(
+                  "edit-note"
+                )
+                .value
+                .trim()
+          }
+        ]);
+
+
+    if (insertContentError) {
+
+      console.error(
+        "Article content insert error:",
+        insertContentError
+      );
+
+      message.textContent =
+        "Article details were saved, but article content could not be created: " +
+        insertContentError.message;
+
+      return;
+    }
+
   }
 
 
