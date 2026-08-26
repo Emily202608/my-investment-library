@@ -376,72 +376,134 @@
       }
     }
 
+
     @media print {
+      html,
       body {
-        background: white;
-        color: #111827;
+        background: white !important;
+        color: #111827 !important;
+        width: 100%;
+        height: auto !important;
+        overflow: visible !important;
       }
 
       .topbar,
       .control-panel,
-      footer {
+      footer,
+      .legend-note {
         display: none !important;
       }
 
       .container {
-        max-width: none;
-        margin: 0;
-        padding: 0;
+        width: 100% !important;
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
       }
 
       .intro {
-        margin-bottom: 10px;
+        margin: 0 0 8px !important;
+      }
+
+      .intro h2 {
+        font-size: 20px !important;
+        margin: 0 0 4px !important;
       }
 
       .intro p {
-        display: none;
+        display: none !important;
       }
 
       .report-meta {
-        display: block;
+        display: block !important;
+        margin: 0 0 10px !important;
+        font-size: 11px !important;
       }
 
       .main-grid {
-        grid-template-columns: 1.45fr 0.85fr;
-        gap: 12px;
+        display: block !important;
       }
 
       .panel {
-        box-shadow: none;
-        border: 1px solid #d0d5dd;
-        break-inside: avoid;
-      }
-
-      #price-chart {
-        height: 520px !important;
-      }
-
-      .legend-note {
-        display: none;
-      }
-
-      .analysis-body {
-        padding: 14px;
-      }
-
-      .analysis-item {
-        padding: 10px 0;
+        display: block !important;
+        width: 100% !important;
+        margin: 0 0 12px !important;
+        box-shadow: none !important;
+        border: 1px solid #d0d5dd !important;
+        border-radius: 6px !important;
+        overflow: visible !important;
+        break-inside: auto !important;
+        page-break-inside: auto !important;
       }
 
       .panel-header {
-        padding: 12px 14px;
+        padding: 8px 10px !important;
+      }
+
+      .panel-header h3 {
+        font-size: 14px !important;
+      }
+
+      #price-chart {
+        width: 100% !important;
+        height: 390px !important;
+        min-height: 390px !important;
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+      }
+
+      .analysis-body {
+        padding: 10px !important;
+      }
+
+      .price-row {
+        padding-bottom: 8px !important;
+        margin-bottom: 2px !important;
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+      }
+
+      .current-price {
+        font-size: 18px !important;
+      }
+
+      .analysis-item {
+        padding: 7px 0 !important;
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+      }
+
+      .analysis-label {
+        margin-bottom: 3px !important;
+        font-size: 9px !important;
+      }
+
+      .analysis-value {
+        font-size: 12px !important;
+        line-height: 1.35 !important;
+      }
+
+      .analysis-detail,
+      .conclusion {
+        font-size: 10.5px !important;
+        line-height: 1.4 !important;
+      }
+
+      .conclusion {
+        padding: 8px !important;
+      }
+
+      .symbol-badge {
+        font-size: 10px !important;
+        padding: 4px 7px !important;
       }
 
       @page {
-        size: landscape;
+        size: portrait;
         margin: 10mm;
       }
     }
+
   </style>
 </head>
 
@@ -464,7 +526,7 @@
       <h2>Price Action Analyst</h2>
       <p>
         Analyze market structure, key support and resistance,
-        breakouts, breakdowns, volume confirmation and recent price action.
+        breakouts, breakdowns, moving averages and recent price action.
       </p>
     </div>
 
@@ -518,7 +580,7 @@
         </div>
 
         <div class="legend-note">
-          Candlesticks and volume are built from the same OHLCV data used by the Price Action analysis.
+          Candlesticks with EMA 20, EMA 50 and SMA 200. Volume is used by the analysis but is not displayed on the chart.
         </div>
       </div>
 
@@ -549,7 +611,9 @@
 
     let chart = null;
     let candleSeries = null;
-    let volumeSeries = null;
+    let ema20Series = null;
+    let ema50Series = null;
+    let sma200Series = null;
     let supportLine = null;
     let resistanceLine = null;
 
@@ -680,11 +744,70 @@
 
       chart = null;
       candleSeries = null;
-      volumeSeries = null;
+      ema20Series = null;
+      ema50Series = null;
+      sma200Series = null;
       supportLine = null;
       resistanceLine = null;
 
       document.getElementById("price-chart").innerHTML = "";
+    }
+
+
+
+    function calculateMovingAverage(candles, period, type = "sma") {
+      const values = [];
+      let ema = null;
+      const multiplier = 2 / (period + 1);
+
+      candles.forEach((candle, index) => {
+        const close = Number(candle.close);
+
+        if (!Number.isFinite(close)) {
+          return;
+        }
+
+        if (type === "ema") {
+          if (ema === null) {
+            if (index < period - 1) {
+              return;
+            }
+
+            let sum = 0;
+
+            for (let i = index - period + 1; i <= index; i++) {
+              sum += Number(candles[i].close);
+            }
+
+            ema = sum / period;
+          } else {
+            ema = (close - ema) * multiplier + ema;
+          }
+
+          values.push({
+            time: candle.time,
+            value: ema
+          });
+
+        } else {
+          if (index < period - 1) {
+            return;
+          }
+
+          let sum = 0;
+
+          for (let i = index - period + 1; i <= index; i++) {
+            sum += Number(candles[i].close);
+          }
+
+          values.push({
+            time: candle.time,
+            value: sum / period
+          });
+        }
+      });
+
+      return values;
     }
 
 
@@ -746,16 +869,31 @@
         });
 
 
-      volumeSeries =
-        chart.addHistogramSeries({
-          priceFormat: {
-            type: "volume"
-          },
-          priceScaleId: "",
-          scaleMargins: {
-            top: 0.80,
-            bottom: 0
-          }
+      ema20Series =
+        chart.addLineSeries({
+          color: "#2563eb",
+          lineWidth: 2,
+          priceLineVisible: false,
+          lastValueVisible: true,
+          title: "EMA 20"
+        });
+
+      ema50Series =
+        chart.addLineSeries({
+          color: "#f59e0b",
+          lineWidth: 2,
+          priceLineVisible: false,
+          lastValueVisible: true,
+          title: "EMA 50"
+        });
+
+      sma200Series =
+        chart.addLineSeries({
+          color: "#7c3aed",
+          lineWidth: 2,
+          priceLineVisible: false,
+          lastValueVisible: true,
+          title: "SMA 200"
         });
 
 
@@ -780,42 +918,27 @@
           .filter(Boolean);
 
 
-      const volumes =
-        (data.candles || [])
-          .map(c => {
-            const time =
-              toChartTime(c.datetime);
-
-            if (
-              time === null ||
-              c.volume === null ||
-              c.volume === undefined
-            ) {
-              return null;
-            }
-
-            const open =
-              Number(c.open);
-
-            const close =
-              Number(c.close);
-
-            return {
-              time,
-              value: Number(c.volume),
-              color:
-                close >= open
-                  ? "rgba(22,163,74,0.35)"
-                  : "rgba(220,38,38,0.35)"
-            };
-          })
-          .filter(Boolean);
-
-
       candleSeries.setData(candles);
 
-      if (volumes.length) {
-        volumeSeries.setData(volumes);
+      const ema20 =
+        calculateMovingAverage(candles, 20, "ema");
+
+      const ema50 =
+        calculateMovingAverage(candles, 50, "ema");
+
+      const sma200 =
+        calculateMovingAverage(candles, 200, "sma");
+
+      if (ema20.length) {
+        ema20Series.setData(ema20);
+      }
+
+      if (ema50.length) {
+        ema50Series.setData(ema50);
+      }
+
+      if (sma200.length) {
+        sma200Series.setData(sma200);
       }
 
 
