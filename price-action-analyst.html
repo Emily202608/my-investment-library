@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>AI Price Action Analyst | Waterside Library</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+      color: #172033;
+    }
+
+    .topbar {
+      background: #111827;
+      color: white;
+      padding: 18px 24px;
+    }
+
+    .topbar-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .topbar h1 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .back-link {
+      color: white;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 35px auto;
+      padding: 0 20px;
+    }
+
+    .intro {
+      margin-bottom: 24px;
+    }
+
+    .intro h2 {
+      margin: 0 0 8px;
+      font-size: 30px;
+    }
+
+    .intro p {
+      margin: 0;
+      color: #667085;
+      line-height: 1.6;
+    }
+
+    .control-panel {
+      background: white;
+      border-radius: 12px;
+      padding: 22px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+      margin-bottom: 24px;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: end;
+      gap: 16px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .field label {
+      font-size: 13px;
+      font-weight: bold;
+      color: #475467;
+    }
+
+    #ticker-input {
+      width: 180px;
+      padding: 11px 12px;
+      border: 1px solid #d0d5dd;
+      border-radius: 8px;
+      font-size: 16px;
+      text-transform: uppercase;
+    }
+
+    .timeframes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .timeframe-button {
+      padding: 10px 14px;
+      border: 1px solid #d0d5dd;
+      background: white;
+      color: #344054;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .timeframe-button:hover {
+      background: #f2f4f7;
+    }
+
+    .timeframe-button.active {
+      background: #111827;
+      color: white;
+      border-color: #111827;
+    }
+
+    #analyze-button {
+      padding: 11px 18px;
+      border: none;
+      border-radius: 8px;
+      background: #2563eb;
+      color: white;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    #analyze-button:hover {
+      background: #1d4ed8;
+    }
+
+    #analyze-button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .status {
+      margin-top: 14px;
+      min-height: 20px;
+      color: #667085;
+      font-size: 14px;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.65fr) minmax(320px, 0.85fr);
+      gap: 24px;
+      align-items: start;
+    }
+
+    .panel {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+      overflow: hidden;
+    }
+
+    .panel-header {
+      padding: 17px 20px;
+      border-bottom: 1px solid #e4e7ec;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .panel-header h3 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .symbol-badge {
+      background: #eef2f7;
+      color: #344054;
+      padding: 6px 10px;
+      border-radius: 18px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    #tradingview-chart {
+      width: 100%;
+      height: 620px;
+    }
+
+    .tradingview-widget-container,
+    .tradingview-widget-container__widget {
+      width: 100%;
+      height: 100%;
+    }
+
+    .analysis-body {
+      padding: 20px;
+    }
+
+    .price-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 17px;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #eaecf0;
+    }
+
+    .price-label {
+      color: #667085;
+      font-size: 13px;
+    }
+
+    .current-price {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .analysis-item {
+      padding: 14px 0;
+      border-bottom: 1px solid #eaecf0;
+    }
+
+    .analysis-item:last-child {
+      border-bottom: none;
+    }
+
+    .analysis-label {
+      margin-bottom: 6px;
+      color: #667085;
+      font-size: 12px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .analysis-value {
+      font-size: 16px;
+      font-weight: bold;
+      line-height: 1.45;
+    }
+
+    .analysis-detail {
+      margin-top: 5px;
+      color: #667085;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .conclusion {
+      background: #f8fafc;
+      border-radius: 10px;
+      padding: 14px;
+      margin-top: 14px;
+      line-height: 1.6;
+    }
+
+    .empty-analysis {
+      padding: 35px 20px;
+      color: #667085;
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    footer {
+      margin-top: 60px;
+      padding: 28px 20px;
+      background: #111827;
+      color: #98a2b3;
+      text-align: center;
+      font-size: 13px;
+    }
+
+    @media (max-width: 900px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+
+      #tradingview-chart {
+        height: 500px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .topbar-inner {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .intro h2 {
+        font-size: 25px;
+      }
+
+      #ticker-input {
+        width: 100%;
+      }
+
+      .field {
+        width: 100%;
+      }
+
+      .controls {
+        align-items: stretch;
+      }
+
+      #analyze-button {
+        width: 100%;
+      }
+
+      #tradingview-chart {
+        height: 430px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="topbar">
+    <div class="topbar-inner">
+      <h1>Waterside Library</h1>
+      <a href="index.html" class="back-link">← Back to Library</a>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <div class="intro">
+      <h2>AI Price Action Analyst</h2>
+      <p>
+        Analyze market structure, key support and resistance,
+        breakouts, breakdowns, volume confirmation and recent price action.
+      </p>
+    </div>
+
+    <div class="control-panel">
+
+      <div class="controls">
+
+        <div class="field">
+          <label for="ticker-input">Ticker</label>
+          <input
+            id="ticker-input"
+            type="text"
+            value="MU"
+            placeholder="MU"
+            maxlength="15"
+          >
+        </div>
+
+        <div class="field">
+          <label>Timeframe</label>
+
+          <div class="timeframes">
+
+            <button
+              class="timeframe-button"
+              data-interval="5min"
+              data-tv-interval="5"
+            >
+              5M
+            </button>
+
+            <button
+              class="timeframe-button"
+              data-interval="15min"
+              data-tv-interval="15"
+            >
+              15M
+            </button>
+
+            <button
+              class="timeframe-button"
+              data-interval="1h"
+              data-tv-interval="60"
+            >
+              1H
+            </button>
+
+            <button
+              class="timeframe-button active"
+              data-interval="1day"
+              data-tv-interval="D"
+            >
+              1D
+            </button>
+
+            <button
+              class="timeframe-button"
+              data-interval="1week"
+              data-tv-interval="W"
+            >
+              1W
+            </button>
+
+          </div>
+        </div>
+
+        <button id="analyze-button">
+          Analyze
+        </button>
+
+      </div>
+
+      <div id="status" class="status"></div>
+
+    </div>
+
+    <div class="main-grid">
+
+      <div class="panel">
+
+        <div class="panel-header">
+          <h3>Interactive Chart</h3>
+          <span id="chart-symbol" class="symbol-badge">
+            NASDAQ:MU · 1D
+          </span>
+        </div>
+
+        <div id="tradingview-chart"></div>
+
+      </div>
+
+      <div class="panel">
+
+        <div class="panel-header">
+          <h3>Price Action Analysis</h3>
+          <span id="analysis-symbol" class="symbol-badge">
+            MU · 1D
+          </span>
+        </div>
+
+        <div id="analysis-content">
+
+          <div class="empty-analysis">
+            Enter a ticker, choose a timeframe,
+            then click Analyze.
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <footer>
+    Waterside Library · Price Action Analysis
+  </footer>
+
+  <script>
+
+    let selectedInterval = "1day";
+    let selectedTvInterval = "D";
+    let selectedLabel = "1D";
+
+    const tickerInput =
+      document.getElementById("ticker-input");
+
+    const analyzeButton =
+      document.getElementById("analyze-button");
+
+    const statusElement =
+      document.getElementById("status");
+
+    const analysisContent =
+      document.getElementById("analysis-content");
+
+    const chartSymbol =
+      document.getElementById("chart-symbol");
+
+    const analysisSymbol =
+      document.getElementById("analysis-symbol");
+
+
+    document
+      .querySelectorAll(".timeframe-button")
+      .forEach(button => {
+
+        button.addEventListener(
+          "click",
+          () => {
+
+            document
+              .querySelectorAll(".timeframe-button")
+              .forEach(item => {
+                item.classList.remove("active");
+              });
+
+            button.classList.add("active");
+
+            selectedInterval =
+              button.dataset.interval;
+
+            selectedTvInterval =
+              button.dataset.tvInterval;
+
+            selectedLabel =
+              button.textContent.trim();
+          }
+        );
+
+      });
+
+
+    tickerInput.addEventListener(
+      "keydown",
+      event => {
+
+        if (event.key === "Enter") {
+          analyzeStock();
+        }
+
+      }
+    );
+
+
+    analyzeButton.addEventListener(
+      "click",
+      analyzeStock
+    );
+
+
+    function normalizeTicker(value) {
+
+      return String(value || "")
+        .trim()
+        .toUpperCase();
+
+    }
+
+
+    function getTradingViewSymbol(ticker) {
+
+      /*
+        First version:
+        most stocks will resolve correctly with NASDAQ.
+        TradingView also allows symbol changes inside the chart.
+
+        Later we can improve automatic exchange detection.
+      */
+
+      return "NASDAQ:" + ticker;
+
+    }
+
+
+    function loadTradingViewChart(
+      ticker,
+      tvInterval
+    ) {
+
+      const container =
+        document.getElementById(
+          "tradingview-chart"
+        );
+
+      const symbol =
+        getTradingViewSymbol(ticker);
+
+      container.innerHTML = "";
+
+      const outer =
+        document.createElement("div");
+
+      outer.className =
+        "tradingview-widget-container";
+
+
+      const widget =
+        document.createElement("div");
+
+      widget.className =
+        "tradingview-widget-container__widget";
+
+      outer.appendChild(widget);
+
+
+      const script =
+        document.createElement("script");
+
+      script.type =
+        "text/javascript";
+
+      script.src =
+        "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
+
+      script.async = true;
+
+      script.innerHTML =
+        JSON.stringify({
+
+          autosize: true,
+
+          symbol: symbol,
+
+          interval: tvInterval,
+
+          timezone: "exchange",
+
+          theme: "light",
+
+          style: "1",
+
+          locale: "en",
+
+          allow_symbol_change: true,
+
+          withdateranges: true,
+
+          hide_side_toolbar: false,
+
+          save_image: false,
+
+          calendar: false,
+
+          support_host:
+            "https://www.tradingview.com"
+
+        });
+
+
+      outer.appendChild(script);
+
+      container.appendChild(outer);
+
+      chartSymbol.textContent =
+        symbol + " · " + selectedLabel;
+
+    }
+
+
+    async function analyzeStock() {
+
+      const ticker =
+        normalizeTicker(
+          tickerInput.value
+        );
+
+      if (
+        !ticker ||
+        !/^[A-Z0-9.\-]{1,15}$/.test(ticker)
+      ) {
+
+        statusElement.textContent =
+          "Please enter a valid ticker.";
+
+        return;
+      }
+
+
+      analyzeButton.disabled = true;
+
+      analyzeButton.textContent =
+        "Analyzing...";
+
+      statusElement.textContent =
+        "Loading market data and analyzing price action...";
+
+
+      analysisContent.innerHTML =
+        `
+          <div class="empty-analysis">
+            Analyzing ${escapeHtml(ticker)}...
+          </div>
+        `;
+
+
+      loadTradingViewChart(
+        ticker,
+        selectedTvInterval
+      );
+
+
+      analysisSymbol.textContent =
+        ticker + " · " + selectedLabel;
+
+
+      try {
+
+        const {
+          data,
+          error
+        } =
+          await supabaseClient
+            .functions
+            .invoke(
+              "price-action-data",
+              {
+                body: {
+                  ticker: ticker,
+                  interval:
+                    selectedInterval
+                }
+              }
+            );
+
+
+        if (error) {
+          throw error;
+        }
+
+
+        if (!data) {
+          throw new Error(
+            "No response received."
+          );
+        }
+
+
+        if (data.error) {
+          throw new Error(
+            data.error
+          );
+        }
+
+
+        renderAnalysis(data);
+
+        statusElement.textContent =
+          "Analysis updated successfully.";
+
+      } catch (error) {
+
+        console.error(
+          "Price Action Analyst error:",
+          error
+        );
+
+        analysisContent.innerHTML =
+          `
+            <div class="empty-analysis">
+              Unable to complete the analysis.<br><br>
+              ${escapeHtml(
+                error?.message ||
+                "Unknown error."
+              )}
+            </div>
+          `;
+
+        statusElement.textContent =
+          "Analysis failed.";
+
+      } finally {
+
+        analyzeButton.disabled = false;
+
+        analyzeButton.textContent =
+          "Analyze";
+
+      }
+
+    }
+
+
+    function renderAnalysis(data) {
+
+      const analysis =
+        data.analysis || {};
+
+      const structure =
+        analysis.marketStructure || {};
+
+      const breakStatus =
+        analysis.breakoutBreakdown || {};
+
+      const volume =
+        analysis.volumeConfirmation || {};
+
+
+      const price =
+        formatPrice(
+          data.currentPrice
+        );
+
+      const support =
+        formatPrice(
+          analysis.keySupport
+        );
+
+      const resistance =
+        formatPrice(
+          analysis.keyResistance
+        );
+
+
+      analysisContent.innerHTML =
+        `
+          <div class="analysis-body">
+
+            <div class="price-row">
+
+              <div>
+                <div class="price-label">
+                  Current Price
+                </div>
+              </div>
+
+              <div class="current-price">
+                ${price}
+              </div>
+
+            </div>
+
+
+            <div class="analysis-item">
+
+              <div class="analysis-label">
+                Market Structure
+              </div>
+
+              <div class="analysis-value">
+                ${escapeHtml(
+                  structure.label ||
+                  "Unavailable"
+                )}
+              </div>
+
+              <div class="analysis-detail">
+                ${escapeHtml(
+                  structure.detail ||
+                  ""
+                )}
+              </div>
+
+            </div>
+
+
+            <div class="analysis-item">
+
+              <div class="analysis-label">
+                Key Support
+              </div>
+
+              <div class="analysis-value">
+                ${support}
+              </div>
+
+            </div>
+
+
+            <div class="analysis-item">
+
+              <div class="analysis-label">
+                Key Resistance
+              </div>
+
+              <div class="analysis-value">
+                ${resistance}
+              </div>
+
+            </div>
+
+
+            <div class="analysis-item">
+
+              <div class="analysis-label">
+                Breakout / Breakdown
+              </div>
+
+              <div class="analysis-value">
+                ${escapeHtml(
+                  breakStatus.status ||
+                  "Unavailable"
+                )}
+              </div>
+
+              <div class="analysis-detail">
+                ${escapeHtml(
+                  breakStatus.detail ||
+                  ""
+                )}
+              </div>
+
+            </div>
+
+
+            <div class="analysis-item">
+
+              <div class="analysis-label">
+                Volume Confirmation
+              </div>
+
+              <div class="analysis-value">
+                ${escapeHtml(
+                  volume.status ||
+                  "Unavailable"
+                )}
+              </div>
+
+              <div class="analysis-detail">
+                ${escapeHtml(
+                  volume.detail ||
+                  ""
+                )}
+              </div>
+
+            </div>
+
+
+            <div class="analysis-item">
+
+              <div class="analysis-label">
+                Latest Price Action
+              </div>
+
+              <div class="analysis-detail">
+                ${escapeHtml(
+                  analysis.latestPriceAction ||
+                  "Unavailable"
+                )}
+              </div>
+
+            </div>
+
+
+            <div class="analysis-item">
+
+              <div class="analysis-label">
+                Conclusion
+              </div>
+
+              <div class="conclusion">
+                ${escapeHtml(
+                  analysis.conclusion ||
+                  "No conclusion available."
+                )}
+              </div>
+
+            </div>
+
+          </div>
+        `;
+
+    }
+
+
+    function formatPrice(value) {
+
+      const number =
+        Number(value);
+
+      if (!Number.isFinite(number)) {
+        return "—";
+      }
+
+      return "$" +
+        number.toLocaleString(
+          "en-US",
+          {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          }
+        );
+
+    }
+
+
+    function escapeHtml(value) {
+
+      return String(
+        value ?? ""
+      )
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+
+    }
+
+
+    /*
+      Load MU Daily as the initial chart.
+      Analysis still runs only when Analyze is pressed.
+    */
+
+    loadTradingViewChart(
+      "MU",
+      "D"
+    );
+
+  </script>
+
+</body>
+</html>
