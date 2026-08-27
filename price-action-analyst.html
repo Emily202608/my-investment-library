@@ -1325,6 +1325,18 @@
       const breakStatus =
         analysis.breakoutBreakdown || {};
 
+      const rangeLow =
+        Number(breakStatus.rangeLow);
+
+      const rangeHigh =
+        Number(breakStatus.rangeHigh);
+
+      const rangeText =
+        Number.isFinite(rangeLow) &&
+        Number.isFinite(rangeHigh)
+          ? formatPrice(rangeLow) + " – " + formatPrice(rangeHigh)
+          : "";
+
       const volume =
         analysis.volumeConfirmation || {};
 
@@ -1424,6 +1436,16 @@
                   "Unavailable"
                 )}
               </div>
+
+              ${
+                breakStatus.status === "Inside Range" && rangeText
+                  ? `
+                      <div class="analysis-detail">
+                        <strong>Range:</strong> ${escapeHtml(rangeText)}
+                      </div>
+                    `
+                  : ""
+              }
 
               <div class="analysis-detail">
                 ${escapeHtml(
