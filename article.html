@@ -1626,17 +1626,7 @@ function renderEditMode() {
           id="edit-preview"
         ></textarea>
 
-
-        <label>
-          Description
-        </label>
-
-        <textarea
-          id="edit-description"
-        ></textarea>
-
-
-        <label>
+<label>
           Article Content
         </label>
 
@@ -1750,16 +1740,7 @@ function renderEditMode() {
     .value =
     currentArticle.preview || "";
 
-
-  document
-    .getElementById(
-      "edit-description"
-    )
-    .value =
-    currentArticle.description || "";
-
-
-  document
+document
     .getElementById(
       "edit-note"
     )
@@ -1864,17 +1845,7 @@ async function saveChanges() {
       "";
   }
 
-
-  const descriptionValue =
-    document
-      .getElementById(
-        "edit-description"
-      )
-      .value
-      .trim();
-
-
-  const updatedItem = {
+const updatedItem = {
 
     title:
       document
@@ -1984,62 +1955,7 @@ async function saveChanges() {
   }
 
 
-  /*
-    Save Description separately.
-    This avoids it being skipped when the rest
-    of the item fields are updated.
-  */
-
-  const {
-    data: descriptionRows,
-    error: descriptionError
-  } =
-    await supabaseClient
-      .from("items")
-      .update({
-        description:
-          descriptionValue,
-        updated_at:
-          new Date().toISOString()
-      })
-      .eq(
-        "id",
-        currentArticleId
-      )
-      .select(
-        "description, updated_at"
-      );
-
-
-  if (descriptionError) {
-
-    console.error(
-      "Description update error:",
-      descriptionError
-    );
-
-    message.textContent =
-      "Article details were saved, but Description could not be saved: " +
-      descriptionError.message;
-
-    return;
-  }
-
-
-  if (
-    descriptionRows &&
-    descriptionRows.length > 0
-  ) {
-
-    savedItem.description =
-      descriptionRows[0].description;
-
-    savedItem.updated_at =
-      descriptionRows[0].updated_at;
-  }
-
-
-  const protectedUpdate = {
+    const protectedUpdate = {
 
     content_html:
       contentHtml,
