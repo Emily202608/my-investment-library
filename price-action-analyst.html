@@ -326,6 +326,68 @@
       line-height: 1.5;
     }
 
+
+    /* =========================
+       PRICE ACTION ARTICLES
+    ========================= */
+    .articles-section {
+      margin-top: 28px;
+    }
+
+    .articles-header {
+      margin-bottom: 14px;
+    }
+
+    .articles-header h2 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .article-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .article-list-item {
+      background: white;
+      padding: 17px 20px;
+      border-radius: 10px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+      border-left: 4px solid #111827;
+    }
+
+    .article-title-link {
+      display: block;
+      color: #172033;
+      text-decoration: none;
+      font-size: 18px;
+      font-weight: bold;
+      line-height: 1.4;
+    }
+
+    .article-title-link:hover {
+      color: #2563eb;
+    }
+
+    .article-meta {
+      margin-top: 8px;
+      color: #6b7280;
+      font-size: 13px;
+    }
+
+    .article-meta span {
+      display: inline-block;
+      margin-right: 12px;
+    }
+
+    .articles-empty {
+      background: white;
+      padding: 22px;
+      border-radius: 10px;
+      color: #667085;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+    }
+
     footer {
       margin-top: 60px;
       padding: 28px 20px;
@@ -391,7 +453,8 @@
       .topbar,
       .control-panel,
       footer,
-      .legend-note {
+      .legend-note,
+      .articles-section {
         display: none !important;
       }
 
@@ -630,6 +693,21 @@
 
     </div>
 
+    <!-- =========================
+         PRICE ACTION ARTICLES
+    ========================= -->
+    <section class="articles-section">
+      <div class="articles-header">
+        <h2>Articles</h2>
+      </div>
+
+      <div id="price-action-articles" class="article-list">
+        <div class="articles-empty">
+          Loading Price Action articles...
+        </div>
+      </div>
+    </section>
+
   </div>
 
   <footer>
@@ -668,6 +746,9 @@
 
     const reportMeta =
       document.getElementById("report-meta");
+
+    const priceActionArticles =
+      document.getElementById("price-action-articles");
 
 
     document
@@ -1156,6 +1237,84 @@
     }
 
 
+
+    async function loadPriceActionArticles() {
+      if (!priceActionArticles) {
+        return;
+      }
+
+      const { data, error } =
+        await supabaseClient
+          .from("items")
+          .select("id,title,ticker,category,type,created_at")
+          .eq("category", "Price Action Analysis")
+          .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error(
+          "Price Action articles error:",
+          error
+        );
+
+        priceActionArticles.innerHTML =
+          `
+            <div class="articles-empty">
+              Unable to load Price Action articles.
+            </div>
+          `;
+
+        return;
+      }
+
+      const items = data || [];
+
+      if (items.length === 0) {
+        priceActionArticles.innerHTML =
+          `
+            <div class="articles-empty">
+              No Price Action articles found.
+            </div>
+          `;
+
+        return;
+      }
+
+      priceActionArticles.innerHTML =
+        items.map(item => {
+          const id =
+            encodeURIComponent(item.id);
+
+          const ticker =
+            escapeHtml(item.ticker || "");
+
+          const title =
+            escapeHtml(item.title || "Untitled");
+
+          const category =
+            escapeHtml(item.category || "");
+
+          const type =
+            escapeHtml(item.type || "");
+
+          return `
+            <div class="article-list-item">
+              <a
+                class="article-title-link"
+                href="article.html?id=${id}"
+              >
+                ${ticker ? ticker + " — " : ""}${title}
+              </a>
+
+              <div class="article-meta">
+                ${category ? `<span>${category}</span>` : ""}
+                ${type ? `<span>${type}</span>` : ""}
+              </div>
+            </div>
+          `;
+        }).join("");
+    }
+
+
     function renderAnalysis(data) {
       const analysis =
         data.analysis || {};
@@ -1333,6 +1492,8 @@
           </div>
         `;
     }
+
+    loadPriceActionArticles();
   </script>
 
 </body>
