@@ -645,7 +645,6 @@
           <label>Timeframe</label>
 
           <div class="timeframes">
-            <button class="timeframe-button" data-interval="5min">5M</button>
             <button class="timeframe-button" data-interval="15min">15M</button>
             <button class="timeframe-button" data-interval="1h">1H</button>
             <button class="timeframe-button active" data-interval="1day">1D</button>
@@ -956,7 +955,6 @@
             timeScale: {
               borderColor: "#d0d5dd",
               timeVisible:
-                selectedInterval === "5min" ||
                 selectedInterval === "15min" ||
                 selectedInterval === "1h",
               secondsVisible: false,
@@ -1127,7 +1125,7 @@
       analyzeButton.textContent = "Analyzing...";
 
       statusElement.textContent =
-        "Loading market data and analyzing price action...";
+        "Refreshing latest price, loading market data, and analyzing price action...";
 
       analysisContent.innerHTML =
         `
