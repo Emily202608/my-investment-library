@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Add New Content | Waterside Library</title>
+  <title>Add New Content | My Investment Library</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
@@ -228,6 +228,60 @@
       min-height: 240px;
     }
 
+    .review-images-section {
+      margin: 18px 0 24px;
+      padding: 20px;
+      border: 1px solid #d7dee8;
+      border-radius: 10px;
+      background: #f8fafc;
+    }
+
+    .review-images-section[hidden] {
+      display: none;
+    }
+
+    .review-image-input {
+      margin-bottom: 8px;
+      background: white;
+    }
+
+    .review-image-preview {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      gap: 14px;
+      margin-top: 12px;
+    }
+
+    .review-image-card {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid #d7dee8;
+      border-radius: 9px;
+      background: white;
+    }
+
+    .review-image-card img {
+      width: 100%;
+      height: 130px;
+      display: block;
+      object-fit: cover;
+    }
+
+    .review-image-card button {
+      position: absolute;
+      top: 7px;
+      right: 7px;
+      width: 28px;
+      height: 28px;
+      border: 0;
+      border-radius: 50%;
+      background: rgba(17, 24, 39, .86);
+      color: white;
+      cursor: pointer;
+      font-size: 17px;
+      line-height: 1;
+    }
+
     @media (max-width: 800px) {
       .grid-2 {
         grid-template-columns: 1fr;
@@ -338,8 +392,8 @@
 
       <select id="new-category">
 
-        <option value="Macroeconomy">
-          Macroeconomy
+        <option value="Macro Trends">
+          Macro Trends
         </option>
 
         <option value="Fundamental Analysis">
@@ -359,7 +413,7 @@
         </option>
 
         <option value="My Trade Reviews">
-          My Trade Reviews
+          Daily Review
         </option>
 
         <option value="My Videos">
@@ -380,23 +434,41 @@
         type="text"
         placeholder="AI, HBM, Earnings..."
       >
-      <label>Preview</label>
-
-      <textarea
-        id="new-preview"
-        placeholder="Write a short 1–2 line preview for readers."
-      ></textarea>
 
 
-      <label>Access</label>
+      <label>Description</label>
 
-      <select id="new-access-level">
-        <option value="public">Public</option>
-        <option value="members">Members Only</option>
-      </select>
+      <textarea id="new-description" placeholder="Short summary shown in article lists."></textarea>
+
 
       <label>Article Content</label>
+
+      <div class="helper">
+        Paste content from ChatGPT here, then reorganize paragraphs and format it.
+        You can use headings, font size, bold, italic, underline, text color,
+        highlight, lists, quotes and links.
+      </div>
+
       <div id="new-content-editor" class="rich-editor"></div>
+
+      <section id="review-images-section" class="review-images-section" hidden>
+        <label for="review-images">Review Images</label>
+
+        <div class="helper">
+          Upload charts, screenshots, or visual notes for this daily review.
+          You can select several images and remove any image before publishing.
+        </div>
+
+        <input
+          id="review-images"
+          class="review-image-input"
+          type="file"
+          accept="image/*"
+          multiple
+        >
+
+        <div id="review-image-preview" class="review-image-preview"></div>
+      </section>
 
 
       <label>My Note</label>
@@ -428,29 +500,35 @@
 
 <script>
 
-const ADMIN_UID = "a5bc1b7d-ca11-49f3-8e95-1d99b12031fa";
-
 /* ========================================
    LOGIN CHECK
 ======================================== */
 
 async function checkLogin() {
 
-  const { data: { session } } =
+  const {
+    data: { session }
+  } =
     await supabaseClient.auth.getSession();
 
-  if (
-    !session ||
-    session.user.id !== ADMIN_UID
-  ) {
 
-    document.getElementById("management-content").style.display = "none";
+  if (!session) {
 
-    const warning = document.getElementById("login-warning");
-    warning.style.display = "block";
-    warning.innerHTML = session
-      ? "<strong>Admin access only.</strong><br><br><a href='index.html'>Back to Library</a>"
-      : "<strong>You are not logged in.</strong><br><br><a href='admin.html'>Go to Log In</a>";
+    document
+      .getElementById(
+        "management-content"
+      )
+      .style.display =
+      "none";
+
+
+    document
+      .getElementById(
+        "login-warning"
+      )
+      .style.display =
+      "block";
+
 
     return;
   }
@@ -466,109 +544,182 @@ async function checkLogin() {
 async function addContent() {
 
   const message =
-    document.getElementById("content-message");
+    document.getElementById(
+      "content-message"
+    );
 
-  const { data: { session } } =
-    await supabaseClient.auth.getSession();
-
-  if (
-    !session ||
-    session.user.id !== ADMIN_UID
-  ) {
-    message.textContent = "Admin access required.";
-    return;
-  }
 
   const item = {
-    title: document.getElementById("new-title").value.trim(),
-    url: document.getElementById("new-url").value.trim(),
-    type: document.getElementById("new-type").value,
-    ticker: document.getElementById("new-ticker").value.trim().toUpperCase(),
-    category: document.getElementById("new-category").value,
-    tags: document.getElementById("new-tags").value.trim(),
-    preview: document.getElementById("new-preview").value.trim(),
-    description: document.getElementById("new-preview").value.trim(),
-    access_level: document.getElementById("new-access-level").value
+
+    title:
+      document
+        .getElementById(
+          "new-title"
+        )
+        .value
+        .trim(),
+
+    url:
+      document
+        .getElementById(
+          "new-url"
+        )
+        .value
+        .trim(),
+
+    type:
+      document
+        .getElementById(
+          "new-type"
+        )
+        .value,
+
+    ticker:
+      document
+        .getElementById(
+          "new-ticker"
+        )
+        .value
+        .trim()
+        .toUpperCase(),
+
+    category:
+      document
+        .getElementById(
+          "new-category"
+        )
+        .value,
+
+    tags:
+      document
+        .getElementById(
+          "new-tags"
+        )
+        .value
+        .trim(),
+
+    description:
+      document
+        .getElementById(
+          "new-description"
+        )
+        .value
+        .trim(),
+
+    my_note:
+      document
+        .getElementById(
+          "new-note"
+        )
+        .value
+        .trim(),
+
+    content_html:
+      getNewEditorHtml()
   };
 
-  const contentHtml = getNewEditorHtml();
-  const myNote = document.getElementById("new-note").value.trim();
 
   if (!item.title) {
-    message.textContent = "Please enter a title.";
-    return;
-  }
 
-  if (
-    item.access_level === "members" &&
-    !item.preview
-  ) {
     message.textContent =
-      "Please add a short Preview for Members Only content.";
+      "Please enter a title.";
+
     return;
   }
 
-  message.textContent = "Publishing...";
 
-  const {
-    data: insertedItem,
-    error: itemError
-  } =
+  message.textContent =
+    "Publishing...";
+
+  try {
+    const imageUrls =
+      item.category === "My Trade Reviews"
+        ? await uploadReviewImages(reviewImageFiles)
+        : [];
+
+    if (imageUrls.length) {
+      item.content_html =
+        [item.content_html, buildReviewImagesHtml(imageUrls)]
+          .filter(Boolean)
+          .join("");
+    }
+  } catch (error) {
+    console.error(error);
+    message.textContent =
+      "Image upload failed: " + error.message;
+    return;
+  }
+
+
+  const { error } =
     await supabaseClient
       .from("items")
-      .insert([item])
-      .select("id")
-      .single();
+      .insert([item]);
 
-  if (itemError) {
-    console.error(itemError);
+
+  if (error) {
+
+    console.error(error);
+
     message.textContent =
-      "Publish failed: " + itemError.message;
+      "Publish failed: "
+      + error.message;
+
     return;
   }
 
-  const { error: contentError } =
-    await supabaseClient
-      .from("item_content")
-      .insert([{
-        item_id: insertedItem.id,
-        content_html: contentHtml,
-        my_note: myNote
-      }]);
 
-  if (contentError) {
-    console.error(contentError);
+  message.textContent =
+    "Published successfully!";
 
-    await supabaseClient
-      .from("items")
-      .delete()
-      .eq("id", insertedItem.id);
 
-    message.textContent =
-      "Publish failed while saving article content: "
-      + contentError.message;
-    return;
-  }
+  document
+    .getElementById(
+      "new-title"
+    )
+    .value = "";
 
-  message.textContent = "Published successfully!";
 
-  [
-    "new-title",
-    "new-url",
-    "new-ticker",
-    "new-tags",
-    "new-preview",
-    "new-note"
-  ].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = "";
-  });
+  document
+    .getElementById(
+      "new-url"
+    )
+    .value = "";
 
-  document.getElementById("new-access-level").value = "public";
+
+  document
+    .getElementById(
+      "new-ticker"
+    )
+    .value = "";
+
+
+  document
+    .getElementById(
+      "new-tags"
+    )
+    .value = "";
+
+
+  document
+    .getElementById(
+      "new-description"
+    )
+    .value = "";
+
+
+  document
+    .getElementById(
+      "new-note"
+    )
+    .value = "";
 
   if (newContentEditor) {
     newContentEditor.setContents([]);
   }
+
+  clearReviewImages();
+
 }
 
 
@@ -589,6 +740,138 @@ const quillToolbarOptions = [
 ];
 
 let newContentEditor = null;
+let reviewImageFiles = [];
+
+
+function updateReviewImagesVisibility() {
+
+  const category =
+    document.getElementById("new-category").value;
+
+  document
+    .getElementById("review-images-section")
+    .hidden = category !== "My Trade Reviews";
+}
+
+
+function renderReviewImagePreview() {
+
+  const preview =
+    document.getElementById("review-image-preview");
+
+  preview.innerHTML = "";
+
+  reviewImageFiles.forEach((file, index) => {
+    const card = document.createElement("div");
+    card.className = "review-image-card";
+
+    const image = document.createElement("img");
+    image.src = URL.createObjectURL(file);
+    image.alt = file.name;
+    image.onload = () => URL.revokeObjectURL(image.src);
+
+    const removeButton = document.createElement("button");
+    removeButton.type = "button";
+    removeButton.setAttribute("aria-label", "Remove " + file.name);
+    removeButton.textContent = "×";
+    removeButton.addEventListener("click", () => {
+      reviewImageFiles.splice(index, 1);
+      renderReviewImagePreview();
+    });
+
+    card.append(image, removeButton);
+    preview.appendChild(card);
+  });
+}
+
+
+function handleReviewImages(event) {
+
+  const selected =
+    Array.from(event.target.files || [])
+      .filter(file => file.type.startsWith("image/"));
+
+  reviewImageFiles =
+    reviewImageFiles.concat(selected).slice(0, 10);
+
+  event.target.value = "";
+  renderReviewImagePreview();
+}
+
+
+function clearReviewImages() {
+  reviewImageFiles = [];
+  document.getElementById("review-images").value = "";
+  renderReviewImagePreview();
+}
+
+
+async function uploadReviewImages(files) {
+
+  if (!files.length) {
+    return [];
+  }
+
+  const {
+    data: { session }
+  } = await supabaseClient.auth.getSession();
+
+  if (!session) {
+    throw new Error("Please log in again before uploading images.");
+  }
+
+  const urls = [];
+
+  for (const file of files) {
+    const extension =
+      (file.name.split(".").pop() || "jpg")
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, "") || "jpg";
+
+    const path =
+      session.user.id + "/" +
+      new Date().toISOString().slice(0, 10) + "/" +
+      crypto.randomUUID() + "." + extension;
+
+    const { error } =
+      await supabaseClient.storage
+        .from("review-images")
+        .upload(path, file, {
+          cacheControl: "3600",
+          contentType: file.type,
+          upsert: false
+        });
+
+    if (error) {
+      throw error;
+    }
+
+    const { data } =
+      supabaseClient.storage
+        .from("review-images")
+        .getPublicUrl(path);
+
+    urls.push(data.publicUrl);
+  }
+
+  return urls;
+}
+
+
+function buildReviewImagesHtml(urls) {
+  return `
+    <section class="saved-review-images">
+      <h2>Review Images</h2>
+      <div class="saved-review-image-grid">
+        ${urls.map((url, index) => `
+          <a href="${safeAttr(url)}" target="_blank" rel="noopener noreferrer">
+            <img src="${safeAttr(url)}" alt="Daily review image ${index + 1}">
+          </a>
+        `).join("")}
+      </div>
+    </section>
+  `;
+}
 
 
 function initializeNewEditor() {
@@ -618,6 +901,16 @@ function initializeNewEditor() {
         }
       }
     );
+
+  document
+    .getElementById("new-category")
+    .addEventListener("change", updateReviewImagesVisibility);
+
+  document
+    .getElementById("review-images")
+    .addEventListener("change", handleReviewImages);
+
+  updateReviewImagesVisibility();
 }
 
 
