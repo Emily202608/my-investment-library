@@ -448,11 +448,11 @@
 
       <div id="new-content-editor" class="rich-editor"></div>
 
-      <section id="review-images-section" class="review-images-section" hidden>
-        <label for="review-images">Review Images</label>
+      <section id="review-images-section" class="review-images-section">
+        <label for="review-images">Images</label>
 
         <div class="helper">
-          Upload charts, screenshots, or visual notes for this daily review.
+          Upload charts, screenshots, or other images for this content.
           You can select several images and remove any image before publishing.
         </div>
 
@@ -630,9 +630,7 @@ async function addContent() {
 
   try {
     const imageUrls =
-      item.category === "My Trade Reviews"
-        ? await uploadReviewImages(reviewImageFiles)
-        : [];
+      await uploadReviewImages(reviewImageFiles);
 
     if (imageUrls.length) {
       item.content_html =
@@ -775,13 +773,9 @@ let reviewImageFiles = [];
 
 
 function updateReviewImagesVisibility() {
-
-  const category =
-    document.getElementById("new-category").value;
-
   document
     .getElementById("review-images-section")
-    .hidden = category !== "My Trade Reviews";
+    .hidden = false;
 }
 
 
@@ -892,7 +886,7 @@ async function uploadReviewImages(files) {
 function buildReviewImagesHtml(urls) {
   return `
     <section class="saved-review-images">
-      <h2>Review Images</h2>
+      <h2>Images</h2>
       <div class="saved-review-image-grid">
         ${urls.map((url, index) => `
           <img src="${safeAttr(url)}" alt="Daily review image ${index + 1}">
