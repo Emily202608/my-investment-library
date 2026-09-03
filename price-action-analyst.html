@@ -4,14 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Price Action Analyst | Waterside Library</title>
+  <title>AI Price Action Analyst | Waterside Library</title>
 
-  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
-
-  <!-- Lightweight Charts -->
-  <script src="https://unpkg.com/lightweight-charts@4.2.2/dist/lightweight-charts.standalone.production.js"></script>
 
   <style>
     * {
@@ -32,12 +28,12 @@
     }
 
     .topbar-inner {
-      max-width: 1220px;
+      max-width: 1200px;
       margin: 0 auto;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      gap: 16px;
+      justify-content: space-between;
+      gap: 20px;
     }
 
     .topbar h1 {
@@ -45,42 +41,21 @@
       font-size: 22px;
     }
 
-    .topbar-actions {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-
-    .top-link,
-    .print-button {
-      display: inline-block;
-      padding: 9px 13px;
-      border-radius: 7px;
+    .back-link {
+      color: white;
+      text-decoration: none;
       font-size: 14px;
       font-weight: bold;
-      text-decoration: none;
-      cursor: pointer;
-    }
-
-    .top-link {
-      color: white;
-      border: 1px solid rgba(255,255,255,0.25);
-    }
-
-    .print-button {
-      border: none;
-      background: white;
-      color: #111827;
     }
 
     .container {
-      max-width: 1500px;
-      margin: 34px auto;
-      padding: 0 24px;
+      max-width: 1200px;
+      margin: 35px auto;
+      padding: 0 20px;
     }
 
     .intro {
-      margin-bottom: 22px;
+      margin-bottom: 24px;
     }
 
     .intro h2 {
@@ -97,16 +72,16 @@
     .control-panel {
       background: white;
       border-radius: 12px;
-      padding: 20px;
+      padding: 22px;
       box-shadow: 0 3px 12px rgba(0,0,0,0.06);
-      margin-bottom: 22px;
+      margin-bottom: 24px;
     }
 
     .controls {
       display: flex;
       flex-wrap: wrap;
-      gap: 16px;
       align-items: end;
+      gap: 16px;
     }
 
     .field {
@@ -128,11 +103,6 @@
       border-radius: 8px;
       font-size: 16px;
       text-transform: uppercase;
-      outline: none;
-    }
-
-    #ticker-input:focus {
-      border-color: #667085;
     }
 
     .timeframes {
@@ -182,23 +152,16 @@
     }
 
     .status {
-      margin-top: 12px;
+      margin-top: 14px;
       min-height: 20px;
+      color: #667085;
       font-size: 14px;
-      color: #667085;
-    }
-
-    .report-meta {
-      display: none;
-      margin-bottom: 14px;
-      color: #667085;
-      font-size: 13px;
     }
 
     .main-grid {
       display: grid;
-      grid-template-columns: 1fr;
-      gap: 22px;
+      grid-template-columns: minmax(0, 1.65fr) minmax(320px, 0.85fr);
+      gap: 24px;
       align-items: start;
     }
 
@@ -213,8 +176,8 @@
       padding: 17px 20px;
       border-bottom: 1px solid #e4e7ec;
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
       gap: 12px;
     }
 
@@ -230,28 +193,21 @@
       border-radius: 18px;
       font-size: 12px;
       font-weight: bold;
-      white-space: nowrap;
     }
 
-    #price-chart {
+    #tradingview-chart {
       width: 100%;
-      height: 660px;
-      position: relative;
+      height: 620px;
     }
 
-    .chart-empty {
-      height: 660px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      color: #667085;
-      padding: 30px;
-      line-height: 1.6;
+    .tradingview-widget-container,
+    .tradingview-widget-container__widget {
+      width: 100%;
+      height: 100%;
     }
 
     .analysis-body {
-      padding: 22px 24px 26px;
+      padding: 20px;
     }
 
     .price-row {
@@ -259,7 +215,7 @@
       justify-content: space-between;
       align-items: center;
       padding-bottom: 17px;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
       border-bottom: 1px solid #eaecf0;
     }
 
@@ -283,109 +239,40 @@
     }
 
     .analysis-label {
-      margin-bottom: 7px;
+      margin-bottom: 6px;
       color: #667085;
-      font-size: 14px;
+      font-size: 12px;
       font-weight: bold;
       text-transform: uppercase;
       letter-spacing: 0.04em;
     }
 
     .analysis-value {
-      font-size: 18px;
+      font-size: 16px;
       font-weight: bold;
-      line-height: 1.5;
+      line-height: 1.45;
     }
 
     .analysis-detail {
-      margin-top: 6px;
+      margin-top: 5px;
       color: #667085;
-      font-size: 16px;
-      line-height: 1.6;
+      font-size: 13px;
+      line-height: 1.55;
     }
 
     .conclusion {
       background: #f8fafc;
       border-radius: 10px;
-      padding: 16px;
-      font-size: 16px;
+      padding: 14px;
+      margin-top: 14px;
       line-height: 1.6;
     }
 
     .empty-analysis {
-      padding: 36px 20px;
+      padding: 35px 20px;
       color: #667085;
       text-align: center;
       line-height: 1.6;
-    }
-
-    .legend-note {
-      padding: 10px 18px 16px;
-      color: #667085;
-      font-size: 12px;
-      line-height: 1.5;
-    }
-
-
-    /* =========================
-       PRICE ACTION ARTICLES
-    ========================= */
-    .articles-section {
-      margin-top: 28px;
-    }
-
-    .articles-header {
-      margin-bottom: 14px;
-    }
-
-    .articles-header h2 {
-      margin: 0;
-      font-size: 24px;
-    }
-
-    .article-list {
-      display: grid;
-      gap: 12px;
-    }
-
-    .article-list-item {
-      background: white;
-      padding: 17px 20px;
-      border-radius: 10px;
-      box-shadow: 0 3px 12px rgba(0,0,0,0.05);
-      border-left: 4px solid #111827;
-    }
-
-    .article-title-link {
-      display: block;
-      color: #172033;
-      text-decoration: none;
-      font-size: 18px;
-      font-weight: bold;
-      line-height: 1.4;
-    }
-
-    .article-title-link:hover {
-      color: #2563eb;
-    }
-
-    .article-meta {
-      margin-top: 8px;
-      color: #6b7280;
-      font-size: 13px;
-    }
-
-    .article-meta span {
-      display: inline-block;
-      margin-right: 12px;
-    }
-
-    .articles-empty {
-      background: white;
-      padding: 22px;
-      border-radius: 10px;
-      color: #667085;
-      box-shadow: 0 3px 12px rgba(0,0,0,0.05);
     }
 
     footer {
@@ -402,30 +289,26 @@
         grid-template-columns: 1fr;
       }
 
-      #price-chart,
-      .chart-empty {
+      #tradingview-chart {
         height: 500px;
       }
     }
 
     @media (max-width: 600px) {
       .topbar-inner {
-        flex-direction: column;
         align-items: flex-start;
-      }
-
-      .topbar-actions {
-        width: 100%;
-        flex-wrap: wrap;
+        flex-direction: column;
       }
 
       .intro h2 {
         font-size: 25px;
       }
 
-      .field,
-      #ticker-input,
-      #analyze-button {
+      #ticker-input {
+        width: 100%;
+      }
+
+      .field {
         width: 100%;
       }
 
@@ -433,171 +316,14 @@
         align-items: stretch;
       }
 
-      #price-chart,
-      .chart-empty {
+      #analyze-button {
+        width: 100%;
+      }
+
+      #tradingview-chart {
         height: 430px;
       }
     }
-
-
-    @media print {
-      html,
-      body {
-        background: #fff !important;
-        color: #111827 !important;
-        width: 100% !important;
-        height: auto !important;
-        overflow: visible !important;
-      }
-
-      .topbar,
-      .control-panel,
-      footer,
-      .legend-note,
-      .articles-section {
-        display: none !important;
-      }
-
-      .container {
-        width: 100% !important;
-        max-width: none !important;
-        margin: 0 !important;
-        padding: 0 !important;
-      }
-
-      .intro {
-        margin: 0 0 5mm !important;
-      }
-
-      .intro h2 {
-        margin: 0 0 2mm !important;
-        font-size: 19pt !important;
-      }
-
-      .intro p {
-        display: none !important;
-      }
-
-      .report-meta {
-        display: block !important;
-        margin: 0 0 4mm !important;
-        font-size: 9pt !important;
-      }
-
-      .main-grid {
-        display: contents !important;
-      }
-
-      .panel {
-        width: 100% !important;
-        margin: 0 0 6mm !important;
-        border: 1px solid #d0d5dd !important;
-        border-radius: 4px !important;
-        box-shadow: none !important;
-        overflow: visible !important;
-        break-inside: auto !important;
-        page-break-inside: auto !important;
-      }
-
-      .chart-panel {
-        display: block !important;
-        width: 100% !important;
-        margin: 0 !important;
-        break-inside: avoid !important;
-        page-break-inside: avoid !important;
-        break-after: page !important;
-        page-break-after: always !important;
-      }
-
-      .analysis-panel {
-        display: block !important;
-        width: 100% !important;
-        margin: 0 !important;
-        break-before: page !important;
-        page-break-before: always !important;
-        break-inside: auto !important;
-        page-break-inside: auto !important;
-      }
-
-      .panel-header {
-        padding: 7px 10px !important;
-      }
-
-      .panel-header h3 {
-        font-size: 12pt !important;
-      }
-
-      .symbol-badge {
-        padding: 3px 6px !important;
-        font-size: 8pt !important;
-      }
-
-      #price-chart {
-        width: 100% !important;
-        height: 400px !important;
-        min-height: 400px !important;
-        break-inside: avoid-page !important;
-        page-break-inside: avoid !important;
-      }
-
-      .analysis-body {
-        padding: 8px 12px 10px !important;
-      }
-
-      .analysis-panel .panel-header,
-      .analysis-panel .analysis-body {
-        break-before: auto !important;
-        page-break-before: auto !important;
-      }
-
-      .analysis-panel::before {
-        content: "";
-        display: block;
-        height: 0;
-      }
-
-      .price-row {
-        margin: 0 !important;
-        padding: 0 0 7px !important;
-        break-inside: avoid !important;
-      }
-
-      .current-price {
-        font-size: 23pt !important;
-      }
-
-      .analysis-item {
-        padding: 6px 0 !important;
-        break-inside: avoid !important;
-        page-break-inside: avoid !important;
-      }
-
-      .analysis-label {
-        margin-bottom: 4px !important;
-        font-size: 12pt !important;
-      }
-
-      .analysis-value {
-        font-size: 16pt !important;
-        line-height: 1.28 !important;
-      }
-
-      .analysis-detail,
-      .conclusion {
-        font-size: 15pt !important;
-        line-height: 1.32 !important;
-      }
-
-      .conclusion {
-        padding: 10px !important;
-      }
-
-      @page {
-        size: A4 landscape;
-        margin: 8mm;
-      }
-    }
-
   </style>
 </head>
 
@@ -606,27 +332,22 @@
   <div class="topbar">
     <div class="topbar-inner">
       <h1>Waterside Library</h1>
-
-      <div class="topbar-actions">
-        <a href="index.html" class="top-link">← Back to Library</a>
-        <button class="print-button" onclick="window.print()">🖨 Print / Save PDF</button>
-      </div>
+      <a href="index.html" class="back-link">← Back</a>
     </div>
   </div>
 
   <div class="container">
 
     <div class="intro">
-      <h2>Price Action Analyst</h2>
+      <h2>AI Price Action Analyst</h2>
       <p>
         Analyze market structure, key support and resistance,
-        breakouts, breakdowns, moving averages and recent price action.
+        breakouts, breakdowns, volume confirmation and recent price action.
       </p>
     </div>
 
-    <div id="report-meta" class="report-meta"></div>
-
     <div class="control-panel">
+
       <div class="controls">
 
         <div class="field">
@@ -634,10 +355,9 @@
           <input
             id="ticker-input"
             type="text"
-            value=""
-            placeholder="Enter ticker"
-            maxlength="15"
-            autocomplete="off"
+            value="MU"
+            placeholder="MU or NYSE:CRCL"
+            maxlength="25"
           >
         </div>
 
@@ -645,85 +365,108 @@
           <label>Timeframe</label>
 
           <div class="timeframes">
-            <button class="timeframe-button" data-interval="15min">15M</button>
-            <button class="timeframe-button" data-interval="1h">1H</button>
-            <button class="timeframe-button active" data-interval="1day">1D</button>
-            <button class="timeframe-button" data-interval="1week">1W</button>
+
+            <button
+              class="timeframe-button"
+              data-interval="5min"
+              data-tv-interval="5"
+            >
+              5M
+            </button>
+
+            <button
+              class="timeframe-button"
+              data-interval="15min"
+              data-tv-interval="15"
+            >
+              15M
+            </button>
+
+            <button
+              class="timeframe-button"
+              data-interval="1h"
+              data-tv-interval="60"
+            >
+              1H
+            </button>
+
+            <button
+              class="timeframe-button active"
+              data-interval="1day"
+              data-tv-interval="D"
+            >
+              1D
+            </button>
+
+            <button
+              class="timeframe-button"
+              data-interval="1week"
+              data-tv-interval="W"
+            >
+              1W
+            </button>
+
           </div>
         </div>
 
-        <button id="analyze-button">Refresh Price &amp; Analyze</button>
+        <button id="analyze-button">
+          Analyze
+        </button>
+
       </div>
 
       <div id="status" class="status"></div>
+
     </div>
 
     <div class="main-grid">
 
-      <div class="panel chart-panel">
+      <div class="panel">
+
         <div class="panel-header">
-          <h3>Price Chart</h3>
-          <span id="chart-symbol" class="symbol-badge">— · 1D</span>
+          <h3>Interactive Chart</h3>
+          <span id="chart-symbol" class="symbol-badge">
+            NASDAQ:MU · 1D
+          </span>
         </div>
 
-        <div id="price-chart">
-          <div class="chart-empty">
-            Enter a ticker, select a timeframe, then click Analyze.
-          </div>
-        </div>
+        <div id="tradingview-chart"></div>
 
-        <div class="legend-note">
-          Candlesticks with EMA 20, EMA 50 and SMA 200. Volume is used by the analysis but is not displayed on the chart.
-        </div>
       </div>
 
-      <div class="panel analysis-panel">
+      <div class="panel">
+
         <div class="panel-header">
           <h3>Price Action Analysis</h3>
-          <span id="analysis-symbol" class="symbol-badge">— · 1D</span>
+          <span id="analysis-symbol" class="symbol-badge">
+            MU · 1D
+          </span>
         </div>
 
         <div id="analysis-content">
+
           <div class="empty-analysis">
-            Enter a ticker, choose a timeframe, then click Analyze.
+            Enter a ticker, choose a timeframe,
+            then click Analyze.
           </div>
+
         </div>
+
       </div>
 
     </div>
 
-    <!-- =========================
-         PRICE ACTION ARTICLES
-    ========================= -->
-    <section class="articles-section">
-      <div class="articles-header">
-        <h2>Articles</h2>
-      </div>
-
-      <div id="price-action-articles" class="article-list">
-        <div class="articles-empty">
-          Loading Price Action articles...
-        </div>
-      </div>
-    </section>
-
   </div>
 
   <footer>
-    Waterside Library · Price Action Analyst
+    Waterside Library · Price Action Analysis
   </footer>
 
   <script>
-    let selectedInterval = "1day";
-    let selectedLabel = "1D";
 
-    let chart = null;
-    let candleSeries = null;
-    let ema20Series = null;
-    let ema50Series = null;
-    let sma200Series = null;
-    let supportLine = null;
-    let resistanceLine = null;
+    let selectedInterval = "1day";
+    let selectedTvInterval = "D";
+    let selectedLabel = "1D";
 
     const tickerInput =
       document.getElementById("ticker-input");
@@ -743,39 +486,45 @@
     const analysisSymbol =
       document.getElementById("analysis-symbol");
 
-    const reportMeta =
-      document.getElementById("report-meta");
-
-    const priceActionArticles =
-      document.getElementById("price-action-articles");
-
 
     document
       .querySelectorAll(".timeframe-button")
       .forEach(button => {
-        button.addEventListener("click", () => {
 
-          document
-            .querySelectorAll(".timeframe-button")
-            .forEach(item => item.classList.remove("active"));
+        button.addEventListener(
+          "click",
+          () => {
 
-          button.classList.add("active");
+            document
+              .querySelectorAll(".timeframe-button")
+              .forEach(item => {
+                item.classList.remove("active");
+              });
 
-          selectedInterval =
-            button.dataset.interval;
+            button.classList.add("active");
 
-          selectedLabel =
-            button.textContent.trim();
-        });
+            selectedInterval =
+              button.dataset.interval;
+
+            selectedTvInterval =
+              button.dataset.tvInterval;
+
+            selectedLabel =
+              button.textContent.trim();
+          }
+        );
+
       });
 
 
     tickerInput.addEventListener(
       "keydown",
       event => {
+
         if (event.key === "Enter") {
           analyzeStock();
         }
+
       }
     );
 
@@ -787,345 +536,167 @@
 
 
     function normalizeTicker(value) {
+
       return String(value || "")
         .trim()
         .toUpperCase();
+
     }
 
 
-    function escapeHtml(value) {
-      return String(value ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
+    function getTradingViewSymbol(ticker) {
 
+      /*
+        TradingView needs the correct exchange for some symbols.
+        Users may also enter an explicit symbol such as NYSE:CRCL.
+      */
 
-    function formatPrice(value) {
-      const number = Number(value);
-
-      if (!Number.isFinite(number)) {
-        return "—";
+      if (ticker.includes(":")) {
+        return ticker;
       }
 
-      return "$" + number.toLocaleString(
-        "en-US",
-        {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2
-        }
-      );
+      const exchangeMap = {
+        CRCL: "NYSE",
+        BE: "NYSE",
+        SPY: "AMEX",
+        QQQ: "NASDAQ",
+        IWM: "AMEX",
+        DIA: "AMEX",
+        GLD: "AMEX",
+        SLV: "AMEX",
+        TLT: "NASDAQ",
+        MU: "NASDAQ",
+        COIN: "NASDAQ",
+        MRNA: "NASDAQ",
+        NVDA: "NASDAQ",
+        AAPL: "NASDAQ",
+        MSFT: "NASDAQ",
+        AMZN: "NASDAQ",
+        META: "NASDAQ",
+        GOOGL: "NASDAQ",
+        TSLA: "NASDAQ"
+      };
+
+      const exchange =
+        exchangeMap[ticker] || "NASDAQ";
+
+      return exchange + ":" + ticker;
+
     }
 
 
-    function toChartTime(datetime) {
-      if (!datetime) {
-        return null;
-      }
+    function loadTradingViewChart(
+      ticker,
+      tvInterval
+    ) {
 
-      const clean =
-        String(datetime).trim();
-
-      if (/^\d{4}-\d{2}-\d{2}$/.test(clean)) {
-        return clean;
-      }
-
-      const normalized =
-        clean.replace(" ", "T");
-
-      const timestamp =
-        Math.floor(
-          new Date(normalized).getTime() / 1000
-        );
-
-      if (!Number.isFinite(timestamp)) {
-        return null;
-      }
-
-      return timestamp;
-    }
-
-
-    function clearChart() {
-      if (chart) {
-        chart.remove();
-      }
-
-      chart = null;
-      candleSeries = null;
-      ema20Series = null;
-      ema50Series = null;
-      sma200Series = null;
-      supportLine = null;
-      resistanceLine = null;
-
-      document.getElementById("price-chart").innerHTML = "";
-    }
-
-
-
-    function calculateMovingAverage(candles, period, type = "sma") {
-      const values = [];
-      let ema = null;
-      const multiplier = 2 / (period + 1);
-
-      candles.forEach((candle, index) => {
-        const close = Number(candle.close);
-
-        if (!Number.isFinite(close)) {
-          return;
-        }
-
-        if (type === "ema") {
-          if (ema === null) {
-            if (index < period - 1) {
-              return;
-            }
-
-            let sum = 0;
-
-            for (let i = index - period + 1; i <= index; i++) {
-              sum += Number(candles[i].close);
-            }
-
-            ema = sum / period;
-          } else {
-            ema = (close - ema) * multiplier + ema;
-          }
-
-          values.push({
-            time: candle.time,
-            value: ema
-          });
-
-        } else {
-          if (index < period - 1) {
-            return;
-          }
-
-          let sum = 0;
-
-          for (let i = index - period + 1; i <= index; i++) {
-            sum += Number(candles[i].close);
-          }
-
-          values.push({
-            time: candle.time,
-            value: sum / period
-          });
-        }
-      });
-
-      return values;
-    }
-
-
-    function renderChart(data) {
       const container =
-        document.getElementById("price-chart");
-
-      clearChart();
-
-      chart =
-        LightweightCharts.createChart(
-          container,
-          {
-            width: container.clientWidth,
-            height: container.clientHeight,
-            layout: {
-              background: {
-                type: "solid",
-                color: "#ffffff"
-              },
-              textColor: "#475467"
-            },
-            grid: {
-              vertLines: {
-                color: "#f2f4f7"
-              },
-              horzLines: {
-                color: "#f2f4f7"
-              }
-            },
-            rightPriceScale: {
-              borderColor: "#d0d5dd"
-            },
-            timeScale: {
-              borderColor: "#d0d5dd",
-              timeVisible:
-                selectedInterval === "15min" ||
-                selectedInterval === "1h",
-              secondsVisible: false,
-              rightOffset: 5,
-              barSpacing: 7
-            },
-            crosshair: {
-              mode: LightweightCharts.CrosshairMode.Normal
-            }
-          }
+        document.getElementById(
+          "tradingview-chart"
         );
 
+      const symbol =
+        getTradingViewSymbol(ticker);
 
-      candleSeries =
-        chart.addCandlestickSeries({
-          upColor: "#16a34a",
-          downColor: "#dc2626",
-          borderVisible: false,
-          wickUpColor: "#16a34a",
-          wickDownColor: "#dc2626",
-          priceScaleId: "right"
+      container.innerHTML = "";
+
+      const outer =
+        document.createElement("div");
+
+      outer.className =
+        "tradingview-widget-container";
+
+
+      const widget =
+        document.createElement("div");
+
+      widget.className =
+        "tradingview-widget-container__widget";
+
+      outer.appendChild(widget);
+
+
+      const script =
+        document.createElement("script");
+
+      script.type =
+        "text/javascript";
+
+      script.src =
+        "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
+
+      script.async = true;
+
+      script.innerHTML =
+        JSON.stringify({
+
+          autosize: true,
+
+          symbol: symbol,
+
+          interval: tvInterval,
+
+          timezone: "exchange",
+
+          theme: "light",
+
+          style: "1",
+
+          locale: "en",
+
+          allow_symbol_change: true,
+
+          withdateranges: true,
+
+          hide_side_toolbar: false,
+
+          save_image: false,
+
+          calendar: false,
+
+          support_host:
+            "https://www.tradingview.com"
+
         });
 
 
-      ema20Series =
-        chart.addLineSeries({
-          color: "#2563eb",
-          lineWidth: 2,
-          priceLineVisible: false,
-          lastValueVisible: true,
-          title: "EMA 20"
-        });
+      outer.appendChild(script);
 
-      ema50Series =
-        chart.addLineSeries({
-          color: "#f59e0b",
-          lineWidth: 2,
-          priceLineVisible: false,
-          lastValueVisible: true,
-          title: "EMA 50"
-        });
+      container.appendChild(outer);
 
-      sma200Series =
-        chart.addLineSeries({
-          color: "#7c3aed",
-          lineWidth: 2,
-          priceLineVisible: false,
-          lastValueVisible: true,
-          title: "SMA 200"
-        });
+      chartSymbol.textContent =
+        symbol + " · " + selectedLabel;
 
-
-      const candles =
-        (data.candles || [])
-          .map(c => {
-            const time =
-              toChartTime(c.datetime);
-
-            if (time === null) {
-              return null;
-            }
-
-            return {
-              time,
-              open: Number(c.open),
-              high: Number(c.high),
-              low: Number(c.low),
-              close: Number(c.close)
-            };
-          })
-          .filter(Boolean);
-
-
-      candleSeries.setData(candles);
-
-      const ema20 =
-        calculateMovingAverage(candles, 20, "ema");
-
-      const ema50 =
-        calculateMovingAverage(candles, 50, "ema");
-
-      const sma200 =
-        calculateMovingAverage(candles, 200, "sma");
-
-      if (ema20.length) {
-        ema20Series.setData(ema20);
-      }
-
-      if (ema50.length) {
-        ema50Series.setData(ema50);
-      }
-
-      if (sma200.length) {
-        sma200Series.setData(sma200);
-      }
-
-
-      const support =
-        Number(data?.analysis?.keySupport);
-
-      const resistance =
-        Number(data?.analysis?.keyResistance);
-
-
-      if (Number.isFinite(support)) {
-        supportLine =
-          candleSeries.createPriceLine({
-            price: support,
-            color: "#2563eb",
-            lineWidth: 1,
-            lineStyle: LightweightCharts.LineStyle.Dashed,
-            axisLabelVisible: true,
-            title: "Support"
-          });
-      }
-
-
-      if (Number.isFinite(resistance)) {
-        resistanceLine =
-          candleSeries.createPriceLine({
-            price: resistance,
-            color: "#7c3aed",
-            lineWidth: 1,
-            lineStyle: LightweightCharts.LineStyle.Dashed,
-            axisLabelVisible: true,
-            title: "Resistance"
-          });
-      }
-
-
-      chart.timeScale().fitContent();
-
-
-      const resizeObserver =
-        new ResizeObserver(entries => {
-          if (!chart || !entries.length) {
-            return;
-          }
-
-          const rect =
-            entries[0].contentRect;
-
-          chart.applyOptions({
-            width: rect.width,
-            height: rect.height
-          });
-        });
-
-      resizeObserver.observe(container);
     }
 
 
     async function analyzeStock() {
+
       const ticker =
-        normalizeTicker(tickerInput.value);
+        normalizeTicker(
+          tickerInput.value
+        );
 
       if (
         !ticker ||
-        !/^[A-Z0-9.\-]{1,15}$/.test(ticker)
+        !/^(?:[A-Z]+:)?[A-Z0-9.\-]{1,15}$/.test(ticker)
       ) {
+
         statusElement.textContent =
           "Please enter a valid ticker.";
+
         return;
       }
 
 
       analyzeButton.disabled = true;
-      analyzeButton.textContent = "Analyzing...";
+
+      analyzeButton.textContent =
+        "Analyzing...";
 
       statusElement.textContent =
-        "Refreshing latest price, loading market data, and analyzing price action...";
+        "Loading market data and analyzing price action...";
+
 
       analysisContent.innerHTML =
         `
@@ -1134,23 +705,38 @@
           </div>
         `;
 
-      chartSymbol.textContent =
-        ticker + " · " + selectedLabel;
+
+      const analysisTicker =
+        ticker.includes(":")
+          ? ticker.split(":").pop()
+          : ticker;
+
+
+      loadTradingViewChart(
+        ticker,
+        selectedTvInterval
+      );
+
 
       analysisSymbol.textContent =
-        ticker + " · " + selectedLabel;
+        analysisTicker + " · " + selectedLabel;
 
 
       try {
-        const { data, error } =
+
+        const {
+          data,
+          error
+        } =
           await supabaseClient
             .functions
             .invoke(
               "price-action-data",
               {
                 body: {
-                  ticker: ticker,
-                  interval: selectedInterval
+                  ticker: analysisTicker,
+                  interval:
+                    selectedInterval
                 }
               }
             );
@@ -1175,29 +761,13 @@
         }
 
 
-        if (
-          !Array.isArray(data.candles) ||
-          data.candles.length === 0
-        ) {
-          throw new Error(
-            "No OHLCV data returned."
-          );
-        }
-
-
-        renderChart(data);
         renderAnalysis(data);
-
-        const now =
-          new Date();
-
-        reportMeta.textContent =
-          `${ticker} · ${selectedLabel} · Generated ${now.toLocaleString()}`;
 
         statusElement.textContent =
           "Analysis updated successfully.";
 
       } catch (error) {
+
         console.error(
           "Price Action Analyst error:",
           error
@@ -1214,106 +784,23 @@
             </div>
           `;
 
-        clearChart();
-
-        document
-          .getElementById("price-chart")
-          .innerHTML =
-          `
-            <div class="chart-empty">
-              Unable to load chart data.
-            </div>
-          `;
-
         statusElement.textContent =
           "Analysis failed.";
 
       } finally {
+
         analyzeButton.disabled = false;
-        analyzeButton.textContent = "Refresh Price & Analyze";
-      }
-    }
 
+        analyzeButton.textContent =
+          "Analyze";
 
-
-    async function loadPriceActionArticles() {
-      if (!priceActionArticles) {
-        return;
       }
 
-      const { data, error } =
-        await supabaseClient
-          .from("items")
-          .select("id,title,ticker,category,type,created_at")
-          .eq("category", "Price Action Analysis")
-          .order("created_at", { ascending: false });
-
-      if (error) {
-        console.error(
-          "Price Action articles error:",
-          error
-        );
-
-        priceActionArticles.innerHTML =
-          `
-            <div class="articles-empty">
-              Unable to load Price Action articles.
-            </div>
-          `;
-
-        return;
-      }
-
-      const items = data || [];
-
-      if (items.length === 0) {
-        priceActionArticles.innerHTML =
-          `
-            <div class="articles-empty">
-              No Price Action articles found.
-            </div>
-          `;
-
-        return;
-      }
-
-      priceActionArticles.innerHTML =
-        items.map(item => {
-          const id =
-            encodeURIComponent(item.id);
-
-          const ticker =
-            escapeHtml(item.ticker || "");
-
-          const title =
-            escapeHtml(item.title || "Untitled");
-
-          const category =
-            escapeHtml(item.category || "");
-
-          const type =
-            escapeHtml(item.type || "");
-
-          return `
-            <div class="article-list-item">
-              <a
-                class="article-title-link"
-                href="article.html?id=${id}"
-              >
-                ${ticker ? ticker + " — " : ""}${title}
-              </a>
-
-              <div class="article-meta">
-                ${category ? `<span>${category}</span>` : ""}
-                ${type ? `<span>${type}</span>` : ""}
-              </div>
-            </div>
-          `;
-        }).join("");
     }
 
 
     function renderAnalysis(data) {
+
       const analysis =
         data.analysis || {};
 
@@ -1323,20 +810,9 @@
       const breakStatus =
         analysis.breakoutBreakdown || {};
 
-      const rangeLow =
-        Number(breakStatus.rangeLow);
-
-      const rangeHigh =
-        Number(breakStatus.rangeHigh);
-
-      const rangeText =
-        Number.isFinite(rangeLow) &&
-        Number.isFinite(rangeHigh)
-          ? formatPrice(rangeLow) + " – " + formatPrice(rangeHigh)
-          : "";
-
       const volume =
         analysis.volumeConfirmation || {};
+
 
       const price =
         formatPrice(
@@ -1435,16 +911,6 @@
                 )}
               </div>
 
-              ${
-                breakStatus.status === "Inside Range" && rangeText
-                  ? `
-                      <div class="analysis-detail">
-                        <strong>Range:</strong> ${escapeHtml(rangeText)}
-                      </div>
-                    `
-                  : ""
-              }
-
               <div class="analysis-detail">
                 ${escapeHtml(
                   breakStatus.detail ||
@@ -1511,9 +977,55 @@
 
           </div>
         `;
+
     }
 
-    loadPriceActionArticles();
+
+    function formatPrice(value) {
+
+      const number =
+        Number(value);
+
+      if (!Number.isFinite(number)) {
+        return "—";
+      }
+
+      return "$" +
+        number.toLocaleString(
+          "en-US",
+          {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          }
+        );
+
+    }
+
+
+    function escapeHtml(value) {
+
+      return String(
+        value ?? ""
+      )
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+
+    }
+
+
+    /*
+      Load MU Daily as the initial chart.
+      Analysis still runs only when Analyze is pressed.
+    */
+
+    loadTradingViewChart(
+      "MU",
+      "D"
+    );
+
   </script>
 
 </body>
