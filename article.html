@@ -423,18 +423,18 @@
       object-fit: cover;
     }
 
-    .daily-review-content .saved-review-image-grid {
+    .article-content .saved-review-image-grid {
       display: block;
     }
 
-    .daily-review-content .saved-review-image-grid a {
+    .article-content .saved-review-image-grid a {
       display: block;
       margin: 0 0 24px;
       border: 0;
       border-radius: 10px;
     }
 
-    .daily-review-content img {
+    .article-content img {
       display: block;
       width: 100%;
       height: auto;
@@ -1709,13 +1709,13 @@ function renderEditMode() {
 
         <div id="inline-editor"></div>
 
-        <section id="edit-review-images" class="edit-review-images" hidden>
+        <section id="edit-review-images" class="edit-review-images">
           <label for="edit-review-images-input">
-            Review Images
+            Images
           </label>
 
           <div class="helper">
-            Add more charts, screenshots, or visual notes to this daily review.
+            Add more charts, screenshots, or images to this content.
             Existing saved images remain in the review content above.
           </div>
 
@@ -1900,9 +1900,7 @@ function updateEditReviewImagesVisibility() {
     return;
   }
 
-  section.hidden =
-    document.getElementById("edit-category").value !==
-    "My Trade Reviews";
+  section.hidden = false;
 }
 
 
@@ -2007,7 +2005,7 @@ async function uploadEditReviewImages(files) {
 function buildEditReviewImagesHtml(urls) {
   return `
     <section class="saved-review-images">
-      <h2>Review Images</h2>
+      <h2>Images</h2>
       <div class="saved-review-image-grid">
         ${urls.map((url, index) => `
           <img src="${safeText(url)}" alt="Daily review image ${index + 1}">
@@ -2084,13 +2082,8 @@ async function saveChanges() {
   }
 
   try {
-    const selectedCategory =
-      document.getElementById("edit-category").value;
-
     const imageUrls =
-      selectedCategory === "My Trade Reviews"
-        ? await uploadEditReviewImages(editReviewImageFiles)
-        : [];
+      await uploadEditReviewImages(editReviewImageFiles);
 
     if (imageUrls.length) {
       contentHtml =
