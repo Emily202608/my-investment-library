@@ -94,17 +94,90 @@
     }
 
     .sentiment-widget-wrap {
-      display: flex;
-      justify-content: center;
-      overflow: hidden;
+      margin-top: 18px;
     }
 
-    .sentiment-widget-wrap iframe {
-      width: 320px;
-      max-width: 100%;
-      height: 310px;
-      border: none;
-      border-radius: 16px;
+    .fear-greed-panel {
+      max-width: 620px;
+      margin: 0 auto;
+      padding: 24px;
+      background: #f8fafc;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+    }
+
+    .fear-greed-top {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .fear-greed-value {
+      font-size: 46px;
+      line-height: 1;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .fear-greed-status {
+      font-size: 20px;
+      font-weight: 700;
+      color: #374151;
+      text-align: right;
+    }
+
+    .fear-greed-track {
+      position: relative;
+      height: 14px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #991b1b 0%, #dc2626 20%, #f59e0b 40%, #eab308 55%, #84cc16 72%, #16a34a 100%);
+      overflow: visible;
+    }
+
+    .fear-greed-marker {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 20px;
+      height: 20px;
+      background: white;
+      border: 3px solid #111827;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.20);
+      transition: left 0.35s ease;
+    }
+
+    .fear-greed-scale {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 10px;
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    .fear-greed-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      margin-top: 18px;
+      color: #6b7280;
+      font-size: 13px;
+      line-height: 1.5;
+      flex-wrap: wrap;
+    }
+
+    .fear-greed-link {
+      color: #2563eb;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .fear-greed-link:hover {
+      text-decoration: underline;
     }
 
     .article-list-heading {
@@ -226,13 +299,36 @@
 
       <div class="sentiment-widget-wrap">
 
-        <iframe
-          src="https://feargreedchart.com/widget.html"
-          width="320"
-          height="310"
-          loading="lazy"
-          title="Fear and Greed Index"
-        ></iframe>
+        <div class="fear-greed-panel" aria-live="polite">
+
+          <div class="fear-greed-top">
+            <div id="fear-greed-value" class="fear-greed-value">--</div>
+            <div id="fear-greed-status" class="fear-greed-status">Loading...</div>
+          </div>
+
+          <div class="fear-greed-track">
+            <div id="fear-greed-marker" class="fear-greed-marker"></div>
+          </div>
+
+          <div class="fear-greed-scale">
+            <span>Extreme Fear</span>
+            <span>Neutral</span>
+            <span>Extreme Greed</span>
+          </div>
+
+          <div class="fear-greed-meta">
+            <span id="fear-greed-date">Latest available reading</span>
+            <a
+              class="fear-greed-link"
+              href="https://fearandgreedgraph.com/data"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View data source →
+            </a>
+          </div>
+
+        </div>
 
       </div>
 
@@ -347,6 +443,155 @@ function safeText(value) {
 }
 
 
+async function loadFearGreedIndex() {
+
+  const valueElement =
+    document.getElementById(
+      "fear-greed-value"
+    );
+
+  const statusElement =
+    document.getElementById(
+      "fear-greed-status"
+    );
+
+  const markerElement =
+    document.getElementById(
+      "fear-greed-marker"
+    );
+
+  const dateElement =
+    document.getElementById(
+      "fear-greed-date"
+    );
+
+  if (
+    !valueElement ||
+    !statusElement ||
+    !markerElement ||
+    !dateElement
+  ) {
+    return;
+  }
+
+  try {
+
+    const response =
+      await fetch(
+        "https://fearandgreedgraph.com/api/fear-greed",
+        {
+          cache: "no-store"
+        }
+      );
+
+    if (!response.ok) {
+      throw new Error(
+        "Fear & Greed request failed"
+      );
+    }
+
+    const result =
+      await response.json();
+
+    const values =
+      Array.isArray(result.values)
+        ? result.values
+        : [];
+
+    const dates =
+      Array.isArray(result.dates)
+        ? result.dates
+        : [];
+
+    const latestValue =
+      Number(
+        values[values.length - 1]
+      );
+
+    if (!Number.isFinite(latestValue)) {
+      throw new Error(
+        "No Fear & Greed value returned"
+      );
+    }
+
+    const score =
+      Math.max(
+        0,
+        Math.min(
+          100,
+          latestValue
+        )
+      );
+
+    let status = "Neutral";
+
+    if (score <= 24) {
+      status = "Extreme Fear";
+    } else if (score <= 44) {
+      status = "Fear";
+    } else if (score <= 55) {
+      status = "Neutral";
+    } else if (score <= 74) {
+      status = "Greed";
+    } else {
+      status = "Extreme Greed";
+    }
+
+    valueElement.textContent =
+      Math.round(score);
+
+    statusElement.textContent =
+      status;
+
+    markerElement.style.left =
+      score + "%";
+
+    const latestDate =
+      result.asOf ||
+      dates[dates.length - 1];
+
+    if (latestDate) {
+      const parsedDate =
+        new Date(
+          latestDate +
+          (String(latestDate).length === 10
+            ? "T12:00:00"
+            : "")
+        );
+
+      dateElement.textContent =
+        Number.isNaN(parsedDate.getTime())
+          ? "Latest available reading"
+          : "Updated: " +
+            parsedDate.toLocaleDateString(
+              "en-US",
+              {
+                year: "numeric",
+                month: "short",
+                day: "numeric"
+              }
+            );
+    }
+
+  } catch (error) {
+
+    console.error(
+      "Fear & Greed load error:",
+      error
+    );
+
+    valueElement.textContent =
+      "--";
+
+    statusElement.textContent =
+      "Data unavailable";
+
+    dateElement.textContent =
+      "Open the data source for the latest reading.";
+  }
+}
+
+
 async function loadCategory() {
 
   const params =
@@ -430,6 +675,8 @@ async function loadCategory() {
 
     listHeading.textContent =
       "Trading Psychology Articles";
+
+    loadFearGreedIndex();
 
   } else {
 
