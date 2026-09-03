@@ -367,6 +367,7 @@
             <option value="Article">Article</option>
             <option value="News">News</option>
             <option value="Research">Research</option>
+            <option value="Image">Image</option>
             <option value="Video">Video</option>
             <option value="Investment Idea">Investment Idea</option>
           </select>
@@ -892,9 +893,7 @@ function buildReviewImagesHtml(urls) {
       <h2>Review Images</h2>
       <div class="saved-review-image-grid">
         ${urls.map((url, index) => `
-          <a href="${safeAttr(url)}" target="_blank" rel="noopener noreferrer">
-            <img src="${safeAttr(url)}" alt="Daily review image ${index + 1}">
-          </a>
+          <img src="${safeAttr(url)}" alt="Daily review image ${index + 1}">
         `).join("")}
       </div>
     </section>
