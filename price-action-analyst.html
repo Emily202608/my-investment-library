@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>AI Price Action Analyst | Waterside Library</title>
+  <title>AI Price Action Analyst | North Current Research</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
@@ -46,6 +46,27 @@
       text-decoration: none;
       font-size: 14px;
       font-weight: bold;
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .print-button {
+      border: 1px solid rgba(255,255,255,0.35);
+      background: white;
+      color: #111827;
+      padding: 9px 13px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .print-button:hover {
+      background: #f2f4f7;
     }
 
     .container {
@@ -324,6 +345,36 @@
         height: 430px;
       }
     }
+
+    @media print {
+      body {
+        background: white;
+        color: #111827;
+      }
+
+      .topbar,
+      .control-panel,
+      footer {
+        display: none !important;
+      }
+
+      .container {
+        max-width: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      .panel {
+        box-shadow: none;
+        break-inside: avoid;
+      }
+
+      @page {
+        size: landscape;
+        margin: 10mm;
+      }
+    }
+
   </style>
 </head>
 
@@ -331,8 +382,11 @@
 
   <div class="topbar">
     <div class="topbar-inner">
-      <h1>Waterside Library</h1>
-      <a href="index.html" class="back-link">← Back</a>
+      <h1>North Current Research</h1>
+      <div class="topbar-actions">
+        <a href="index.html" class="back-link">← Back</a>
+        <button class="print-button" type="button" onclick="window.print()">🖨 Print / Save PDF</button>
+      </div>
     </div>
   </div>
 
@@ -459,7 +513,7 @@
   </div>
 
   <footer>
-    Waterside Library · Price Action Analysis
+    North Current Research · Price Action Analysis
   </footer>
 
   <script>
