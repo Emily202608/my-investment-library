@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Add New Content | My Investment Library</title>
+  <title>Add New Content | North Current Research</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
@@ -444,6 +444,22 @@
       <textarea id="new-description" placeholder="Short summary shown in article lists."></textarea>
 
 
+      <label>Preview</label>
+
+      <textarea
+        id="new-preview"
+        placeholder="Public preview for Members Only content (about 1–2 lines)."
+      ></textarea>
+
+
+      <label>Visibility</label>
+
+      <select id="new-access-level">
+        <option value="public">Public</option>
+        <option value="members">Members Only</option>
+      </select>
+
+
       <label>Article Content</label>
 
       <div id="new-content-editor" class="rich-editor"></div>
@@ -603,6 +619,21 @@ async function addContent() {
         .value
         .trim(),
 
+    preview:
+      document
+        .getElementById(
+          "new-preview"
+        )
+        .value
+        .trim(),
+
+    access_level:
+      document
+        .getElementById(
+          "new-access-level"
+        )
+        .value,
+
     my_note:
       document
         .getElementById(
@@ -620,6 +651,18 @@ async function addContent() {
 
     message.textContent =
       "Please enter a title.";
+
+    return;
+  }
+
+
+  if (
+    item.access_level === "members" &&
+    !item.preview
+  ) {
+
+    message.textContent =
+      "Please add a short Preview for Members Only content.";
 
     return;
   }
@@ -735,6 +778,20 @@ async function addContent() {
       "new-description"
     )
     .value = "";
+
+
+  document
+    .getElementById(
+      "new-preview"
+    )
+    .value = "";
+
+
+  document
+    .getElementById(
+      "new-access-level"
+    )
+    .value = "public";
 
 
   document
