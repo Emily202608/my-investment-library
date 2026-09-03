@@ -443,12 +443,6 @@
 
       <label>Article Content</label>
 
-      <div class="helper">
-        Paste content from ChatGPT here, then reorganize paragraphs and format it.
-        You can use headings, font size, bold, italic, underline, text color,
-        highlight, lists, quotes and links.
-      </div>
-
       <div id="new-content-editor" class="rich-editor"></div>
 
       <section id="review-images-section" class="review-images-section" hidden>
@@ -651,10 +645,15 @@ async function addContent() {
   }
 
 
-  const { error } =
+  const {
+    data: savedItem,
+    error
+  } =
     await supabaseClient
       .from("items")
-      .insert([item]);
+      .insert([item])
+      .select("id")
+      .single();
 
 
   if (error) {
@@ -664,6 +663,35 @@ async function addContent() {
     message.textContent =
       "Publish failed: "
       + error.message;
+
+    return;
+  }
+
+
+  const {
+    error: contentError
+  } =
+    await supabaseClient
+      .from("item_content")
+      .upsert(
+        {
+          item_id: Number(savedItem.id),
+          content_html: item.content_html,
+          my_note: item.my_note
+        },
+        {
+          onConflict: "item_id"
+        }
+      );
+
+
+  if (contentError) {
+
+    console.error(contentError);
+
+    message.textContent =
+      "The review was created, but its text and images could not be saved: " +
+      contentError.message;
 
     return;
   }
