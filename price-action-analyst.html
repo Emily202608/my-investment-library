@@ -347,9 +347,10 @@
     }
 
     @media print {
+      html,
       body {
-        background: white;
-        color: #111827;
+        background: white !important;
+        color: #111827 !important;
       }
 
       .topbar,
@@ -359,19 +360,113 @@
       }
 
       .container {
-        max-width: none;
-        margin: 0;
-        padding: 0;
+        max-width: none !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+
+      .intro {
+        margin: 0 0 8px !important;
+      }
+
+      .intro h2 {
+        margin: 0 0 4px !important;
+        font-size: 20pt !important;
+      }
+
+      .intro p {
+        display: none !important;
+      }
+
+      .main-grid {
+        display: block !important;
       }
 
       .panel {
-        box-shadow: none;
-        break-inside: avoid;
+        box-shadow: none !important;
+        border: 1px solid #d0d5dd !important;
+        border-radius: 8px !important;
+        overflow: visible !important;
+      }
+
+      /* Print page 1: chart only, sized to use the page efficiently. */
+      .main-grid > .panel:first-child {
+        break-after: page !important;
+        page-break-after: always !important;
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+      }
+
+      /* Print page 2: analysis follows immediately after the forced page break. */
+      .main-grid > .panel:nth-child(2) {
+        break-inside: auto !important;
+        page-break-inside: auto !important;
+      }
+
+      .panel-header {
+        padding: 8px 10px !important;
+      }
+
+      .panel-header h3 {
+        font-size: 12pt !important;
+      }
+
+      .symbol-badge {
+        padding: 3px 6px !important;
+        font-size: 8pt !important;
+      }
+
+      #tradingview-chart {
+        height: 590px !important;
+        min-height: 590px !important;
+        break-inside: avoid-page !important;
+        page-break-inside: avoid !important;
+      }
+
+      .analysis-body {
+        padding: 8px 10px 10px !important;
+      }
+
+      .price-row,
+      .analysis-item,
+      .conclusion {
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+      }
+
+      .price-row {
+        padding-bottom: 7px !important;
+        margin-bottom: 5px !important;
+      }
+
+      .current-price {
+        font-size: 22pt !important;
+      }
+
+      .analysis-item {
+        padding: 6px 0 !important;
+      }
+
+      .analysis-label {
+        margin-bottom: 3px !important;
+        font-size: 10pt !important;
+      }
+
+      .analysis-value,
+      .analysis-detail,
+      .conclusion {
+        font-size: 10pt !important;
+        line-height: 1.25 !important;
+      }
+
+      .conclusion {
+        padding: 7px !important;
       }
 
       @page {
-        size: landscape;
-        margin: 10mm;
+        size: A4 landscape;
+        margin: 8mm;
       }
     }
 
