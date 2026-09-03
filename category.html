@@ -231,6 +231,33 @@
       text-align: center;
     }
 
+    .load-more-wrap {
+      margin-top: 22px;
+      text-align: center;
+    }
+
+    .load-more-button {
+      display: none;
+      border: 1px solid #d1d5db;
+      background: white;
+      color: #172033;
+      padding: 11px 22px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    .load-more-button:hover {
+      background: #f3f4f6;
+    }
+
+    .load-more-button:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+
     footer {
       margin-top: 70px;
       padding: 35px 20px;
@@ -353,6 +380,16 @@
       Loading articles...
     </div>
 
+  </div>
+
+  <div class="load-more-wrap">
+    <button
+      id="load-more-button"
+      class="load-more-button"
+      type="button"
+    >
+      Load More
+    </button>
   </div>
 
 </div>
@@ -691,164 +728,253 @@ async function loadCategory() {
   }
 
 
-  const {
-    data,
-    error
-  } =
-    await supabaseClient
-      .from("items")
-      .select("*")
-      .eq(
-        "category",
-        category
-      )
-      .order(
-        "created_at",
-        {
-          ascending: false
-        }
-      );
+  const PAGE_SIZE = 12;
+  let articleOffset = 0;
+  let isLoadingArticles = false;
 
-
-  if (error) {
-
-    console.error(
-      "Category load error:",
-      error
+  const loadMoreButton =
+    document.getElementById(
+      "load-more-button"
     );
 
 
-    listElement.innerHTML = `
-      <div class="message">
-        Unable to load articles.
-      </div>
-    `;
+  function renderArticleItem(item) {
 
-    return;
+    const id =
+      encodeURIComponent(
+        item.id
+      );
+
+    const title =
+      safeText(
+        item.title
+      );
+
+    const ticker =
+      safeText(
+        item.ticker
+      );
+
+    const type =
+      safeText(
+        item.type
+      );
+
+    const published =
+      formatDate(
+        item.created_at
+      );
+
+    const updated =
+      formatDate(
+        item.updated_at
+      );
+
+
+    return `
+
+      <div class="article-item">
+
+        <a
+          class="article-title"
+          href="article.html?id=${id}"
+        >
+
+          ${
+            ticker
+              ? ticker + " — "
+              : ""
+          }
+
+          ${title}
+
+        </a>
+
+
+        <div class="article-meta">
+
+          ${
+            ticker
+              ? `
+                <span>
+                  Ticker: ${ticker}
+                </span>
+              `
+              : ""
+          }
+
+          ${
+            type
+              ? `
+                <span>
+                  ${type}
+                </span>
+              `
+              : ""
+          }
+
+          ${
+            published
+              ? `
+                <span>
+                  Published: ${published}
+                </span>
+              `
+              : ""
+          }
+
+          ${
+            updated &&
+            updated !== published
+              ? `
+                <span>
+                  Updated: ${updated}
+                </span>
+              `
+              : ""
+          }
+
+        </div>
+
+      </div>
+
+    `;
   }
 
 
-  if (
-    !data ||
-    data.length === 0
-  ) {
+  async function loadArticleBatch({ initial = false } = {}) {
 
-    listElement.innerHTML = `
-      <div class="message">
-        No articles have been published in this category yet.
-      </div>
-    `;
+    if (isLoadingArticles) {
+      return;
+    }
 
-    return;
-  }
+    isLoadingArticles = true;
 
+    loadMoreButton.disabled = true;
+    loadMoreButton.textContent =
+      "Loading...";
 
-  listElement.innerHTML =
-    data.map(
-      item => {
+    const start =
+      articleOffset;
 
-        const id =
-          encodeURIComponent(
-            item.id
-          );
+    // Fetch one extra row so we know whether more articles remain.
+    const end =
+      start + PAGE_SIZE;
 
-        const title =
-          safeText(
-            item.title
-          );
-
-        const ticker =
-          safeText(
-            item.ticker
-          );
-
-        const type =
-          safeText(
-            item.type
-          );
-
-        const published =
-          formatDate(
-            item.created_at
-          );
-
-        const updated =
-          formatDate(
-            item.updated_at
-          );
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .from("items")
+        .select("*")
+        .eq(
+          "category",
+          category
+        )
+        .order(
+          "created_at",
+          {
+            ascending: false
+          }
+        )
+        .range(
+          start,
+          end
+        );
 
 
-        return `
+    if (error) {
 
-          <div class="article-item">
+      console.error(
+        "Category load error:",
+        error
+      );
 
-            <a
-              class="article-title"
-              href="article.html?id=${id}"
-            >
-
-              ${
-                ticker
-                  ? ticker + " — "
-                  : ""
-              }
-
-              ${title}
-
-            </a>
-
-
-            <div class="article-meta">
-
-              ${
-                ticker
-                  ? `
-                    <span>
-                      Ticker: ${ticker}
-                    </span>
-                  `
-                  : ""
-              }
-
-              ${
-                type
-                  ? `
-                    <span>
-                      ${type}
-                    </span>
-                  `
-                  : ""
-              }
-
-              ${
-                published
-                  ? `
-                    <span>
-                      Published: ${published}
-                    </span>
-                  `
-                  : ""
-              }
-
-              ${
-                updated &&
-                updated !== published
-                  ? `
-                    <span>
-                      Updated: ${updated}
-                    </span>
-                  `
-                  : ""
-              }
-
-            </div>
-
+      if (initial) {
+        listElement.innerHTML = `
+          <div class="message">
+            Unable to load articles.
           </div>
-
         `;
-
       }
-    ).join("");
+
+      loadMoreButton.style.display =
+        "none";
+
+      isLoadingArticles = false;
+      return;
+    }
+
+
+    const rows =
+      data || [];
+
+    const visibleRows =
+      rows.slice(0, PAGE_SIZE);
+
+    const hasMore =
+      rows.length > PAGE_SIZE;
+
+
+    if (
+      initial &&
+      visibleRows.length === 0
+    ) {
+
+      listElement.innerHTML = `
+        <div class="message">
+          No articles have been published in this category yet.
+        </div>
+      `;
+
+      loadMoreButton.style.display =
+        "none";
+
+      isLoadingArticles = false;
+      return;
+    }
+
+
+    const html =
+      visibleRows
+        .map(renderArticleItem)
+        .join("");
+
+    if (initial) {
+      listElement.innerHTML = html;
+    } else {
+      listElement.insertAdjacentHTML(
+        "beforeend",
+        html
+      );
+    }
+
+    articleOffset +=
+      visibleRows.length;
+
+    loadMoreButton.style.display =
+      hasMore
+        ? "inline-block"
+        : "none";
+
+    loadMoreButton.disabled = false;
+    loadMoreButton.textContent =
+      "Load More";
+
+    isLoadingArticles = false;
+  }
+
+
+  loadMoreButton.addEventListener(
+    "click",
+    () => loadArticleBatch()
+  );
+
+
+  await loadArticleBatch({
+    initial: true
+  });
 
 }
 
