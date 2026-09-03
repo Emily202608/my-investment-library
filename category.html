@@ -5,16 +5,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Category | Waterside Library</title>
+  <title>North Current Research</title>
 
+  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
 
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
-
   <style>
-    * { box-sizing: border-box; }
+
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
@@ -23,175 +24,354 @@
       color: #172033;
     }
 
+    /* =========================
+       HEADER
+    ========================= */
+
     header {
-      background: #111827;
+      position: relative;
       color: white;
-      padding: 18px 25px;
+      padding: 78px 20px;
+      text-align: center;
+      background:
+        linear-gradient(rgba(8, 20, 42, 0.42), rgba(8, 20, 42, 0.42)),
+        url("investment-library-hero.png") center center / cover no-repeat;
     }
 
-    .header-inner {
-      max-width: 950px;
-      margin: auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 15px;
+    header h1 {
+      margin: 0 0 12px;
+      font-size: 42px;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.45);
     }
 
-    .back-link,
+    header p {
+      margin-bottom: 0;
+      font-size: 18px;
+      color: white;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    }
+
     .login-link {
-      color: white;
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      padding: 9px 14px;
+      background: white;
+      color: #111827;
       text-decoration: none;
+      border-radius: 7px;
+      font-size: 14px;
       font-weight: bold;
     }
 
-    .back-link:hover,
-    .login-link:hover { text-decoration: underline; }
+    .login-link:hover {
+      background: #e5e7eb;
+    }
+
+    /* =========================
+       GENERAL
+    ========================= */
 
     .container {
-      max-width: 950px;
+      max-width: 1180px;
       margin: 45px auto;
       padding: 0 20px;
     }
 
-    .category-header { margin-bottom: 30px; }
-
-    .category-header h1 {
-      margin: 0 0 10px;
-      font-size: 36px;
+    .section-title {
+      margin-bottom: 22px;
     }
 
-    .category-header p {
-      margin: 0;
-      color: #6b7280;
-      line-height: 1.6;
+    /* =========================
+       WATCH LIST
+    ========================= */
+
+    .watch-section {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 25px;
     }
 
-    /* Fear & Greed */
-    .sentiment-section {
-      display: none;
-      margin: 0 0 34px;
-    }
-
-    .sentiment-card {
+    .watch-panel,
+    .chart-panel {
       background: white;
-      padding: 28px;
       border-radius: 12px;
       box-shadow: 0 3px 12px rgba(0,0,0,0.06);
     }
 
-    .sentiment-top {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 20px;
+    .watch-panel {
+      padding: 22px;
+    }
+
+    .watch-panel h2 {
+      margin-top: 0;
       margin-bottom: 18px;
     }
 
-    .sentiment-title h2 {
-      margin: 0 0 7px;
-      font-size: 24px;
-    }
-
-    .sentiment-title p {
-      margin: 0;
-      color: #6b7280;
-      line-height: 1.55;
-    }
-
-    .current-reading {
-      min-width: 130px;
-      text-align: right;
-    }
-
-    .current-score {
-      display: block;
-      font-size: 34px;
-      font-weight: 700;
-      line-height: 1;
-    }
-
-    .current-rating {
-      display: block;
-      margin-top: 6px;
-      font-size: 13px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .04em;
-      color: #4b5563;
-    }
-
-    .chart-wrap {
-      position: relative;
+    .watch-item {
       width: 100%;
-      height: 360px;
+      margin-bottom: 10px;
+      padding: 12px 14px;
+      background: #f3f4f6;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      text-align: left;
+      cursor: pointer;
+      transition: 0.2s;
     }
 
-    .sentiment-footer {
+    .watch-item:hover {
+      background: #e5e7eb;
+    }
+
+    .watch-item.active {
+      background: #111827;
+      color: white;
+    }
+
+    .watch-ticker {
+      display: block;
+      font-size: 17px;
+      font-weight: bold;
+    }
+
+    .watch-company {
+      display: block;
+      margin-top: 4px;
+      font-size: 12px;
+      opacity: 0.75;
+    }
+
+    .watch-empty {
+      color: #6b7280;
+      line-height: 1.5;
+    }
+
+
+    .watchlist-more-wrap {
       margin-top: 14px;
-      font-size: 13px;
-      color: #6b7280;
-    }
-
-    .sentiment-error {
-      display: none;
-      padding: 24px;
-      background: #f9fafb;
-      border: 1px solid #e5e7eb;
-      border-radius: 9px;
-      color: #6b7280;
       text-align: center;
-      line-height: 1.6;
     }
 
-    .article-list-heading {
-      margin: 0 0 18px;
-      font-size: 24px;
+    .watchlist-more-link {
+      display: inline-block;
+      padding: 9px 13px;
+      border-radius: 7px;
+      background: #111827;
+      color: white;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: bold;
     }
 
-    .article-list {
+    .watchlist-more-link:hover {
+      background: #263247;
+    }
+
+    /* =========================
+       CHART
+    ========================= */
+
+    .chart-panel {
+      overflow: hidden;
+    }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 22px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .chart-header h2 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    #current-symbol {
+      padding: 6px 10px;
+      background: #eef2f7;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    #tradingview-chart {
+      width: 100%;
+      height: 500px;
+    }
+
+    .tradingview-widget-container,
+    .tradingview-widget-container__widget {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* =========================
+       RESEARCH CATEGORIES
+    ========================= */
+
+    .categories {
       display: grid;
-      gap: 14px;
+      grid-template-columns:
+        repeat(auto-fit, minmax(290px, 1fr));
+      gap: 20px;
     }
 
-    .article-item {
+    .category-card {
       background: white;
-      padding: 20px 24px;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+    }
+
+    .category-picture {
+      width: calc(100% + 50px);
+      height: 145px;
+      margin: -25px -25px 18px;
+      border-radius: 12px 12px 0 0;
+      overflow: hidden;
+      background: #e5e7eb;
+    }
+
+    .category-picture img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+    }
+
+    .category-card h3 {
+      margin: 12px 0 8px;
+    }
+
+    .category-card p {
+      color: #526071;
+      line-height: 1.5;
+    }
+
+    .category-button {
+      margin-top: 10px;
+      padding: 9px 13px;
+      border: none;
+      border-radius: 7px;
+      background: #111827;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .category-button:hover {
+      background: #263247;
+    }
+
+    .subcategories {
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .sub-button {
+      display: inline-block;
+      width: auto;
+      margin-top: 8px;
+      margin-right: 8px;
+      padding: 9px 13px;
+      background: #111827;
+      color: white;
+      border: none;
+      border-radius: 7px;
+      text-align: center;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .sub-button:hover {
+      background: #263247;
+    }
+
+    /* =========================
+       LIBRARY TITLE LIST
+    ========================= */
+
+    .library-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .library-header h2 {
+      margin: 0;
+    }
+.article-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .article-list-item {
+      background: white;
+      padding: 18px 22px;
       border-radius: 10px;
       box-shadow: 0 3px 12px rgba(0,0,0,0.05);
       border-left: 4px solid #111827;
     }
 
-    .article-title {
+    .article-title-link {
       display: block;
       color: #172033;
       text-decoration: none;
-      font-size: 19px;
+      font-size: 18px;
       font-weight: bold;
-      line-height: 1.45;
+      line-height: 1.4;
     }
 
-    .article-title:hover { color: #2563eb; }
+    .article-title-link:hover {
+      color: #2563eb;
+    }
 
     .article-meta {
-      margin-top: 9px;
+      margin-top: 8px;
       color: #6b7280;
       font-size: 13px;
-      line-height: 1.6;
     }
 
     .article-meta span {
       display: inline-block;
-      margin-right: 14px;
+      margin-right: 12px;
     }
 
-    .message {
+    .empty-message {
       background: white;
-      padding: 28px;
+      padding: 25px;
       border-radius: 10px;
       color: #6b7280;
+    }
+
+    .library-toggle-wrap {
+      margin-top: 16px;
       text-align: center;
     }
+
+    .library-toggle {
+      background: none;
+      border: none;
+      padding: 6px 10px;
+      color: #2563eb;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .library-toggle:hover {
+      text-decoration: underline;
+    }
+
+    /* =========================
+       FOOTER
+    ========================= */
 
     footer {
       margin-top: 70px;
@@ -201,557 +381,782 @@
       text-align: center;
     }
 
-    @media (max-width: 700px) {
-      .category-header h1 { font-size: 30px; }
-      .header-inner { align-items: flex-start; }
+    /* =========================
+       MOBILE
+    ========================= */
 
-      .sentiment-card { padding: 20px; }
+    @media (max-width: 800px) {
 
-      .sentiment-top {
-        display: block;
+      .watch-section {
+        grid-template-columns: 1fr;
       }
 
-      .current-reading {
-        margin-top: 16px;
-        text-align: left;
+      #tradingview-chart {
+        height: 420px;
       }
 
-      .chart-wrap { height: 300px; }
+      header h1 {
+        font-size: 34px;
+      }
+
+      .login-link {
+        top: 15px;
+        right: 15px;
+      }
+
     }
+
   </style>
 </head>
 
+
 <body>
 
+
+<!-- =========================
+     HEADER
+========================= -->
+
 <header>
-  <div class="header-inner">
-    <a href="index.html" class="back-link">← Back</a>
-    <a href="admin.html" class="login-link">Log In</a>
-  </div>
+
+  <a href="member.html" class="login-link" id="account-link">
+    🔐 Log In 
+  </a>
+
+  <h1>North Current Research</h1>
+
+  <p>
+    AI-Powered Research, Market Insights, Trading Ideas &amp; Selected Resources
+  </p>
 </header>
+
+
+<!-- =========================
+     RESEARCH CATEGORIES
+========================= -->
 
 <div class="container">
 
-  <div class="category-header">
-    <h1 id="category-title">Loading...</h1>
-    <p id="category-description"></p>
-  </div>
+  <h2 class="section-title">
+    Research Categories
+  </h2>
 
-  <!-- Only visible for Trading Psychology -->
-  <section id="sentiment-section" class="sentiment-section">
-    <div class="sentiment-card">
 
-      <div class="sentiment-top">
-        <div class="sentiment-title">
-          <h2>Fear &amp; Greed Index</h2>
-          <p>Historical market sentiment on a 0–100 scale.</p>
-        </div>
+  <div class="categories">
 
-        <div id="current-reading" class="current-reading">
-          <span id="current-score" class="current-score">—</span>
-          <span id="current-rating" class="current-rating">Loading</span>
-        </div>
+
+    <!-- Macroeconomy -->
+
+    <div class="category-card">
+
+      <div class="category-picture">
+        <img
+          src="category-macro.png"
+          alt="Global market and Macroeconomy"
+          loading="lazy"
+        >
       </div>
 
-      <div id="sentiment-error" class="sentiment-error">
-        Fear &amp; Greed data is temporarily unavailable. Your article library is still available below.
+      <h3>Macroeconomy</h3>
+
+      <p>
+        Interest rates, inflation, liquidity,
+        economic cycles, market flows and
+        broader market conditions.
+      </p>
+
+      <button
+        class="category-button"
+        onclick="window.location.href='category.html?name=Macroeconomy'"
+      >
+        View Macroeconomy
+      </button>
+
+    </div>
+
+
+    <!-- Stock Analysis -->
+
+    <div class="category-card">
+
+      <div class="category-picture">
+        <img
+          src="category-stock.png"
+          alt="Stock market analysis"
+          loading="lazy"
+        >
       </div>
 
-      <div id="chart-area">
-        <div class="chart-wrap">
-          <canvas id="fear-greed-chart"></canvas>
-        </div>
+      <h3>Stock Analysis</h3>
 
-        <div id="sentiment-footer" class="sentiment-footer">
-          Loading latest sentiment data...
-        </div>
+      <p>
+        Company research combining business
+        fundamentals with practical price action.
+      </p>
+
+      <div class="subcategories">
+
+        <button
+          class="sub-button"
+          onclick="window.location.href='category.html?name=Fundamental%20Analysis'"
+        >
+          Fundamental
+        </button>
+
+        <button
+          class="sub-button"
+          onclick="window.location.href='price-action-analyst.html'"
+        >
+          Price Action Analyst
+        </button>
+
       </div>
 
     </div>
-  </section>
 
-  <h2 id="article-list-heading" class="article-list-heading">Articles</h2>
 
-  <div id="article-list" class="article-list">
-    <div class="message">Loading articles...</div>
+    <!-- Trading Psychology -->
+
+    <div class="category-card">
+
+      <div class="category-picture">
+        <img
+          src="category-psychology.png"
+          alt="Trading psychology"
+          loading="lazy"
+        >
+      </div>
+
+      <h3>Trading Psychology</h3>
+
+      <p>
+        Discipline, emotion, decision-making,
+        FOMO, patience and trading behavior.
+      </p>
+
+      <button
+        class="category-button"
+        onclick="window.location.href='category.html?name=Trading%20Psychology'"
+      >
+        View Psychology
+      </button>
+
+    </div>
+
+
+    <!-- Trading Strategies -->
+
+    <div class="category-card">
+
+      <div class="category-picture">
+        <img
+          src="category-strategies.png"
+          alt="Trading strategies"
+          loading="lazy"
+        >
+      </div>
+
+      <h3>Trading Strategies</h3>
+
+      <p>
+        Trading setups, entries, exits,
+        risk management, position sizing
+        and execution.
+      </p>
+
+      <button
+        class="category-button"
+        onclick="window.location.href='category.html?name=Trading%20Strategies'"
+      >
+        View Strategies
+      </button>
+
+    </div>
+
+
+    <!-- Daily Review -->
+
+    <div class="category-card">
+
+      <div class="category-picture">
+        <img
+          src="category-reviews.png"
+          alt="Trade review journal"
+          loading="lazy"
+        >
+      </div>
+
+      <h3>Daily Review</h3>
+
+      <p>
+        Daily notes, chart screenshots,
+        execution lessons and
+        post-trade analysis.
+      </p>
+
+      <button
+        class="category-button"
+        onclick="window.location.href='category.html?name=My%20Trade%20Reviews'"
+      >
+        View Daily Review
+      </button>
+
+    </div>
+
+
+    <!-- Videos -->
+
+    <div class="category-card">
+
+      <div class="category-picture">
+        <img
+          src="category-videos.png"
+          alt="Investment videos"
+          loading="lazy"
+        >
+      </div>
+
+      <h3>Videos</h3>
+
+      <p>
+        My own investment videos and selected
+        videos from YouTube.
+      </p>
+
+      <div class="subcategories">
+
+        <button
+          class="sub-button"
+          onclick="window.location.href='category.html?name=My%20Videos'"
+        >
+          My Videos
+        </button>
+
+        <button
+          class="sub-button"
+          onclick="window.location.href='category.html?name=Selected%20YouTube%20Videos'"
+        >
+          Selected YouTube Videos
+        </button>
+
+      </div>
+
+    </div>
+
+
   </div>
 
 </div>
 
+<!-- =========================
+     WATCH LIST + CHART
+========================= -->
+
+<div class="container">
+
+  <div class="watch-section">
+
+    <div class="watch-panel">
+
+      <h2>⭐ Watch List</h2>
+
+      <div id="watch-list">
+        Loading Watch List...
+      </div>
+
+      <div class="watchlist-more-wrap">
+        <a class="watchlist-more-link" href="watchlist.html">
+          View All Watchlist →
+        </a>
+      </div>
+
+    </div>
+
+
+    <div class="chart-panel">
+
+      <div class="chart-header">
+
+        <h2>📊 Interactive Chart</h2>
+
+        <span id="current-symbol">
+          Select a stock
+        </span>
+
+      </div>
+
+
+      <div id="tradingview-chart">
+
+        <div
+          style="
+            padding:40px;
+            color:#6b7280;
+            text-align:center;
+          "
+        >
+          Select a stock from the Watch List.
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- =========================
+     ARTICLE TITLE LIST
+========================= -->
+
+<div class="container">
+
+  <div class="library-header">
+
+    <h2 id="library-title">
+      📚 Latest From North Current Research
+    </h2>
+</div>
+
+
+  <div
+    class="article-list"
+    id="database-items"
+  >
+
+    <div class="empty-message">
+      Loading investment items...
+    </div>
+
+  </div>
+
+</div>
+
+<!-- =========================
+     FOOTER
+========================= -->
+
 <footer>
-  Waterside Library
+
+  North Current Research
+
   <br><br>
+
   Personal investment research and content collection.
+
 </footer>
+
 
 <script>
 
-const categoryDescriptions = {
-  "Macroeconomy":
-    "Interest rates, inflation, liquidity, economic cycles and broader market conditions.",
-
-  "Fundamental Analysis":
-    "Company fundamentals, financial performance, valuation, business quality and long-term outlook.",
-
-  "Price Action Analysis":
-    "Practical price action, technical structure, trend behavior, support, resistance and market positioning.",
-
-  "Trading Psychology":
-    "Trading discipline, decision-making, patience, emotion and behavioral patterns.",
-
-  "Trading Strategies":
-    "Trading setups, entries, exits, risk management, position sizing and execution.",
-
-  "My Trade Reviews":
-    "Personal trade reviews, lessons, mistakes, execution notes and post-trade analysis.",
-
-  "My Videos":
-    "My own investment and market-analysis videos.",
-
-  "Selected YouTube Videos":
-    "Selected YouTube videos related to investing, markets and trading."
-};
-
-
-function formatDate(value) {
-  if (!value) return "";
-
-  const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) return "";
-
-  return date.toLocaleDateString(
-    "en-US",
-    {
-      year: "numeric",
-      month: "short",
-      day: "numeric"
-    }
-  );
-}
-
-
-function safeText(value) {
-  if (value === null || value === undefined) return "";
-
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
 
 /* ========================================
-   FEAR & GREED CHART
+   WATCH LIST
 ======================================== */
 
-async function loadFearGreedChart() {
+let watchListData = [];
 
-  const chartArea =
-    document.getElementById("chart-area");
 
-  const errorBox =
-    document.getElementById("sentiment-error");
+async function loadWatchList() {
 
-  try {
+  const container =
+    document.getElementById("watch-list");
 
-    /*
-      CNN's graph-data endpoint is not a formally documented public API.
-      If browser CORS or CNN access rules block it, this function fails
-      gracefully and the article list below continues working.
-    */
 
-    const start = new Date();
-    start.setFullYear(start.getFullYear() - 1);
-
-    const startDate =
-      start.toISOString().slice(0, 10);
-
-    const endpoint =
-      "https://production.dataviz.cnn.io/index/fearandgreed/graphdata/" +
-      startDate;
-
-    const response =
-      await fetch(
-        endpoint,
-        {
-          headers: {
-            "Accept": "application/json"
-          }
-        }
-      );
-
-    if (!response.ok) {
-      throw new Error(
-        "Fear & Greed request failed: " +
-        response.status
-      );
-    }
-
-    const payload =
-      await response.json();
-
-    const history =
-      payload?.fear_and_greed_historical?.data;
-
-    if (
-      !Array.isArray(history) ||
-      history.length === 0
-    ) {
-      throw new Error(
-        "Historical Fear & Greed data missing."
-      );
-    }
-
-    const points =
-      history
-        .filter(
-          point =>
-            Number.isFinite(Number(point.x)) &&
-            Number.isFinite(Number(point.y))
-        )
-        .map(
-          point => ({
-            x: Number(point.x),
-            y: Number(point.y)
-          })
-        )
-        .sort(
-          (a, b) => a.x - b.x
-        );
-
-    const labels =
-      points.map(
-        point =>
-          new Date(point.x)
-            .toLocaleDateString(
-              "en-US",
-              {
-                month: "short",
-                year: "numeric"
-              }
-            )
-      );
-
-    const values =
-      points.map(
-        point => point.y
-      );
-
-    const headline =
-      payload?.fear_and_greed || {};
-
-    const currentScore =
-      Number(headline.score);
-
-    const currentRating =
-      safeText(headline.rating || "");
-
-    if (Number.isFinite(currentScore)) {
-      document.getElementById(
-        "current-score"
-      ).textContent =
-        Math.round(currentScore);
-    }
-
-    document.getElementById(
-      "current-rating"
-    ).textContent =
-      currentRating || "Current";
-
-
-    const ctx =
-      document.getElementById(
-        "fear-greed-chart"
-      );
-
-
-    new Chart(
-      ctx,
-      {
-        type: "line",
-
-        data: {
-          labels: labels,
-
-          datasets: [
-            {
-              label: "Fear & Greed",
-              data: values,
-              borderWidth: 2,
-              pointRadius: 0,
-              pointHoverRadius: 4,
-              tension: 0.15
-            }
-          ]
-        },
-
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-
-          interaction: {
-            intersect: false,
-            mode: "index"
-          },
-
-          plugins: {
-            legend: {
-              display: false
-            },
-
-            tooltip: {
-              callbacks: {
-                label: function(context) {
-                  return (
-                    "Fear & Greed: " +
-                    Number(context.raw).toFixed(1)
-                  );
-                }
-              }
-            }
-          },
-
-          scales: {
-
-            y: {
-              min: 0,
-              max: 100,
-
-              ticks: {
-                stepSize: 25,
-
-                callback: function(value) {
-
-                  if (value === 0) {
-                    return "0  Extreme Fear";
-                  }
-
-                  if (value === 25) {
-                    return "25  Fear";
-                  }
-
-                  if (value === 50) {
-                    return "50  Neutral";
-                  }
-
-                  if (value === 75) {
-                    return "75  Greed";
-                  }
-
-                  if (value === 100) {
-                    return "100  Extreme Greed";
-                  }
-
-                  return value;
-                }
-              }
-            },
-
-            x: {
-              ticks: {
-                maxTicksLimit: 6,
-                maxRotation: 0,
-                autoSkip: true
-              },
-
-              grid: {
-                display: false
-              }
-            }
-          }
-        }
-      }
-    );
-
-
-    const updated =
-      headline.timestamp
-        ? new Date(headline.timestamp)
-        : null;
-
-    document.getElementById(
-      "sentiment-footer"
-    ).textContent =
-      updated &&
-      !Number.isNaN(updated.getTime())
-        ? "Last updated: " +
-          updated.toLocaleString()
-        : "Latest available Fear & Greed data";
-
-  } catch (error) {
-
-    console.error(
-      "Fear & Greed load error:",
-      error
-    );
-
-    chartArea.style.display =
-      "none";
-
-    errorBox.style.display =
-      "block";
-
-    document.getElementById(
-      "current-score"
-    ).textContent =
-      "—";
-
-    document.getElementById(
-      "current-rating"
-    ).textContent =
-      "Unavailable";
-  }
-}
-
-
-/* ========================================
-   CATEGORY + ARTICLE LIST
-======================================== */
-
-async function loadCategory() {
-
-  const params =
-    new URLSearchParams(
-      window.location.search
-    );
-
-  const category =
-    params.get("name");
-
-  const titleElement =
-    document.getElementById(
-      "category-title"
-    );
-
-  const descriptionElement =
-    document.getElementById(
-      "category-description"
-    );
-
-  const listElement =
-    document.getElementById(
-      "article-list"
-    );
-
-  const listHeading =
-    document.getElementById(
-      "article-list-heading"
-    );
-
-  const sentimentSection =
-    document.getElementById(
-      "sentiment-section"
-    );
-
-
-  if (!category) {
-
-    titleElement.textContent =
-      "Category Not Found";
-
-    listHeading.style.display =
-      "none";
-
-    listElement.innerHTML = `
-      <div class="message">
-        No category was selected.
-      </div>
-    `;
-
-    return;
-  }
-
-
-  titleElement.textContent =
-    category;
-
-  descriptionElement.textContent =
-    categoryDescriptions[category] || "";
-
-  document.title =
-    category +
-    " | Waterside Library";
-
-
-  if (
-    category ===
-    "Trading Psychology"
-  ) {
-
-    sentimentSection.style.display =
-      "block";
-
-    listHeading.textContent =
-      "Trading Psychology Articles";
-
-    loadFearGreedChart();
-
-  } else {
-
-    sentimentSection.style.display =
-      "none";
-
-    listHeading.textContent =
-      category + " Articles";
-  }
-
-
-  const {
-    data,
-    error
-  } =
+  const { data, error } =
     await supabaseClient
-      .from("items")
+      .from("watchlist")
       .select("*")
-      .eq(
-        "category",
-        category
+      .order(
+        "display_order",
+        { ascending: true }
       )
       .order(
         "created_at",
-        {
-          ascending: false
-        }
+        { ascending: true }
       );
 
 
   if (error) {
 
     console.error(
-      "Category load error:",
+      "Watch List error:",
       error
     );
 
-    listElement.innerHTML = `
-      <div class="message">
-        Unable to load articles.
-      </div>
-    `;
+    container.innerHTML =
+      `
+        <p class="watch-empty">
+          Unable to load Watch List.
+        </p>
+      `;
 
     return;
   }
+
+
+  watchListData =
+    data || [];
+
+
+  if (watchListData.length === 0) {
+
+    container.innerHTML =
+      `
+        <p class="watch-empty">
+          No stocks in the Watch List yet.
+        </p>
+      `;
+
+    return;
+  }
+
+
+  const homepageWatchList =
+    watchListData.slice(0, 5);
+
+
+  container.innerHTML =
+    homepageWatchList.map(
+      (stock, index) => {
+
+        const ticker =
+          safeText(stock.ticker);
+
+        const company =
+          safeText(stock.company);
+
+        const exchange =
+          safeText(
+            stock.exchange ||
+            "NASDAQ"
+          );
+
+
+        const symbol =
+          stock.tradingview_symbol
+            ? safeText(
+                stock.tradingview_symbol
+              )
+            : exchange + ":" + ticker;
+
+
+        return `
+
+          <button
+            class="
+              watch-item
+              ${index === 0 ? "active" : ""}
+            "
+            onclick="
+              selectWatchStock(
+                '${symbol}',
+                this
+              )
+            "
+          >
+
+            <span class="watch-ticker">
+              ${ticker}
+            </span>
+
+            <span class="watch-company">
+              ${company}
+            </span>
+
+          </button>
+
+        `;
+
+      }
+    ).join("");
+
+
+  const firstStock =
+    watchListData[0];
+
+
+  const firstTicker =
+    firstStock.ticker
+      ? String(firstStock.ticker)
+          .trim()
+          .toUpperCase()
+      : "";
+
+
+  const firstExchange =
+    firstStock.exchange
+      ? String(firstStock.exchange)
+          .trim()
+          .toUpperCase()
+      : "NASDAQ";
+
+
+  const firstSymbol =
+    firstStock.tradingview_symbol
+      ? String(firstStock.tradingview_symbol)
+          .trim()
+          .toUpperCase()
+      : (
+          firstExchange +
+          ":" +
+          firstTicker
+        );
+
+
+  loadTradingViewChart(
+    firstSymbol
+  );
+
+}
+
+
+/* ========================================
+   SELECT WATCH STOCK
+======================================== */
+
+function selectWatchStock(
+  symbol,
+  button
+) {
+
+  document
+    .querySelectorAll(
+      ".watch-item"
+    )
+    .forEach(
+      item => {
+        item.classList.remove(
+          "active"
+        );
+      }
+    );
+
+
+  button.classList.add(
+    "active"
+  );
+
+
+  loadTradingViewChart(
+    symbol
+  );
+
+}
+
+
+/* ========================================
+   TRADINGVIEW CHART
+======================================== */
+
+function loadTradingViewChart(
+  symbol
+) {
+
+  const chartContainer =
+    document.getElementById(
+      "tradingview-chart"
+    );
+
+
+  document
+    .getElementById(
+      "current-symbol"
+    )
+    .textContent =
+    symbol;
+
+
+  chartContainer.innerHTML =
+    "";
+
+
+  const outer =
+    document.createElement(
+      "div"
+    );
+
+
+  outer.className =
+    "tradingview-widget-container";
+
+
+  const widget =
+    document.createElement(
+      "div"
+    );
+
+
+  widget.className =
+    "tradingview-widget-container__widget";
+
+
+  outer.appendChild(
+    widget
+  );
+
+
+  const script =
+    document.createElement(
+      "script"
+    );
+
+
+  script.type =
+    "text/javascript";
+
+
+  script.src =
+    "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
+
+
+  script.async =
+    true;
+
+
+  script.innerHTML =
+    JSON.stringify({
+
+      autosize: true,
+
+      symbol: symbol,
+
+      interval: "D",
+
+      timezone: "exchange",
+
+      theme: "light",
+
+      style: "1",
+
+      locale: "en",
+
+      allow_symbol_change: true,
+
+      withdateranges: true,
+
+      hide_side_toolbar: false,
+
+      save_image: false,
+
+      calendar: false,
+
+      support_host:
+        "https://www.tradingview.com"
+
+    });
+
+
+  outer.appendChild(
+    script
+  );
+
+
+  chartContainer.appendChild(
+    outer
+  );
+
+}
+
+
+/* ========================================
+   INVESTMENT CONTENT
+======================================== */
+
+let allInvestmentItems = [];
+let libraryExpanded = false;
+
+
+/* ========================================
+   LOAD CONTENT
+======================================== */
+
+async function loadInvestmentItems() {
+
+  const { data, error } =
+    await supabaseClient
+      .from("items")
+      .select("*")
+      .order(
+        "created_at",
+        { ascending: false }
+      );
+
+
+  if (error) {
+
+    console.error(
+      "Error loading items:",
+      error
+    );
+
+
+    document
+      .getElementById(
+        "database-items"
+      )
+      .innerHTML =
+      `
+        <div class="empty-message">
+          Unable to load investment items.
+        </div>
+      `;
+
+
+    return;
+  }
+
+
+  allInvestmentItems =
+    data || [];
+
+
+  displayArticleTitles(
+    allInvestmentItems
+  );
+
+}
+
+
+/* ========================================
+   DISPLAY ONLY ARTICLE TITLES
+======================================== */
+
+function displayArticleTitles(
+  items
+) {
+
+  const container =
+    document.getElementById(
+      "database-items"
+    );
 
 
   if (
-    !data ||
-    data.length === 0
+    !items ||
+    items.length === 0
   ) {
 
-    listElement.innerHTML = `
-      <div class="message">
-        No articles have been published in this category yet.
-      </div>
-    `;
+    container.innerHTML =
+      `
+        <div class="empty-message">
+          No investment items found.
+        </div>
+      `;
 
     return;
   }
 
 
-  listElement.innerHTML =
-    data.map(
+  const visibleItems =
+    libraryExpanded
+      ? items
+      : items.slice(0, 6);
+
+
+  const articleHtml =
+    visibleItems.map(
       item => {
 
         const id =
@@ -759,14 +1164,19 @@ async function loadCategory() {
             item.id
           );
 
+        const ticker =
+          safeText(
+            item.ticker
+          );
+
         const title =
           safeText(
             item.title
           );
 
-        const ticker =
+        const category =
           safeText(
-            item.ticker
+            item.category
           );
 
         const type =
@@ -774,23 +1184,13 @@ async function loadCategory() {
             item.type
           );
 
-        const published =
-          formatDate(
-            item.created_at
-          );
-
-        const updated =
-          formatDate(
-            item.updated_at
-          );
-
 
         return `
 
-          <div class="article-item">
+          <div class="article-list-item">
 
             <a
-              class="article-title"
+              class="article-title-link"
               href="article.html?id=${id}"
             >
 
@@ -808,10 +1208,10 @@ async function loadCategory() {
             <div class="article-meta">
 
               ${
-                ticker
+                category
                   ? `
                     <span>
-                      Ticker: ${ticker}
+                      ${category}
                     </span>
                   `
                   : ""
@@ -827,27 +1227,6 @@ async function loadCategory() {
                   : ""
               }
 
-              ${
-                published
-                  ? `
-                    <span>
-                      Published: ${published}
-                    </span>
-                  `
-                  : ""
-              }
-
-              ${
-                updated &&
-                updated !== published
-                  ? `
-                    <span>
-                      Updated: ${updated}
-                    </span>
-                  `
-                  : ""
-              }
-
             </div>
 
           </div>
@@ -856,12 +1235,156 @@ async function loadCategory() {
 
       }
     ).join("");
+
+
+  const toggleHtml =
+    items.length > 6
+      ? `
+        <div class="library-toggle-wrap">
+
+          <button
+            class="library-toggle"
+            onclick="toggleLibraryList()"
+          >
+            ${
+              libraryExpanded
+                ? "Show Less ↑"
+                : "Show More ↓"
+            }
+          </button>
+
+        </div>
+      `
+      : "";
+
+
+  container.innerHTML =
+    articleHtml +
+    toggleHtml;
+
 }
 
 
-loadCategory();
+function toggleLibraryList() {
+
+  libraryExpanded =
+    !libraryExpanded;
+
+
+  displayArticleTitles(
+    allInvestmentItems
+  );
+
+}
+
+/* ========================================
+   TEXT SAFETY
+======================================== */
+
+function safeText(
+  value
+) {
+
+  if (
+    value === null ||
+    value === undefined
+  ) {
+
+    return "";
+
+  }
+
+
+  return String(value)
+
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
+
+}
+
+
+/* ========================================
+   ACCOUNT / ADMIN ACCESS
+======================================== */
+
+const ADMIN_UID =
+  "a5bc1b7d-ca11-49f3-8e95-1d99b12031fa";
+
+async function updateAccountLink() {
+
+  const accountLink =
+    document.getElementById("account-link");
+
+  if (!accountLink) {
+    return;
+  }
+
+  const {
+    data: { session }
+  } =
+    await supabaseClient.auth.getSession();
+
+  // Not logged in
+  if (!session) {
+    accountLink.href = "member.html";
+    accountLink.textContent = "🔐 Log In ";
+    return;
+  }
+
+  // Administrator
+  if (session.user.id === ADMIN_UID) {
+    accountLink.href = "management.html";
+    accountLink.textContent = "⚙️ Management";
+    return;
+  }
+
+  // Regular logged-in member
+  accountLink.href = "#";
+  accountLink.textContent = "↪ Log Out";
+
+  accountLink.onclick = async function(event) {
+    event.preventDefault();
+    await supabaseClient.auth.signOut();
+    window.location.reload();
+  };
+}
+
+
+/* ========================================
+   START
+======================================== */
+
+loadWatchList();
+
+loadInvestmentItems();
+
+updateAccountLink();
 
 </script>
 
+
 </body>
+
 </html>
