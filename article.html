@@ -423,6 +423,27 @@
       object-fit: cover;
     }
 
+    .article-content .saved-review-image-grid {
+      display: block;
+    }
+
+    .article-content .saved-review-image-grid a {
+      display: block;
+      margin: 0 0 24px;
+      border: 0;
+      border-radius: 10px;
+    }
+
+    .article-content .saved-review-image-grid img,
+    .article-content > img {
+      width: 100%;
+      height: auto;
+      max-height: none;
+      margin: 0 0 24px;
+      border-radius: 10px;
+      object-fit: contain;
+    }
+
     .edit-review-images {
       margin: 18px 0 24px;
       padding: 20px;
@@ -1028,7 +1049,7 @@ async function loadArticle() {
     await supabaseClient
       .from("items")
       .select(
-        "id, created_at, updated_at, title, type, ticker, tags, description, preview, url, category, access_level"
+        "id, created_at, updated_at, title, type, ticker, tags, description, preview, url, category, access_level, content_html, my_note"
       )
       .eq(
         "id",
@@ -1059,10 +1080,10 @@ async function loadArticle() {
     data;
 
   currentContentHtml =
-    "";
+    data.content_html || "";
 
   currentMyNote =
-    "";
+    data.my_note || "";
 
   hasProtectedAccess =
     false;
@@ -1553,6 +1574,7 @@ function renderEditMode() {
               <option value="Article">Article</option>
               <option value="Video">Video</option>
               <option value="Research">Research</option>
+              <option value="Image">Image</option>
               <option value="Note">Note</option>
             </select>
 
@@ -1986,9 +2008,7 @@ function buildEditReviewImagesHtml(urls) {
       <h2>Review Images</h2>
       <div class="saved-review-image-grid">
         ${urls.map((url, index) => `
-          <a href="${safeText(url)}" target="_blank" rel="noopener noreferrer">
-            <img src="${safeText(url)}" alt="Daily review image ${index + 1}">
-          </a>
+          <img src="${safeText(url)}" alt="Daily review image ${index + 1}">
         `).join("")}
       </div>
     </section>
