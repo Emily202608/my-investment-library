@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Investment Article | North Current Research</title>
+  <title>Investment Article | Waterside Library</title>
 
   <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -206,20 +206,6 @@
     .article-content ul,
     .article-content ol {
       line-height: 1.8;
-      padding-left: 1.6em;
-    }
-
-    .article-content ol {
-      list-style-type: decimal;
-    }
-
-    .article-content ul {
-      list-style-type: disc;
-    }
-
-    .article-content li {
-      display: list-item;
-      margin: 8px 0;
     }
 
     .article-content a {
@@ -1216,8 +1202,8 @@ function renderReadMode() {
   document.title =
     title
       ? title +
-        " | North Current Research"
-      : "North Current Research";
+        " | Waterside Library"
+      : "Waterside Library";
 
 
   container.innerHTML =
@@ -1345,7 +1331,7 @@ function renderReadMode() {
                   href="member.html"
                   class="login-to-read"
                 >
-                  Log In →
+                  Member Log In →
                 </a>
 
               </div>
@@ -1409,13 +1395,6 @@ function renderReadMode() {
       </article>
 
     `;
-
-
-  fixOrderedListNumbering(
-    container.querySelector(
-      ".article-content"
-    )
-  );
 
 }
 
@@ -1626,7 +1605,17 @@ function renderEditMode() {
           id="edit-preview"
         ></textarea>
 
-<label>
+
+        <label>
+          Description
+        </label>
+
+        <textarea
+          id="edit-description"
+        ></textarea>
+
+
+        <label>
           Article Content
         </label>
 
@@ -1740,7 +1729,16 @@ function renderEditMode() {
     .value =
     currentArticle.preview || "";
 
-document
+
+  document
+    .getElementById(
+      "edit-description"
+    )
+    .value =
+    currentArticle.description || "";
+
+
+  document
     .getElementById(
       "edit-note"
     )
@@ -1845,7 +1843,8 @@ async function saveChanges() {
       "";
   }
 
-const updatedItem = {
+
+  const updatedItem = {
 
     title:
       document
@@ -1909,6 +1908,14 @@ const updatedItem = {
         .value
         .trim(),
 
+    description:
+      document
+        .getElementById(
+          "edit-description"
+        )
+        .value
+        .trim(),
+
     updated_at:
       new Date().toISOString()
 
@@ -1955,7 +1962,12 @@ const updatedItem = {
   }
 
 
-    const protectedUpdate = {
+  const protectedUpdate = {
+
+    item_id:
+      Number(
+        currentArticleId
+      ),
 
     content_html:
       contentHtml,
@@ -1966,96 +1978,35 @@ const updatedItem = {
           "edit-note"
         )
         .value
-        .trim(),
-
-    updated_at:
-      new Date().toISOString()
+        .trim()
 
   };
 
 
   const {
-    data: updatedContent,
     error: protectedError
   } =
     await supabaseClient
       .from("item_content")
-      .update(
-        protectedUpdate
-      )
-      .eq(
-        "item_id",
-        currentArticleId
-      )
-      .select();
+      .upsert(
+        protectedUpdate,
+        {
+          onConflict: "item_id"
+        }
+      );
 
 
   if (protectedError) {
 
     console.error(
-      "Article content update error:",
       protectedError
     );
 
     message.textContent =
-      "Article details were saved, but article content could not be saved: " +
+      "Article details were saved, but protected content could not be saved: " +
       protectedError.message;
 
     return;
-  }
-
-
-  /*
-    If this article does not yet have
-    an item_content row, create one.
-  */
-
-  if (
-    !updatedContent ||
-    updatedContent.length === 0
-  ) {
-
-    const {
-      error: insertContentError
-    } =
-      await supabaseClient
-        .from("item_content")
-        .insert([
-          {
-            item_id:
-              currentArticleId,
-
-            content_html:
-              contentHtml,
-
-            my_note:
-              document
-                .getElementById(
-                  "edit-note"
-                )
-                .value
-                .trim(),
-
-            updated_at:
-              new Date().toISOString()
-          }
-        ]);
-
-
-    if (insertContentError) {
-
-      console.error(
-        "Article content insert error:",
-        insertContentError
-      );
-
-      message.textContent =
-        "Article details were saved, but article content could not be created: " +
-        insertContentError.message;
-
-      return;
-    }
-
   }
 
 
@@ -2478,70 +2429,6 @@ document.addEventListener(
 
   }
 );
-
-
-/* ========================================
-   ORDERED LIST DISPLAY FIX
-======================================== */
-
-function fixOrderedListNumbering(root) {
-
-  if (!root) {
-    return;
-  }
-
-  const orderedLists =
-    Array.from(
-      root.querySelectorAll("ol")
-    );
-
-  let nextNumber =
-    1;
-
-  let previousWasOrderedList =
-    false;
-
-
-  orderedLists.forEach(
-    function(list) {
-
-      const previous =
-        list.previousElementSibling;
-
-      const continuesPreviousList =
-        previous &&
-        previous.tagName === "OL";
-
-
-      if (!continuesPreviousList) {
-        nextNumber =
-          1;
-      }
-
-
-      if (
-        nextNumber > 1 &&
-        !list.hasAttribute("start")
-      ) {
-        list.setAttribute(
-          "start",
-          String(nextNumber)
-        );
-      }
-
-
-      nextNumber +=
-        list.querySelectorAll(
-          ":scope > li"
-        ).length;
-
-
-      previousWasOrderedList =
-        true;
-    }
-  );
-
-}
 
 
 /* ========================================
