@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>My Investment Library</title>
+  <title>North Current Research</title>
 
   <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -145,6 +145,27 @@
     .watch-empty {
       color: #6b7280;
       line-height: 1.5;
+    }
+
+
+    .watchlist-more-wrap {
+      margin-top: 14px;
+      text-align: center;
+    }
+
+    .watchlist-more-link {
+      display: inline-block;
+      padding: 9px 13px;
+      border-radius: 7px;
+      background: #111827;
+      color: white;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .watchlist-more-link:hover {
+      background: #263247;
     }
 
     /* =========================
@@ -398,14 +419,14 @@
 
 <header>
 
-  <a href="member.html" class="login-link">
-    🔐 Member Log In
+  <a href="member.html" class="login-link" id="account-link">
+    🔐 Log In 
   </a>
 
-  <h1>My Investment Library</h1>
+  <h1>North Current Research</h1>
 
   <p>
-    Research, market insights, trading ideas and selected resources.
+    AI-Powered Research, Market Insights, Trading Ideas &amp; Selected Resources
   </p>
 </header>
 
@@ -424,19 +445,19 @@
   <div class="categories">
 
 
-    <!-- Macro Trends -->
+    <!-- Macroeconomy -->
 
     <div class="category-card">
 
       <div class="category-picture">
         <img
           src="category-macro.png"
-          alt="Global market and macro trends"
+          alt="Global market and Macroeconomy"
           loading="lazy"
         >
       </div>
 
-      <h3>Macro Trends</h3>
+      <h3>Macroeconomy</h3>
 
       <p>
         Interest rates, inflation, liquidity,
@@ -446,9 +467,9 @@
 
       <button
         class="category-button"
-        onclick="window.location.href='category.html?name=Macro%20Trends'"
+        onclick="window.location.href='category.html?name=Macroeconomy'"
       >
-        View Macro Trends
+        View Macroeconomy
       </button>
 
     </div>
@@ -484,9 +505,9 @@
 
         <button
           class="sub-button"
-          onclick="window.location.href='category.html?name=Price%20Action%20Analysis'"
+          onclick="window.location.href='price-action-analyst.html'"
         >
-          Price Action
+          Price Action Analyst
         </button>
 
       </div>
@@ -553,7 +574,7 @@
     </div>
 
 
-    <!-- My Trade Reviews -->
+    <!-- Daily Review -->
 
     <div class="category-card">
 
@@ -565,11 +586,11 @@
         >
       </div>
 
-      <h3>Daily Trade Review</h3>
+      <h3>Daily Review</h3>
 
       <p>
-        Personal trade reviews, lessons,
-        mistakes, execution notes and
+        Daily notes, chart screenshots,
+        execution lessons and
         post-trade analysis.
       </p>
 
@@ -577,7 +598,7 @@
         class="category-button"
         onclick="window.location.href='category.html?name=My%20Trade%20Reviews'"
       >
-        View Trade Reviews
+        View Daily Review
       </button>
 
     </div>
@@ -643,6 +664,12 @@
         Loading Watch List...
       </div>
 
+      <div class="watchlist-more-wrap">
+        <a class="watchlist-more-link" href="watchlist.html">
+          View All Watchlist →
+        </a>
+      </div>
+
     </div>
 
 
@@ -688,7 +715,7 @@
   <div class="library-header">
 
     <h2 id="library-title">
-      📚 Latest From My Library
+      📚 Latest From North Current Research
     </h2>
 </div>
 
@@ -712,7 +739,7 @@
 
 <footer>
 
-  My Investment Library
+  North Current Research
 
   <br><br>
 
@@ -786,8 +813,12 @@ async function loadWatchList() {
   }
 
 
+  const homepageWatchList =
+    watchListData.slice(0, 5);
+
+
   container.innerHTML =
-    watchListData.map(
+    homepageWatchList.map(
       (stock, index) => {
 
         const ticker =
@@ -1295,12 +1326,61 @@ function safeText(
 
 
 /* ========================================
+   ACCOUNT / ADMIN ACCESS
+======================================== */
+
+const ADMIN_UID =
+  "a5bc1b7d-ca11-49f3-8e95-1d99b12031fa";
+
+async function updateAccountLink() {
+
+  const accountLink =
+    document.getElementById("account-link");
+
+  if (!accountLink) {
+    return;
+  }
+
+  const {
+    data: { session }
+  } =
+    await supabaseClient.auth.getSession();
+
+  // Not logged in
+  if (!session) {
+    accountLink.href = "member.html";
+    accountLink.textContent = "🔐 Log In ";
+    return;
+  }
+
+  // Administrator
+  if (session.user.id === ADMIN_UID) {
+    accountLink.href = "management.html";
+    accountLink.textContent = "⚙️ Management";
+    return;
+  }
+
+  // Regular logged-in member
+  accountLink.href = "#";
+  accountLink.textContent = "↪ Log Out";
+
+  accountLink.onclick = async function(event) {
+    event.preventDefault();
+    await supabaseClient.auth.signOut();
+    window.location.reload();
+  };
+}
+
+
+/* ========================================
    START
 ======================================== */
 
 loadWatchList();
 
 loadInvestmentItems();
+
+updateAccountLink();
 
 </script>
 
