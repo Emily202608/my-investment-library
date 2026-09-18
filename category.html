@@ -106,58 +106,85 @@
       border-radius: 14px;
     }
 
-    .fear-greed-top {
+    .fear-greed-current {
       display: flex;
-      align-items: baseline;
+      align-items: center;
       justify-content: space-between;
-      gap: 18px;
-      margin-bottom: 18px;
+      gap: 34px;
+      min-height: 184px;
+    }
+
+    .fear-greed-top {
+      flex: 1 1 auto;
+      min-width: 0;
     }
 
     .fear-greed-value {
-      font-size: 46px;
+      font-size: 52px;
       line-height: 1;
       font-weight: 700;
       color: #111827;
     }
 
     .fear-greed-status {
+      margin-top: 8px;
       font-size: 20px;
       font-weight: 700;
       color: #374151;
-      text-align: right;
+    }
+
+    .fear-greed-gauge {
+      display: flex;
+      align-items: stretch;
+      gap: 12px;
+      height: 170px;
+      flex: 0 0 auto;
     }
 
     .fear-greed-track {
       position: relative;
-      height: 14px;
+      width: 16px;
+      height: 170px;
       border-radius: 999px;
-      background: linear-gradient(90deg, #991b1b 0%, #dc2626 20%, #f59e0b 40%, #eab308 55%, #84cc16 72%, #16a34a 100%);
+      background: linear-gradient(0deg, #991b1b 0%, #dc2626 20%, #f59e0b 40%, #eab308 55%, #84cc16 72%, #16a34a 100%);
       overflow: visible;
     }
 
     .fear-greed-marker {
       position: absolute;
-      top: 50%;
       left: 50%;
-      width: 20px;
-      height: 20px;
+      top: 50%;
+      width: 22px;
+      height: 22px;
       background: white;
       border: 3px solid #111827;
       border-radius: 50%;
       transform: translate(-50%, -50%);
       box-shadow: 0 1px 4px rgba(0,0,0,0.20);
-      transition: left 0.35s ease;
+      transition: top 0.35s ease;
     }
 
     .fear-greed-scale {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      margin-top: 10px;
-      font-size: 12px;
+      position: relative;
+      width: 108px;
+      height: 170px;
+      font-size: 11px;
       color: #6b7280;
+      line-height: 1.2;
     }
+
+    .fear-greed-scale span {
+      position: absolute;
+      left: 0;
+      transform: translateY(-50%);
+      white-space: nowrap;
+    }
+
+    .fear-greed-scale span:nth-child(1) { top: 0%; transform: translateY(0); }
+    .fear-greed-scale span:nth-child(2) { top: 25%; }
+    .fear-greed-scale span:nth-child(3) { top: 50%; }
+    .fear-greed-scale span:nth-child(4) { top: 75%; }
+    .fear-greed-scale span:nth-child(5) { top: 100%; transform: translateY(-100%); }
 
     .fear-greed-meta {
       display: flex;
@@ -295,6 +322,15 @@
       .sentiment-card {
         padding: 20px;
       }
+
+      .fear-greed-current {
+        gap: 22px;
+      }
+
+      .fear-greed-scale {
+        width: 96px;
+        font-size: 10px;
+      }
     }
   </style>
 </head>
@@ -345,19 +381,34 @@
 
         <div class="fear-greed-panel" aria-live="polite">
 
-          <div class="fear-greed-top">
-            <div id="fear-greed-value" class="fear-greed-value">--</div>
-            <div id="fear-greed-status" class="fear-greed-status">Loading...</div>
-          </div>
+          <div class="fear-greed-current">
 
-          <div class="fear-greed-track">
-            <div id="fear-greed-marker" class="fear-greed-marker"></div>
-          </div>
+            <div class="fear-greed-top">
+              <div id="fear-greed-value" class="fear-greed-value">--</div>
+              <div id="fear-greed-status" class="fear-greed-status">Loading...</div>
+            </div>
 
-          <div class="fear-greed-scale">
-            <span>Extreme Fear</span>
-            <span>Neutral</span>
-            <span>Extreme Greed</span>
+            <div class="fear-greed-gauge" aria-label="Fear and Greed scale from 0 to 100">
+              <div
+                id="fear-greed-track"
+                class="fear-greed-track"
+                role="meter"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow="50"
+              >
+                <div id="fear-greed-marker" class="fear-greed-marker"></div>
+              </div>
+
+              <div class="fear-greed-scale" aria-hidden="true">
+                <span>100&nbsp; Extreme Greed</span>
+                <span>75&nbsp; Greed</span>
+                <span>50&nbsp; Neutral</span>
+                <span>25&nbsp; Fear</span>
+                <span>0&nbsp; Extreme Fear</span>
+              </div>
+            </div>
+
           </div>
 
 
@@ -833,8 +884,24 @@ async function loadFearGreedIndex() {
     statusElement.textContent =
       status;
 
-    markerElement.style.left =
-      score + "%";
+    markerElement.style.top =
+      (100 - score) + "%";
+
+    const trackElement =
+      document.getElementById(
+        "fear-greed-track"
+      );
+
+    if (trackElement) {
+      trackElement.setAttribute(
+        "aria-valuenow",
+        Math.round(score)
+      );
+      trackElement.setAttribute(
+        "aria-valuetext",
+        Math.round(score) + " — " + status
+      );
+    }
 
     const latestDate =
       result.asOf ||
