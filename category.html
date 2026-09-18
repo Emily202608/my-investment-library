@@ -180,6 +180,50 @@
       text-decoration: underline;
     }
 
+    .fear-greed-history {
+      margin-top: 28px;
+      padding-top: 24px;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .fear-greed-history-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .fear-greed-history-title {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .fear-greed-history-note {
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    .fear-greed-chart {
+      width: 100%;
+      height: 285px;
+      display: block;
+      overflow: visible;
+    }
+
+    .fear-greed-chart-empty {
+      min-height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #6b7280;
+      font-size: 14px;
+      text-align: center;
+    }
+
     .article-list-heading {
       margin: 0 0 18px;
       font-size: 24px;
@@ -229,33 +273,6 @@
       border-radius: 10px;
       color: #6b7280;
       text-align: center;
-    }
-
-    .load-more-wrap {
-      margin-top: 22px;
-      text-align: center;
-    }
-
-    .load-more-button {
-      display: none;
-      border: 1px solid #d1d5db;
-      background: white;
-      color: #172033;
-      padding: 11px 22px;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: bold;
-      cursor: pointer;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-    }
-
-    .load-more-button:hover {
-      background: #f3f4f6;
-    }
-
-    .load-more-button:disabled {
-      opacity: 0.6;
-      cursor: default;
     }
 
     footer {
@@ -343,6 +360,17 @@
             <span>Extreme Greed</span>
           </div>
 
+
+          <div class="fear-greed-history">
+            <div class="fear-greed-history-head">
+              <h3 class="fear-greed-history-title">6-Month Sentiment History</h3>
+              <span class="fear-greed-history-note">Rolling six-month view</span>
+            </div>
+            <div id="fear-greed-history" class="fear-greed-chart-empty" aria-live="polite">
+              Loading history...
+            </div>
+          </div>
+
           <div class="fear-greed-meta">
             <span id="fear-greed-date">Latest available reading</span>
             <a
@@ -380,16 +408,6 @@
       Loading articles...
     </div>
 
-  </div>
-
-  <div class="load-more-wrap">
-    <button
-      id="load-more-button"
-      class="load-more-button"
-      type="button"
-    >
-      Load More
-    </button>
   </div>
 
 </div>
@@ -480,6 +498,239 @@ function safeText(value) {
 }
 
 
+
+function parseFearGreedDate(value) {
+  if (!value) return null;
+  const raw = String(value);
+  const date = new Date(raw + (raw.length === 10 ? "T12:00:00" : ""));
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function renderFearGreedHistory(values, dates) {
+  const host = document.getElementById("fear-greed-history");
+  if (!host) return;
+
+  const points = [];
+  const count = Math.min(values.length, dates.length);
+
+  for (let i = 0; i < count; i += 1) {
+    const score = Number(values[i]);
+    const date = parseFearGreedDate(dates[i]);
+
+    if (Number.isFinite(score) && date) {
+      points.push({
+        date,
+        score: Math.max(0, Math.min(100, score))
+      });
+    }
+  }
+
+  points.sort((a, b) => a.date - b.date);
+
+  if (!points.length) {
+    host.className = "fear-greed-chart-empty";
+    host.textContent = "Historical data is not available from the current data source.";
+    return;
+  }
+
+  const newest = points[points.length - 1].date;
+  const cutoff = new Date(newest);
+  cutoff.setMonth(cutoff.getMonth() - 6);
+
+  const history = points.filter(point => point.date >= cutoff);
+
+  if (history.length < 2) {
+    host.className = "fear-greed-chart-empty";
+    host.textContent = "More historical readings are needed to draw the trend.";
+    return;
+  }
+
+  const width = 720;
+  const height = 285;
+  const left = 46;
+  const right = 16;
+  const top = 14;
+  const bottom = 58;
+  const plotWidth = width - left - right;
+  const plotHeight = height - top - bottom;
+  const plotBottom = top + plotHeight;
+
+  const minTime = history[0].date.getTime();
+  const maxTime = history[history.length - 1].date.getTime();
+  const timeSpan = Math.max(1, maxTime - minTime);
+
+  const x = date =>
+    left + ((date.getTime() - minTime) / timeSpan) * plotWidth;
+
+  const y = score =>
+    top + (1 - score / 100) * plotHeight;
+
+  const path = history.map((point, index) =>
+    (index === 0 ? "M" : "L") +
+    x(point.date).toFixed(1) + " " +
+    y(point.score).toFixed(1)
+  ).join(" ");
+
+  const yTicks = [0, 25, 50, 75, 100];
+  const grid = yTicks.map(value => {
+    const py = y(value);
+
+    return `
+      <line
+        x1="${left}"
+        y1="${py}"
+        x2="${width - right}"
+        y2="${py}"
+        stroke="#e5e7eb"
+        stroke-width="1"
+      />
+      <text
+        x="${left - 9}"
+        y="${py + 4}"
+        text-anchor="end"
+        font-size="11"
+        fill="#6b7280"
+      >${value}</text>
+    `;
+  }).join("");
+
+  // Build a clear monthly time axis across the rolling six-month window.
+  const ticks = [];
+  const firstVisible = history[0].date;
+  const lastVisible = history[history.length - 1].date;
+  const cursor = new Date(
+    firstVisible.getFullYear(),
+    firstVisible.getMonth() + 1,
+    1,
+    12
+  );
+
+  // Always show the first date so the axis starts exactly with the data.
+  ticks.push(new Date(firstVisible));
+
+  while (cursor < lastVisible) {
+    ticks.push(new Date(cursor));
+    cursor.setMonth(cursor.getMonth() + 1);
+  }
+
+  // Always show the latest date so the axis ends exactly with the data.
+  if (
+    ticks[ticks.length - 1].toDateString() !==
+    lastVisible.toDateString()
+  ) {
+    ticks.push(new Date(lastVisible));
+  }
+
+  const xAxisTicks = ticks.map((date, index) => {
+    const px = x(date);
+    const showYear =
+      index === 0 ||
+      date.getMonth() === 0 ||
+      index === ticks.length - 1;
+
+    const label = date.toLocaleDateString(
+      "en-US",
+      showYear
+        ? { month: "short", year: "2-digit" }
+        : { month: "short" }
+    );
+
+    return `
+      <line
+        x1="${px}"
+        y1="${plotBottom}"
+        x2="${px}"
+        y2="${plotBottom + 6}"
+        stroke="#9ca3af"
+        stroke-width="1"
+      />
+      <text
+        x="${px}"
+        y="${plotBottom + 22}"
+        text-anchor="middle"
+        font-size="11"
+        fill="#6b7280"
+      >${label}</text>
+    `;
+  }).join("");
+
+  const hoverPoints = history.map(point => {
+    const px = x(point.date);
+    const py = y(point.score);
+    const tooltipDate = point.date.toLocaleDateString(
+      "en-US",
+      { year: "numeric", month: "short", day: "numeric" }
+    );
+
+    return `
+      <circle
+        cx="${px}"
+        cy="${py}"
+        r="7"
+        fill="transparent"
+        tabindex="0"
+      >
+        <title>${tooltipDate} — Fear &amp; Greed: ${Math.round(point.score)}</title>
+      </circle>
+    `;
+  }).join("");
+
+  const last = history[history.length - 1];
+  const lastX = x(last.date);
+  const lastY = y(last.score);
+
+  host.className = "";
+  host.innerHTML = `
+    <svg
+      class="fear-greed-chart"
+      viewBox="0 0 ${width} ${height}"
+      role="img"
+      aria-label="Fear and Greed Index history for the latest six months with a time axis"
+    >
+      ${grid}
+
+      <line
+        x1="${left}"
+        y1="${plotBottom}"
+        x2="${width - right}"
+        y2="${plotBottom}"
+        stroke="#9ca3af"
+        stroke-width="1.25"
+      />
+
+      ${xAxisTicks}
+
+      <text
+        x="${left + plotWidth / 2}"
+        y="${height - 7}"
+        text-anchor="middle"
+        font-size="11"
+        font-weight="600"
+        fill="#6b7280"
+      >Time</text>
+
+      <path
+        d="${path}"
+        fill="none"
+        stroke="#2563eb"
+        stroke-width="2.5"
+        stroke-linejoin="round"
+        stroke-linecap="round"
+      />
+
+      ${hoverPoints}
+
+      <circle
+        cx="${lastX}"
+        cy="${lastY}"
+        r="4.5"
+        fill="#ffffff"
+        stroke="#111827"
+        stroke-width="2"
+      />
+    </svg>
+  `;
+}
 async function loadFearGreedIndex() {
 
   const valueElement =
@@ -539,6 +790,8 @@ async function loadFearGreedIndex() {
       Array.isArray(result.dates)
         ? result.dates
         : [];
+
+    renderFearGreedHistory(values, dates);
 
     const latestValue =
       Number(
@@ -728,253 +981,164 @@ async function loadCategory() {
   }
 
 
-  const PAGE_SIZE = 10;
-  let articleOffset = 0;
-  let isLoadingArticles = false;
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .from("items")
+      .select("*")
+      .eq(
+        "category",
+        category
+      )
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
+      );
 
-  const loadMoreButton =
-    document.getElementById(
-      "load-more-button"
+
+  if (error) {
+
+    console.error(
+      "Category load error:",
+      error
     );
 
 
-  function renderArticleItem(item) {
-
-    const id =
-      encodeURIComponent(
-        item.id
-      );
-
-    const title =
-      safeText(
-        item.title
-      );
-
-    const ticker =
-      safeText(
-        item.ticker
-      );
-
-    const type =
-      safeText(
-        item.type
-      );
-
-    const published =
-      formatDate(
-        item.created_at
-      );
-
-    const updated =
-      formatDate(
-        item.updated_at
-      );
-
-
-    return `
-
-      <div class="article-item">
-
-        <a
-          class="article-title"
-          href="article.html?id=${id}"
-        >
-
-          ${
-            ticker
-              ? ticker + " — "
-              : ""
-          }
-
-          ${title}
-
-        </a>
-
-
-        <div class="article-meta">
-
-          ${
-            ticker
-              ? `
-                <span>
-                  Ticker: ${ticker}
-                </span>
-              `
-              : ""
-          }
-
-          ${
-            type
-              ? `
-                <span>
-                  ${type}
-                </span>
-              `
-              : ""
-          }
-
-          ${
-            published
-              ? `
-                <span>
-                  Published: ${published}
-                </span>
-              `
-              : ""
-          }
-
-          ${
-            updated &&
-            updated !== published
-              ? `
-                <span>
-                  Updated: ${updated}
-                </span>
-              `
-              : ""
-          }
-
-        </div>
-
+    listElement.innerHTML = `
+      <div class="message">
+        Unable to load articles.
       </div>
-
     `;
+
+    return;
   }
 
 
-  async function loadArticleBatch({ initial = false } = {}) {
+  if (
+    !data ||
+    data.length === 0
+  ) {
 
-    if (isLoadingArticles) {
-      return;
-    }
+    listElement.innerHTML = `
+      <div class="message">
+        No articles have been published in this category yet.
+      </div>
+    `;
 
-    isLoadingArticles = true;
-
-    loadMoreButton.disabled = true;
-    loadMoreButton.textContent =
-      "Loading...";
-
-    const start =
-      articleOffset;
-
-    // Fetch one extra row so we know whether more articles remain.
-    const end =
-      start + PAGE_SIZE;
-
-    const {
-      data,
-      error
-    } =
-      await supabaseClient
-        .from("items")
-        .select("*")
-        .eq(
-          "category",
-          category
-        )
-        .order(
-          "created_at",
-          {
-            ascending: false
-          }
-        )
-        .range(
-          start,
-          end
-        );
+    return;
+  }
 
 
-    if (error) {
+  listElement.innerHTML =
+    data.map(
+      item => {
 
-      console.error(
-        "Category load error:",
-        error
-      );
+        const id =
+          encodeURIComponent(
+            item.id
+          );
 
-      if (initial) {
-        listElement.innerHTML = `
-          <div class="message">
-            Unable to load articles.
+        const title =
+          safeText(
+            item.title
+          );
+
+        const ticker =
+          safeText(
+            item.ticker
+          );
+
+        const type =
+          safeText(
+            item.type
+          );
+
+        const published =
+          formatDate(
+            item.created_at
+          );
+
+        const updated =
+          formatDate(
+            item.updated_at
+          );
+
+
+        return `
+
+          <div class="article-item">
+
+            <a
+              class="article-title"
+              href="article.html?id=${id}"
+            >
+
+              ${
+                ticker
+                  ? ticker + " — "
+                  : ""
+              }
+
+              ${title}
+
+            </a>
+
+
+            <div class="article-meta">
+
+              ${
+                ticker
+                  ? `
+                    <span>
+                      Ticker: ${ticker}
+                    </span>
+                  `
+                  : ""
+              }
+
+              ${
+                type
+                  ? `
+                    <span>
+                      ${type}
+                    </span>
+                  `
+                  : ""
+              }
+
+              ${
+                published
+                  ? `
+                    <span>
+                      Published: ${published}
+                    </span>
+                  `
+                  : ""
+              }
+
+              ${
+                updated &&
+                updated !== published
+                  ? `
+                    <span>
+                      Updated: ${updated}
+                    </span>
+                  `
+                  : ""
+              }
+
+            </div>
+
           </div>
+
         `;
+
       }
-
-      loadMoreButton.style.display =
-        "none";
-
-      isLoadingArticles = false;
-      return;
-    }
-
-
-    const rows =
-      data || [];
-
-    const visibleRows =
-      rows.slice(0, PAGE_SIZE);
-
-    const hasMore =
-      rows.length > PAGE_SIZE;
-
-
-    if (
-      initial &&
-      visibleRows.length === 0
-    ) {
-
-      listElement.innerHTML = `
-        <div class="message">
-          No articles have been published in this category yet.
-        </div>
-      `;
-
-      loadMoreButton.style.display =
-        "none";
-
-      isLoadingArticles = false;
-      return;
-    }
-
-
-    const html =
-      visibleRows
-        .map(renderArticleItem)
-        .join("");
-
-    if (initial) {
-      listElement.innerHTML = html;
-    } else {
-      listElement.insertAdjacentHTML(
-        "beforeend",
-        html
-      );
-    }
-
-    articleOffset +=
-      visibleRows.length;
-
-    loadMoreButton.style.display =
-      hasMore
-        ? "inline-block"
-        : "none";
-
-    loadMoreButton.disabled = false;
-    loadMoreButton.textContent =
-      "Load More";
-
-    isLoadingArticles = false;
-  }
-
-
-  loadMoreButton.addEventListener(
-    "click",
-    () => loadArticleBatch()
-  );
-
-
-  await loadArticleBatch({
-    initial: true
-  });
+    ).join("");
 
 }
 
