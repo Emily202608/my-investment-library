@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fundamental Screener | North Current Research</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+      color: #172033;
+    }
+    .topbar {
+      background: #111827;
+      color: white;
+      padding: 18px 24px;
+    }
+    .topbar-inner {
+      max-width: 1240px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    .topbar h1 { margin: 0; font-size: 22px; }
+    .back-link { color: white; text-decoration: none; font-weight: bold; font-size: 14px; }
+    .container {
+      max-width: 1240px;
+      margin: 34px auto;
+      padding: 0 20px;
+    }
+    .intro {
+      background: white;
+      border-radius: 14px;
+      padding: 28px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+      margin-bottom: 22px;
+    }
+    .intro h2 { margin: 0 0 10px; font-size: 30px; }
+    .intro p {
+      margin: 0;
+      color: #526071;
+      line-height: 1.65;
+      max-width: 980px;
+    }
+    .intro strong { color: #172033; }
+    .long-term-note {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-left: 4px solid #111827;
+      background: #f8fafc;
+      color: #475467;
+      line-height: 1.55;
+      border-radius: 6px;
+    }
+    .controls {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+      margin-bottom: 22px;
+    }
+    .control-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: end;
+    }
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .field label {
+      font-size: 12px;
+      font-weight: bold;
+      color: #667085;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    input, select {
+      padding: 10px 11px;
+      border: 1px solid #d0d5dd;
+      border-radius: 8px;
+      font-size: 14px;
+      background: white;
+      min-width: 120px;
+    }
+    #search-input { min-width: 210px; }
+    button {
+      padding: 10px 14px;
+      border: none;
+      border-radius: 8px;
+      background: #111827;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover { background: #263247; }
+    .criteria-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+    .criterion {
+      background: white;
+      border-radius: 11px;
+      padding: 17px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+      border-top: 3px solid #111827;
+    }
+    .criterion .label { color: #667085; font-size: 12px; font-weight: bold; text-transform: uppercase; }
+    .criterion .value { margin-top: 7px; font-size: 22px; font-weight: bold; }
+    .criterion .desc { margin-top: 6px; color: #667085; font-size: 12px; line-height: 1.45; }
+    .table-panel {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+      overflow: hidden;
+    }
+    .table-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      padding: 18px 20px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .table-header h3 { margin: 0; font-size: 18px; }
+    .status { color: #667085; font-size: 13px; }
+    .table-wrap { overflow-x: auto; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 1100px;
+    }
+    th, td {
+      padding: 12px 13px;
+      text-align: right;
+      border-bottom: 1px solid #eef1f4;
+      white-space: nowrap;
+      font-size: 13px;
+    }
+    th {
+      background: #f8fafc;
+      color: #475467;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      user-select: none;
+    }
+    th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) { text-align: left; }
+    tbody tr:hover { background: #fafbfc; }
+    .ticker { font-weight: bold; font-size: 14px; }
+    .score {
+      display: inline-block;
+      min-width: 36px;
+      text-align: center;
+      padding: 5px 8px;
+      border-radius: 999px;
+      background: #eef2f7;
+      font-weight: bold;
+    }
+    .pass { color: #067647; font-weight: bold; }
+    .fail { color: #b42318; font-weight: bold; }
+    .empty {
+      padding: 36px 22px;
+      color: #667085;
+      text-align: center;
+      line-height: 1.6;
+    }
+    footer {
+      margin-top: 60px;
+      padding: 28px 20px;
+      background: #111827;
+      color: #98a2b3;
+      text-align: center;
+      font-size: 13px;
+    }
+
+    .screen-tabs { display:flex; gap:10px; margin-bottom:22px; flex-wrap:wrap; }
+    .screen-tab { display:inline-block; padding:11px 15px; border-radius:9px; text-decoration:none; font-weight:bold; background:white; color:#344054; box-shadow:0 2px 8px rgba(0,0,0,.05); border:1px solid #e4e7ec; }
+    .screen-tab.active { background:#111827; color:white; border-color:#111827; }
+    @media (max-width: 700px) {
+      .topbar-inner { align-items: flex-start; flex-direction: column; }
+      .intro h2 { font-size: 25px; }
+      .field { width: 100%; }
+      input, select, #search-input { width: 100%; min-width: 0; }
+      .control-row button { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <h1>North Current Research</h1>
+      <a class="back-link" href="index.html">← Back</a>
+    </div>
+  </div>
+
+  <div class="container">
+    <nav class="screen-tabs" aria-label="Screener types">
+      <a class="screen-tab active" href="fundamental-screener.html">Buffett Long-Term Screener</a>
+      <a class="screen-tab" href="ai-screener.html">AI Bottleneck Screener</a>
+    </nav>
+    <section class="intro">
+      <h2>Fundamental Screener</h2>
+      <p>
+        This screener is built around <strong>Warren Buffett-style long-term stock selection principles</strong>, translated into measurable financial criteria. It focuses on durable business quality, consistently high returns on capital, strong cash generation, prudent debt levels, and reasonable valuation rather than short-term price movement.
+      </p>
+      <div class="long-term-note">
+        The emphasis is on <strong>5–10 year consistency</strong>. This is a long-term research tool, not a short-term trading signal.
+      </div>
+    </section>
+
+    <section class="criteria-grid">
+      <div class="criterion"><div class="label">ROIC</div><div class="value">&gt; 15%</div><div class="desc">High and durable return on invested capital.</div></div>
+      <div class="criterion"><div class="label">ROE</div><div class="value">&gt; 15%</div><div class="desc">Healthy shareholder return, checked alongside leverage.</div></div>
+      <div class="criterion"><div class="label">Revenue CAGR · 5Y</div><div class="value">&gt; 5%</div><div class="desc">Sustained business growth over time.</div></div>
+      <div class="criterion"><div class="label">EPS CAGR · 5Y</div><div class="value">&gt; 7%</div><div class="desc">Consistent per-share earnings growth.</div></div>
+      <div class="criterion"><div class="label">FCF Margin</div><div class="value">&gt; 10%</div><div class="desc">Strong conversion of revenue into free cash flow.</div></div>
+      <div class="criterion"><div class="label">Net Debt / EBITDA</div><div class="value">&lt; 2.0×</div><div class="desc">Conservative balance-sheet leverage.</div></div>
+      <div class="criterion"><div class="label">FCF Record</div><div class="value">9 / 10Y+</div><div class="desc">Free cash flow positive in most years.</div></div>
+      <div class="criterion"><div class="label">Capital Intensity</div><div class="value">Low / Stable</div><div class="desc">Preference for businesses that do not require excessive reinvestment.</div></div>
+    </section>
+
+    <section class="controls">
+      <div class="control-row">
+        <div class="field">
+          <label for="search-input">Ticker / Company</label>
+          <input id="search-input" type="text" placeholder="Search...">
+        </div>
+        <div class="field">
+          <label for="min-score">Minimum Score</label>
+          <select id="min-score">
+            <option value="0">All</option>
+            <option value="65">65+</option>
+            <option value="75">75+</option>
+            <option value="85">85+</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="quality-only">Quality Filter</label>
+          <select id="quality-only">
+            <option value="all">All Companies</option>
+            <option value="pass">Pass Core Buffett Screen</option>
+          </select>
+        </div>
+        <button id="refresh-button" type="button">Refresh</button>
+      </div>
+    </section>
+
+    <section class="table-panel">
+      <div class="table-header">
+        <h3>Buffett-Style Quality Screen</h3>
+        <div id="status" class="status">Loading...</div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th data-key="ticker">Ticker</th>
+              <th data-key="company">Company</th>
+              <th data-key="score">Score</th>
+              <th data-key="roic">ROIC</th>
+              <th data-key="roe">ROE</th>
+              <th data-key="revenue_cagr_5y">Revenue CAGR 5Y</th>
+              <th data-key="eps_cagr_5y">EPS CAGR 5Y</th>
+              <th data-key="fcf_margin">FCF Margin</th>
+              <th data-key="net_debt_ebitda">Net Debt / EBITDA</th>
+              <th data-key="fcf_positive_years_10y">FCF + Years / 10</th>
+              <th data-key="fcf_yield">FCF Yield</th>
+              <th data-key="passes_core_screen">Core Screen</th>
+            </tr>
+          </thead>
+          <tbody id="results-body"></tbody>
+        </table>
+      </div>
+      <div id="empty-state" class="empty" style="display:none;"></div>
+    </section>
+  </div>
+
+  <footer>North Current Research · Long-Term Fundamental Screening</footer>
+
+  <script>
+    let screenerData = [];
+    let sortKey = "score";
+    let sortDirection = "desc";
+
+    const body = document.getElementById("results-body");
+    const emptyState = document.getElementById("empty-state");
+    const status = document.getElementById("status");
+    const searchInput = document.getElementById("search-input");
+    const minScore = document.getElementById("min-score");
+    const qualityOnly = document.getElementById("quality-only");
+
+    function pct(value) {
+      if (value === null || value === undefined || value === "") return "—";
+      return Number(value).toFixed(1) + "%";
+    }
+
+    function num(value, decimals = 1) {
+      if (value === null || value === undefined || value === "") return "—";
+      return Number(value).toFixed(decimals);
+    }
+
+    function safeText(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function passesCore(row) {
+      if (typeof row.passes_core_screen === "boolean") return row.passes_core_screen;
+      return Number(row.roic) > 15 &&
+             Number(row.roe) > 15 &&
+             Number(row.revenue_cagr_5y) > 5 &&
+             Number(row.eps_cagr_5y) > 7 &&
+             Number(row.fcf_margin) > 10 &&
+             Number(row.net_debt_ebitda) < 2 &&
+             Number(row.fcf_positive_years_10y) >= 9;
+    }
+
+    function filteredRows() {
+      const query = searchInput.value.trim().toLowerCase();
+      const scoreFloor = Number(minScore.value || 0);
+      const passOnly = qualityOnly.value === "pass";
+
+      return screenerData
+        .filter(row => {
+          const haystack = `${row.ticker || ""} ${row.company || ""}`.toLowerCase();
+          if (query && !haystack.includes(query)) return false;
+          if (Number(row.score || 0) < scoreFloor) return false;
+          if (passOnly && !passesCore(row)) return false;
+          return true;
+        })
+        .sort((a, b) => {
+          const av = a[sortKey] ?? "";
+          const bv = b[sortKey] ?? "";
+          const factor = sortDirection === "asc" ? 1 : -1;
+          if (typeof av === "number" || typeof bv === "number") {
+            return (Number(av || 0) - Number(bv || 0)) * factor;
+          }
+          return String(av).localeCompare(String(bv)) * factor;
+        });
+    }
+
+    function render() {
+      const rows = filteredRows();
+      status.textContent = `${rows.length} companies`;
+      body.innerHTML = "";
+
+      if (!rows.length) {
+        emptyState.style.display = "block";
+        emptyState.innerHTML = screenerData.length
+          ? "No companies match the current filters."
+          : "No screener data is available yet. The page structure is ready; connect or populate the <strong>buffett_screener</strong> data table to begin screening."
+        return;
+      }
+
+      emptyState.style.display = "none";
+      body.innerHTML = rows.map(row => {
+        const pass = passesCore(row);
+        return `
+          <tr>
+            <td class="ticker">${safeText(row.ticker)}</td>
+            <td>${safeText(row.company)}</td>
+            <td><span class="score">${num(row.score, 0)}</span></td>
+            <td>${pct(row.roic)}</td>
+            <td>${pct(row.roe)}</td>
+            <td>${pct(row.revenue_cagr_5y)}</td>
+            <td>${pct(row.eps_cagr_5y)}</td>
+            <td>${pct(row.fcf_margin)}</td>
+            <td>${num(row.net_debt_ebitda)}</td>
+            <td>${num(row.fcf_positive_years_10y, 0)}</td>
+            <td>${pct(row.fcf_yield)}</td>
+            <td class="${pass ? "pass" : "fail"}">${pass ? "PASS" : "—"}</td>
+          </tr>`;
+      }).join("");
+    }
+
+    async function loadData() {
+      status.textContent = "Loading...";
+      try {
+        if (!window.supabaseClient) throw new Error("Supabase client is unavailable.");
+
+        const { data, error } = await supabaseClient
+          .from("buffett_screener")
+          .select("*")
+          .order("score", { ascending: false });
+
+        if (error) throw error;
+        screenerData = data || [];
+        render();
+      } catch (error) {
+        console.error("Fundamental Screener:", error);
+        screenerData = [];
+        status.textContent = "Data source not connected";
+        emptyState.style.display = "block";
+        emptyState.innerHTML = "The screener interface is ready, but the financial data source is not connected yet. Once the <strong>buffett_screener</strong> dataset is available, this page will automatically load, filter and rank companies.";
+      }
+    }
+
+    document.getElementById("refresh-button").addEventListener("click", loadData);
+    searchInput.addEventListener("input", render);
+    minScore.addEventListener("change", render);
+    qualityOnly.addEventListener("change", render);
+
+    document.querySelectorAll("th[data-key]").forEach(th => {
+      th.addEventListener("click", () => {
+        const key = th.dataset.key;
+        if (sortKey === key) {
+          sortDirection = sortDirection === "asc" ? "desc" : "asc";
+        } else {
+          sortKey = key;
+          sortDirection = key === "ticker" || key === "company" ? "asc" : "desc";
+        }
+        render();
+      });
+    });
+
+    loadData();
+  </script>
+</body>
+</html>
