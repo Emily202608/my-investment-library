@@ -24,18 +24,14 @@
       color: #172033;
     }
 
-    /* =========================
-       HEADER
-    ========================= */
-
     header {
       position: relative;
       color: white;
       padding: 78px 20px;
       text-align: center;
       background:
-  linear-gradient(rgba(8, 20, 42, 0.42), rgba(8, 20, 42, 0.42)),
-  url("north-current-background.png") center center / cover no-repeat;
+        linear-gradient(rgba(8, 20, 42, 0.42), rgba(8, 20, 42, 0.42)),
+        url("investment-library-hero.png") center center / cover no-repeat;
     }
 
     header h1 {
@@ -68,10 +64,6 @@
       background: #e5e7eb;
     }
 
-    /* =========================
-       GENERAL
-    ========================= */
-
     .container {
       max-width: 1180px;
       margin: 45px auto;
@@ -81,136 +73,6 @@
     .section-title {
       margin-bottom: 22px;
     }
-
-    /* =========================
-       WATCH LIST
-    ========================= */
-
-    .watch-section {
-      display: grid;
-      grid-template-columns: 260px 1fr;
-      gap: 25px;
-    }
-
-    .watch-panel,
-    .chart-panel {
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 3px 12px rgba(0,0,0,0.06);
-    }
-
-    .watch-panel {
-      padding: 22px;
-    }
-
-    .watch-panel h2 {
-      margin-top: 0;
-      margin-bottom: 18px;
-    }
-
-    .watch-item {
-      width: 100%;
-      margin-bottom: 10px;
-      padding: 12px 14px;
-      background: #f3f4f6;
-      border: 1px solid transparent;
-      border-radius: 8px;
-      text-align: left;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    .watch-item:hover {
-      background: #e5e7eb;
-    }
-
-    .watch-item.active {
-      background: #111827;
-      color: white;
-    }
-
-    .watch-ticker {
-      display: block;
-      font-size: 17px;
-      font-weight: bold;
-    }
-
-    .watch-company {
-      display: block;
-      margin-top: 4px;
-      font-size: 12px;
-      opacity: 0.75;
-    }
-
-    .watch-empty {
-      color: #6b7280;
-      line-height: 1.5;
-    }
-
-
-    .watchlist-more-wrap {
-      margin-top: 14px;
-      text-align: center;
-    }
-
-    .watchlist-more-link {
-      display: inline-block;
-      padding: 9px 13px;
-      border-radius: 7px;
-      background: #111827;
-      color: white;
-      text-decoration: none;
-      font-size: 14px;
-      font-weight: bold;
-    }
-
-    .watchlist-more-link:hover {
-      background: #263247;
-    }
-
-    /* =========================
-       CHART
-    ========================= */
-
-    .chart-panel {
-      overflow: hidden;
-    }
-
-    .chart-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 18px 22px;
-      border-bottom: 1px solid #e5e7eb;
-    }
-
-    .chart-header h2 {
-      margin: 0;
-      font-size: 20px;
-    }
-
-    #current-symbol {
-      padding: 6px 10px;
-      background: #eef2f7;
-      border-radius: 20px;
-      font-size: 13px;
-      font-weight: bold;
-    }
-
-    #tradingview-chart {
-      width: 100%;
-      height: 500px;
-    }
-
-    .tradingview-widget-container,
-    .tradingview-widget-container__widget {
-      width: 100%;
-      height: 100%;
-    }
-
-    /* =========================
-       RESEARCH CATEGORIES
-    ========================= */
 
     .categories {
       display: grid;
@@ -251,8 +113,10 @@
       line-height: 1.5;
     }
 
-    .category-button {
-      margin-top: 10px;
+    .category-button,
+    .sub-button {
+      margin-top: 8px;
+      margin-right: 8px;
       padding: 9px 13px;
       border: none;
       border-radius: 7px;
@@ -262,7 +126,8 @@
       font-weight: bold;
     }
 
-    .category-button:hover {
+    .category-button:hover,
+    .sub-button:hover {
       background: #263247;
     }
 
@@ -272,41 +137,109 @@
       border-top: 1px solid #e5e7eb;
     }
 
-    .sub-button {
-      display: inline-block;
-      width: auto;
-      margin-top: 8px;
-      margin-right: 8px;
-      padding: 9px 13px;
+    .watch-section {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 25px;
+    }
+
+    .watch-panel,
+    .chart-panel {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+    }
+
+    .watch-panel {
+      padding: 22px;
+    }
+
+    .watch-item {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 12px 14px;
+      background: #f3f4f6;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .watch-item.active {
       background: #111827;
       color: white;
-      border: none;
-      border-radius: 7px;
-      text-align: center;
-      cursor: pointer;
+    }
+
+    .watch-ticker {
+      display: block;
+      font-size: 17px;
       font-weight: bold;
     }
 
-    .sub-button:hover {
-      background: #263247;
+    .watch-company {
+      display: block;
+      margin-top: 4px;
+      font-size: 12px;
+      opacity: 0.75;
     }
 
-    /* =========================
-       LIBRARY TITLE LIST
-    ========================= */
+    .watchlist-more-wrap {
+      margin-top: 14px;
+      text-align: center;
+    }
 
-    .library-header {
+    .watchlist-more-link {
+      display: inline-block;
+      padding: 9px 13px;
+      border-radius: 7px;
+      background: #111827;
+      color: white;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .chart-panel {
+      overflow: hidden;
+    }
+
+    .chart-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 15px;
+      padding: 18px 22px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .chart-header h2 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    #current-symbol {
+      padding: 6px 10px;
+      background: #eef2f7;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    #tradingview-chart {
+      width: 100%;
+      height: 500px;
+    }
+
+    .tradingview-widget-container,
+    .tradingview-widget-container__widget {
+      width: 100%;
+      height: 100%;
+    }
+
+    .library-header {
       margin-bottom: 20px;
     }
 
-    .library-header h2 {
-      margin: 0;
-    }
-.article-list {
+    .article-list {
       display: grid;
       gap: 12px;
     }
@@ -325,11 +258,6 @@
       text-decoration: none;
       font-size: 18px;
       font-weight: bold;
-      line-height: 1.4;
-    }
-
-    .article-title-link:hover {
-      color: #2563eb;
     }
 
     .article-meta {
@@ -339,7 +267,6 @@
     }
 
     .article-meta span {
-      display: inline-block;
       margin-right: 12px;
     }
 
@@ -358,20 +285,11 @@
     .library-toggle {
       background: none;
       border: none;
-      padding: 6px 10px;
       color: #2563eb;
       font-size: 14px;
       font-weight: bold;
       cursor: pointer;
     }
-
-    .library-toggle:hover {
-      text-decoration: underline;
-    }
-
-    /* =========================
-       FOOTER
-    ========================= */
 
     footer {
       margin-top: 70px;
@@ -380,10 +298,6 @@
       color: #9ca3af;
       text-align: center;
     }
-
-    /* =========================
-       MOBILE
-    ========================= */
 
     @media (max-width: 800px) {
 
@@ -399,28 +313,17 @@
         font-size: 34px;
       }
 
-      .login-link {
-        top: 15px;
-        right: 15px;
-      }
-
     }
 
   </style>
 </head>
 
-
 <body>
-
-
-<!-- =========================
-     HEADER
-========================= -->
 
 <header>
 
   <a href="member.html" class="login-link" id="account-link">
-    🔐 Log In 
+    🔐 Log In
   </a>
 
   <h1>North Current Research</h1>
@@ -428,12 +331,9 @@
   <p>
     AI-Powered Research, Market Insights, Trading Ideas &amp; Selected Resources
   </p>
+
 </header>
 
-
-<!-- =========================
-     RESEARCH CATEGORIES
-========================= -->
 
 <div class="container">
 
@@ -441,28 +341,21 @@
     Research Categories
   </h2>
 
-
   <div class="categories">
-
 
     <!-- Macroeconomy -->
 
     <div class="category-card">
 
       <div class="category-picture">
-        <img
-          src="category-macro.png"
-          alt="Global market and Macroeconomy"
-          loading="lazy"
-        >
+        <img src="category-macro.png" alt="Macroeconomy">
       </div>
 
       <h3>Macroeconomy</h3>
 
       <p>
         Interest rates, inflation, liquidity,
-        economic cycles, market flows and
-        broader market conditions.
+        economic cycles, market flows and broader market conditions.
       </p>
 
       <button
@@ -480,18 +373,14 @@
     <div class="category-card">
 
       <div class="category-picture">
-        <img
-          src="category-stock.png"
-          alt="Stock market analysis"
-          loading="lazy"
-        >
+        <img src="category-stock.png" alt="Stock Analysis">
       </div>
 
       <h3>Stock Analysis</h3>
 
       <p>
-        Company research combining business
-        fundamentals with practical price action.
+        Long-term company research focused on business quality,
+        financial strength, durable growth and disciplined fundamental screening.
       </p>
 
       <div class="subcategories">
@@ -505,9 +394,9 @@
 
         <button
           class="sub-button"
-          onclick="window.location.href='price-action-analyst.html'"
+          onclick="window.location.href='fundamental-screener.html'"
         >
-          Price Action Analyst
+          Screener
         </button>
 
       </div>
@@ -520,11 +409,7 @@
     <div class="category-card">
 
       <div class="category-picture">
-        <img
-          src="category-psychology.png"
-          alt="Trading psychology"
-          loading="lazy"
-        >
+        <img src="category-psychology.png" alt="Trading Psychology">
       </div>
 
       <h3>Trading Psychology</h3>
@@ -549,19 +434,14 @@
     <div class="category-card">
 
       <div class="category-picture">
-        <img
-          src="category-strategies.png"
-          alt="Trading strategies"
-          loading="lazy"
-        >
+        <img src="category-strategies.png" alt="Trading Strategies">
       </div>
 
       <h3>Trading Strategies</h3>
 
       <p>
         Trading setups, entries, exits,
-        risk management, position sizing
-        and execution.
+        risk management, position sizing and execution.
       </p>
 
       <button
@@ -579,19 +459,14 @@
     <div class="category-card">
 
       <div class="category-picture">
-        <img
-          src="category-reviews.png"
-          alt="Trade review journal"
-          loading="lazy"
-        >
+        <img src="category-reviews.png" alt="Daily Review">
       </div>
 
       <h3>Daily Review</h3>
 
       <p>
         Daily notes, chart screenshots,
-        execution lessons and
-        post-trade analysis.
+        execution lessons and post-trade analysis.
       </p>
 
       <button
@@ -609,18 +484,13 @@
     <div class="category-card">
 
       <div class="category-picture">
-        <img
-          src="category-videos.png"
-          alt="Investment videos"
-          loading="lazy"
-        >
+        <img src="category-videos.png" alt="Videos">
       </div>
 
       <h3>Videos</h3>
 
       <p>
-        My own investment videos and selected
-        videos from YouTube.
+        My own investment videos and selected videos from YouTube.
       </p>
 
       <div class="subcategories">
@@ -643,14 +513,10 @@
 
     </div>
 
-
   </div>
 
 </div>
 
-<!-- =========================
-     WATCH LIST + CHART
-========================= -->
 
 <div class="container">
 
@@ -685,7 +551,6 @@
 
       </div>
 
-
       <div id="tradingview-chart">
 
         <div
@@ -706,24 +571,18 @@
 
 </div>
 
-<!-- =========================
-     ARTICLE TITLE LIST
-========================= -->
 
 <div class="container">
 
   <div class="library-header">
 
-    <h2 id="library-title">
+    <h2>
       📚 Latest From North Current Research
     </h2>
-</div>
 
+  </div>
 
-  <div
-    class="article-list"
-    id="database-items"
-  >
+  <div class="article-list" id="database-items">
 
     <div class="empty-message">
       Loading investment items...
@@ -733,9 +592,6 @@
 
 </div>
 
-<!-- =========================
-     FOOTER
-========================= -->
 
 <footer>
 
@@ -750,11 +606,6 @@
 
 <script>
 
-
-/* ========================================
-   WATCH LIST
-======================================== */
-
 let watchListData = [];
 
 
@@ -763,63 +614,40 @@ async function loadWatchList() {
   const container =
     document.getElementById("watch-list");
 
-
   const { data, error } =
     await supabaseClient
       .from("watchlist")
       .select("*")
-      .order(
-        "display_order",
-        { ascending: true }
-      )
-      .order(
-        "created_at",
-        { ascending: true }
-      );
-
+      .order("display_order", { ascending: true })
+      .order("created_at", { ascending: true });
 
   if (error) {
 
-    console.error(
-      "Watch List error:",
-      error
-    );
+    console.error(error);
 
     container.innerHTML =
-      `
-        <p class="watch-empty">
-          Unable to load Watch List.
-        </p>
-      `;
+      `<p>Unable to load Watch List.</p>`;
 
     return;
-  }
 
+  }
 
   watchListData =
     data || [];
 
-
-  if (watchListData.length === 0) {
+  if (!watchListData.length) {
 
     container.innerHTML =
-      `
-        <p class="watch-empty">
-          No stocks in the Watch List yet.
-        </p>
-      `;
+      `<p>No stocks in Watch List.</p>`;
 
     return;
+
   }
 
-
-  const homepageWatchList =
-    watchListData.slice(0, 5);
-
-
   container.innerHTML =
-    homepageWatchList.map(
-      (stock, index) => {
+    watchListData
+      .slice(0,5)
+      .map((stock,index) => {
 
         const ticker =
           safeText(stock.ticker);
@@ -828,33 +656,18 @@ async function loadWatchList() {
           safeText(stock.company);
 
         const exchange =
-          safeText(
-            stock.exchange ||
-            "NASDAQ"
-          );
-
+          safeText(stock.exchange || "NASDAQ");
 
         const symbol =
           stock.tradingview_symbol
-            ? safeText(
-                stock.tradingview_symbol
-              )
+            ? safeText(stock.tradingview_symbol)
             : exchange + ":" + ticker;
-
 
         return `
 
           <button
-            class="
-              watch-item
-              ${index === 0 ? "active" : ""}
-            "
-            onclick="
-              selectWatchStock(
-                '${symbol}',
-                this
-              )
-            "
+            class="watch-item ${index === 0 ? "active" : ""}"
+            onclick="selectWatchStock('${symbol}',this)"
           >
 
             <span class="watch-ticker">
@@ -869,151 +682,72 @@ async function loadWatchList() {
 
         `;
 
-      }
-    ).join("");
+      })
+      .join("");
 
-
-  const firstStock =
+  const first =
     watchListData[0];
 
+  const symbol =
+    first.tradingview_symbol
+      ||
+      (first.exchange || "NASDAQ")
+      + ":"
+      + first.ticker;
 
-  const firstTicker =
-    firstStock.ticker
-      ? String(firstStock.ticker)
-          .trim()
-          .toUpperCase()
-      : "";
-
-
-  const firstExchange =
-    firstStock.exchange
-      ? String(firstStock.exchange)
-          .trim()
-          .toUpperCase()
-      : "NASDAQ";
-
-
-  const firstSymbol =
-    firstStock.tradingview_symbol
-      ? String(firstStock.tradingview_symbol)
-          .trim()
-          .toUpperCase()
-      : (
-          firstExchange +
-          ":" +
-          firstTicker
-        );
-
-
-  loadTradingViewChart(
-    firstSymbol
-  );
+  loadTradingViewChart(symbol);
 
 }
 
 
-/* ========================================
-   SELECT WATCH STOCK
-======================================== */
-
-function selectWatchStock(
-  symbol,
-  button
-) {
+function selectWatchStock(symbol,button) {
 
   document
-    .querySelectorAll(
-      ".watch-item"
-    )
-    .forEach(
-      item => {
-        item.classList.remove(
-          "active"
-        );
-      }
+    .querySelectorAll(".watch-item")
+    .forEach(item =>
+      item.classList.remove("active")
     );
 
+  button.classList.add("active");
 
-  button.classList.add(
-    "active"
-  );
-
-
-  loadTradingViewChart(
-    symbol
-  );
+  loadTradingViewChart(symbol);
 
 }
 
 
-/* ========================================
-   TRADINGVIEW CHART
-======================================== */
-
-function loadTradingViewChart(
-  symbol
-) {
-
-  const chartContainer =
-    document.getElementById(
-      "tradingview-chart"
-    );
-
+function loadTradingViewChart(symbol) {
 
   document
-    .getElementById(
-      "current-symbol"
-    )
+    .getElementById("current-symbol")
     .textContent =
     symbol;
 
+  const chartContainer =
+    document.getElementById("tradingview-chart");
 
-  chartContainer.innerHTML =
-    "";
-
+  chartContainer.innerHTML = "";
 
   const outer =
-    document.createElement(
-      "div"
-    );
-
+    document.createElement("div");
 
   outer.className =
     "tradingview-widget-container";
 
-
   const widget =
-    document.createElement(
-      "div"
-    );
-
+    document.createElement("div");
 
   widget.className =
     "tradingview-widget-container__widget";
 
-
-  outer.appendChild(
-    widget
-  );
-
+  outer.appendChild(widget);
 
   const script =
-    document.createElement(
-      "script"
-    );
-
-
-  script.type =
-    "text/javascript";
-
+    document.createElement("script");
 
   script.src =
     "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
 
-
-  script.async =
-    true;
-
+  script.async = true;
 
   script.innerHTML =
     JSON.stringify({
@@ -1038,39 +772,22 @@ function loadTradingViewChart(
 
       hide_side_toolbar: false,
 
-      save_image: false,
-
-      calendar: false,
-
       support_host:
         "https://www.tradingview.com"
 
     });
 
+  outer.appendChild(script);
 
-  outer.appendChild(
-    script
-  );
-
-
-  chartContainer.appendChild(
-    outer
-  );
+  chartContainer.appendChild(outer);
 
 }
 
 
-/* ========================================
-   INVESTMENT CONTENT
-======================================== */
-
 let allInvestmentItems = [];
+
 let libraryExpanded = false;
 
-
-/* ========================================
-   LOAD CONTENT
-======================================== */
 
 async function loadInvestmentItems() {
 
@@ -1083,19 +800,10 @@ async function loadInvestmentItems() {
         { ascending: false }
       );
 
-
   if (error) {
 
-    console.error(
-      "Error loading items:",
-      error
-    );
-
-
     document
-      .getElementById(
-        "database-items"
-      )
+      .getElementById("database-items")
       .innerHTML =
       `
         <div class="empty-message">
@@ -1103,14 +811,12 @@ async function loadInvestmentItems() {
         </div>
       `;
 
-
     return;
-  }
 
+  }
 
   allInvestmentItems =
     data || [];
-
 
   displayArticleTitles(
     allInvestmentItems
@@ -1119,24 +825,12 @@ async function loadInvestmentItems() {
 }
 
 
-/* ========================================
-   DISPLAY ONLY ARTICLE TITLES
-======================================== */
-
-function displayArticleTitles(
-  items
-) {
+function displayArticleTitles(items) {
 
   const container =
-    document.getElementById(
-      "database-items"
-    );
+    document.getElementById("database-items");
 
-
-  if (
-    !items ||
-    items.length === 0
-  ) {
+  if (!items.length) {
 
     container.innerHTML =
       `
@@ -1146,44 +840,17 @@ function displayArticleTitles(
       `;
 
     return;
+
   }
 
-
-  const visibleItems =
+  const visible =
     libraryExpanded
       ? items
-      : items.slice(0, 6);
+      : items.slice(0,6);
 
-
-  const articleHtml =
-    visibleItems.map(
-      item => {
-
-        const id =
-          encodeURIComponent(
-            item.id
-          );
-
-        const ticker =
-          safeText(
-            item.ticker
-          );
-
-        const title =
-          safeText(
-            item.title
-          );
-
-        const category =
-          safeText(
-            item.category
-          );
-
-        const type =
-          safeText(
-            item.type
-          );
-
+  container.innerHTML =
+    visible
+      .map(item => {
 
         return `
 
@@ -1191,39 +858,30 @@ function displayArticleTitles(
 
             <a
               class="article-title-link"
-              href="article.html?id=${id}"
+              href="article.html?id=${encodeURIComponent(item.id)}"
             >
 
               ${
-                ticker
-                  ? ticker + " — "
+                item.ticker
+                  ? safeText(item.ticker) + " — "
                   : ""
               }
 
-              ${title}
+              ${safeText(item.title)}
 
             </a>
-
 
             <div class="article-meta">
 
               ${
-                category
-                  ? `
-                    <span>
-                      ${category}
-                    </span>
-                  `
+                item.category
+                  ? `<span>${safeText(item.category)}</span>`
                   : ""
               }
 
               ${
-                type
-                  ? `
-                    <span>
-                      ${type}
-                    </span>
-                  `
+                item.type
+                  ? `<span>${safeText(item.type)}</span>`
                   : ""
               }
 
@@ -1233,34 +891,35 @@ function displayArticleTitles(
 
         `;
 
-      }
-    ).join("");
+      })
+      .join("")
+      +
 
+      (
+        items.length > 6
+          ?
 
-  const toggleHtml =
-    items.length > 6
-      ? `
-        <div class="library-toggle-wrap">
+          `
+            <div class="library-toggle-wrap">
 
-          <button
-            class="library-toggle"
-            onclick="toggleLibraryList()"
-          >
-            ${
-              libraryExpanded
-                ? "Show Less ↑"
-                : "Show More ↓"
-            }
-          </button>
+              <button
+                class="library-toggle"
+                onclick="toggleLibraryList()"
+              >
 
-        </div>
-      `
-      : "";
+                ${
+                  libraryExpanded
+                    ? "Show Less ↑"
+                    : "Show More ↓"
+                }
 
+              </button>
 
-  container.innerHTML =
-    articleHtml +
-    toggleHtml;
+            </div>
+          `
+
+          : ""
+      );
 
 }
 
@@ -1270,20 +929,14 @@ function toggleLibraryList() {
   libraryExpanded =
     !libraryExpanded;
 
-
   displayArticleTitles(
     allInvestmentItems
   );
 
 }
 
-/* ========================================
-   TEXT SAFETY
-======================================== */
 
-function safeText(
-  value
-) {
+function safeText(value) {
 
   if (
     value === null ||
@@ -1294,87 +947,83 @@ function safeText(
 
   }
 
-
   return String(value)
 
-    .replaceAll(
-      "&",
-      "&amp;"
-    )
-
-    .replaceAll(
-      "<",
-      "&lt;"
-    )
-
-    .replaceAll(
-      ">",
-      "&gt;"
-    )
-
-    .replaceAll(
-      '"',
-      "&quot;"
-    )
-
-    .replaceAll(
-      "'",
-      "&#039;"
-    );
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
 
 }
 
-
-/* ========================================
-   ACCOUNT / ADMIN ACCESS
-======================================== */
 
 const ADMIN_UID =
   "a5bc1b7d-ca11-49f3-8e95-1d99b12031fa";
 
+
 async function updateAccountLink() {
 
   const accountLink =
-    document.getElementById("account-link");
-
-  if (!accountLink) {
-    return;
-  }
+    document.getElementById(
+      "account-link"
+    );
 
   const {
     data: { session }
   } =
-    await supabaseClient.auth.getSession();
+    await supabaseClient
+      .auth
+      .getSession();
 
-  // Not logged in
   if (!session) {
-    accountLink.href = "member.html";
-    accountLink.textContent = "🔐 Log In ";
+
+    accountLink.href =
+      "member.html";
+
+    accountLink.textContent =
+      "🔐 Log In";
+
     return;
+
   }
 
-  // Administrator
-  if (session.user.id === ADMIN_UID) {
-    accountLink.href = "management.html";
-    accountLink.textContent = "⚙️ Management";
+  if (
+    session.user.id ===
+    ADMIN_UID
+  ) {
+
+    accountLink.href =
+      "management.html";
+
+    accountLink.textContent =
+      "⚙️ Management";
+
     return;
+
   }
 
-  // Regular logged-in member
-  accountLink.href = "#";
-  accountLink.textContent = "↪ Log Out";
+  accountLink.href =
+    "#";
 
-  accountLink.onclick = async function(event) {
-    event.preventDefault();
-    await supabaseClient.auth.signOut();
-    window.location.reload();
-  };
+  accountLink.textContent =
+    "↪ Log Out";
+
+  accountLink.onclick =
+    async function(event) {
+
+      event.preventDefault();
+
+      await supabaseClient
+        .auth
+        .signOut();
+
+      window.location.reload();
+
+    };
+
 }
 
-
-/* ========================================
-   START
-======================================== */
 
 loadWatchList();
 
@@ -1383,7 +1032,6 @@ loadInvestmentItems();
 updateAccountLink();
 
 </script>
-
 
 </body>
 
